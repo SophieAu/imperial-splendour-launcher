@@ -4,6 +4,10 @@ import resolve from '@rollup/plugin-node-resolve';
 import livereload from 'rollup-plugin-livereload';
 import { terser } from 'rollup-plugin-terser';
 import css from 'rollup-plugin-css-only';
+import image from '@rollup/plugin-image';
+import babel from 'rollup-plugin-babel';
+import polyfill from 'rollup-plugin-polyfill';
+// import copy from "rollup-plugin-copy-assets";
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -37,11 +41,10 @@ export default {
 		file: 'public/build/bundle.js'
 	},
 	plugins: [
+		image(),
 		svelte({
-			compilerOptions: {
-				// enable run-time checks when not in production
-				dev: !production
-			}
+			// enable run-time checks when not in production
+			compilerOptions: { dev: !production }
 		}),
 		// we'll extract any component CSS out into
 		// a separate file - better for performance
@@ -54,8 +57,11 @@ export default {
 		// https://github.com/rollup/plugins/tree/master/packages/commonjs
 		resolve({
 			browser: true,
-			dedupe: ['svelte']
+			dedupe: ['svelte', 'svelte/transition', 'svelte/internal']
 		}),
+
+		// copy({ assets: ["./assets"], }),
+
 		commonjs(),
 
 		// In dev mode, call `npm run start` once
@@ -65,6 +71,32 @@ export default {
 		// Watch the `public` directory and refresh the
 		// browser on changes when not in production
 		!production && livereload('public'),
+
+		// Credit: https://blog.az.sg/posts/svelte-and-ie11/
+		babel({
+			extensions: ['.js', '.jsx', '.es6', '.es', '.mjs', '.svelte', '.html'],
+			runtimeHelpers: true,
+			exclude: ['node_modules/@babel/**', 'node_modules/core-js/**'],
+			presets: [
+				[
+					'@babel/preset-env',
+					{
+						targets: '> 0.25%, not dead, IE 11',
+						modules: false,
+						// spec: true,
+						useBuiltIns: 'usage',
+						forceAllTransforms: true,
+						corejs: 3,
+					},
+				]
+			],
+			plugins: [
+				'@babel/plugin-syntax-dynamic-import',
+				['@babel/plugin-transform-runtime', { useESModules: true }]
+			]
+		}),
+
+		polyfill(['@webcomponents/webcomponentsjs']),
 
 		// If we're building for production (npm run build
 		// instead of npm run dev), minify

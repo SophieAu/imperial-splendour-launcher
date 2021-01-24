@@ -1,15 +1,16 @@
 <script>
   import Button from "./Button.svelte";
+  import headerLogo from "./assets/hero_logo.png";
 
   let version;
   let pageTitle = "Imperial Splendour: Rise of the Republic";
 
-  window.backend.version().then((result) => {
-    version = result;
-  });
+  //   window.backend.version().then((result) => {
+  //     version = result;
+  //   });
 
   const handleExit = () => {
-    window.backend.ExitCall.Exit();
+    // window.backend.ExitCall.Exit();
   };
 
   const handlePlay = () => {};
@@ -22,7 +23,9 @@
   <title>{pageTitle}</title>
 </svelte:head>
 <main>
-  <h1><span>{pageTitle}</span></h1>
+  <h1>
+    <img {headerLogo} tile={pageTitle} alt={pageTitle} />
+  </h1>
   <div class="buttonContainer">
     <Button text={"Play"} handleClick={handlePlay} />
     <Button text={"Switch"} handleClick={handleSwitch} />
@@ -41,17 +44,8 @@
   }
 
   h1 {
-    background: center / contain no-repeat url("/assets/hero_logo.png");
-
-    color: #ff3e00;
-    text-transform: uppercase;
-    font-size: 4em;
-    font-weight: 100;
-    height: 200px;
-  }
-
-  h1 > span {
-    display: none;
+    display: grid;
+    place-items: center;
   }
 
   .buttonContainer {
