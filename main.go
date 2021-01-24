@@ -43,12 +43,13 @@ func main() {
 	exitCall := &ExitCall{}
 
 	app := wails.CreateApp(&wails.AppConfig{
-		Width:  1920,
-		Height: 1200,
-		Title:  "Imperial Splendour: Rise of the Republic",
-		JS:     js,
-		CSS:    css,
-		Colour: "#131313",
+		Width:     1920,
+		Height:    1200,
+		Resizable: false,
+		Title:     "Imperial Splendour: Rise of the Republic",
+		JS:        js,
+		CSS:       css,
+		Colour:    "#131313",
 	})
 
 	app.Bind(play(exitCall))
