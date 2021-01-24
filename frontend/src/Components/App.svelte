@@ -54,21 +54,21 @@
   }
 
   h1 {
-    --width: calc(var(--width-ratio) * 1000);
-    --image-ratio: calc(374 / 1000);
-
     margin: 0 auto;
     padding: calc(var(--height-ratio) * 58) 0 calc(var(--height-ratio) * 128);
     display: grid;
     place-items: center;
-    width: var(--width);
-    height: calc(var(--width) * var(--image-ratio));
+  }
+
+  h1 > img {
+    width: calc(var(--width-ratio) * 1000);
   }
 
   .buttonContainer {
     flex: 1;
     display: flex;
     justify-content: space-evenly;
+    align-items: flex-start;
   }
 
   footer {
