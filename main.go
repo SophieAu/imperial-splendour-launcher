@@ -6,13 +6,30 @@ import (
 	"github.com/wailsapp/wails"
 )
 
-func play()       {}
+func play(exitCall *ExitCall) func() error {
+	playFunc := func() error {
+		err := browser.OpenURL("steam://rungameid/10500")
+		if err != nil {
+			return err
+		}
+		exitCall.Exit()
+		return nil
+	}
+	return playFunc
+}
+
 func switchMode() {}
 func uninstall()  {}
 
 func openWebsite() {
-	err := browser.OpenURL("https://imperialsplendour.com/")
-	print(err)
+	browser.OpenURL("https://imperialsplendour.com/")
+}
+
+func exit(exitCall *ExitCall) func() {
+	exitFunc := func() {
+		exitCall.Exit()
+	}
+	return exitFunc
 }
 
 func version() string {
@@ -23,6 +40,8 @@ func main() {
 	js := mewn.String("./frontend/public/build/bundle.js")
 	css := mewn.String("./frontend/public/build/bundle.css")
 
+	exitCall := &ExitCall{}
+
 	app := wails.CreateApp(&wails.AppConfig{
 		Width:  1920,
 		Height: 1200,
@@ -32,11 +51,11 @@ func main() {
 		Colour: "#131313",
 	})
 
-	app.Bind(play)
+	app.Bind(play(exitCall))
 	app.Bind(switchMode)
 	app.Bind(uninstall)
 	app.Bind(openWebsite)
-	app.Bind(&ExitCall{})
+	app.Bind(exit(exitCall))
 	app.Bind(version)
 	app.Run()
 }
