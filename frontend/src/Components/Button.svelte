@@ -7,12 +7,13 @@
 
 <style>
   button {
-    --font-family-heading: "'IM FELL English SC', georgia, serif";
+    --font-family-heading: "IM FELL English SC";
     --download-button-height: 6.25rem;
+    --download-button-height: calc(var(--height-ratio) * 100);
     --download-button-width: 18.125rem;
     --color-link-hover: #5c4e3c;
 
-    background: no-repeat center/100% url("/assets/texture_btn.png");
+    background: no-repeat center/100% var(--button-texture);
     font: normal 2.5rem / var(--download-button-height)
       var(--font-family-heading);
     height: var(--download-button-height);

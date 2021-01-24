@@ -1,13 +1,11 @@
 import svelte from 'rollup-plugin-svelte';
-import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
 import livereload from 'rollup-plugin-livereload';
 import { terser } from 'rollup-plugin-terser';
-import css from 'rollup-plugin-css-only';
 import image from '@rollup/plugin-image';
 import babel from 'rollup-plugin-babel';
 import polyfill from 'rollup-plugin-polyfill';
-// import copy from "rollup-plugin-copy-assets";
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -44,11 +42,13 @@ export default {
 		image(),
 		svelte({
 			// enable run-time checks when not in production
-			compilerOptions: { dev: !production }
-		}),
+			dev: !production,
 		// we'll extract any component CSS out into
 		// a separate file - better for performance
-		css({ output: 'bundle.css' }),
+			css: css => {
+				css.write('bundle.css');
+			}
+		}),
 
 		// If you have external dependencies installed from
 		// npm, you'll most likely need these plugins. In
@@ -59,9 +59,6 @@ export default {
 			browser: true,
 			dedupe: ['svelte', 'svelte/transition', 'svelte/internal']
 		}),
-
-		// copy({ assets: ["./assets"], }),
-
 		commonjs(),
 
 		// In dev mode, call `npm run start` once

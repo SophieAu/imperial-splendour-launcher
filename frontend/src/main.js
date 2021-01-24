@@ -1,9 +1,9 @@
-import App from './App.svelte';
-// import * as Wails from "@wailsapp/runtime"
+import Root from './Root.svelte';
+
+import * as Wails from '@wailsapp/runtime';
 
 let app;
 
-// Wails.Init(() => { app = new App({ target: document.body }); })
-app = new App({ target: document.body });
+Wails.Init(() => { app = new Root({ target: document.body }) });
 
 export default app;
