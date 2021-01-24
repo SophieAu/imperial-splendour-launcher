@@ -13,6 +13,7 @@
     --width-ratio: calc(100vw / 1920);
     --height-ratio: calc(100vh / 1200);
 
+    overflow: hidden;
     margin: 0;
     height: 100vh;
     width: 100vw;
