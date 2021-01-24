@@ -43,8 +43,8 @@ func main() {
 	exitCall := &ExitCall{}
 
 	app := wails.CreateApp(&wails.AppConfig{
-		Width:     1920,
-		Height:    1200,
+		Width:     1280,
+		Height:    800,
 		Resizable: false,
 		Title:     "Imperial Splendour: Rise of the Republic",
 		JS:        js,
