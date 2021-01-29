@@ -40,11 +40,16 @@
     <Button text={"Uninstall"} handleClick={handleUninstall} />
     <Button text={"Exit"} handleClick={handleExit} />
   </div>
-  <footer><span class="prefix">v</span>{version}</footer>
+  <footer>
+    <span class="prefix">v</span><span class="version">{version}</span>
+  </footer>
 </main>
 
 <style>
   main {
+    --font-size-factor: calc(40 * calc((100vh - 800px) / (1200 - 800)));
+    --font-size: clamp(32px, var(--font-size-factor), 40px);
+
     background: center / contain var(--img-bg);
     height: calc(100vw / 1.6);
     overflow: hidden;
@@ -73,10 +78,9 @@
 
   footer {
     text-align: right;
-    margin-bottom: -0.75rem;
+    margin-bottom: -0.25rem;
     padding-right: 0.25rem;
     font-family: "IM FELL English";
-    font-size: 4rem;
   }
 
   footer > .prefix {
