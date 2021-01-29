@@ -5,24 +5,26 @@
   let version;
   let pageTitle = "Imperial Splendour: Rise of the Republic";
 
+  const { API } = window.backend;
+
   window.backend.version().then((result) => {
     version = result;
   });
 
   const handlePlay = () => {
-    window.backend.play();
+    API.Play();
   };
   const handleSwitch = () => {
     window.backend.switchMode();
   };
   const handleWebsite = () => {
-    window.backend.openWebsite();
+    API.GoToWebsite();
   };
   const handleUninstall = () => {
     window.backend.uninstall();
   };
   const handleExit = () => {
-    window.backend.ExitCall.Exit();
+    API.Exit();
   };
 </script>
 
@@ -85,5 +87,9 @@
 
   footer > .prefix {
     font-size: 2rem;
+  }
+
+  footer > .version {
+    font-size: var(--font-size);
   }
 </style>
