@@ -2,7 +2,7 @@ package main
 
 // Play .
 func (a *API) Play() error {
-	err := a.runtime.Browser.OpenURL("steam://rungameid/10500")
+	err := a.runtime.Browser.OpenURL(etwSteamURI)
 	if err != nil {
 		return err
 		// return thrown promise here asking the user if they have steam installed
@@ -28,8 +28,7 @@ func (a *API) Switch() error {
 }
 
 // GoToWebsite .
-func (a *API) GoToWebsite() {
-	err := a.runtime.Browser.OpenURL("https://imperialsplendour.com/")
+	err := a.runtime.Browser.OpenURL(websiteURL)
 	if err != nil {
 		a.logger.Errorf("%v", err)
 	}

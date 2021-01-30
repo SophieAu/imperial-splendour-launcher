@@ -12,15 +12,6 @@ import (
 	"github.com/wailsapp/wails/lib/logger"
 )
 
-var appDataPath = "The Creative Assembly/Empire/scripts/"
-var userScript = "user.empire_script.txt"
-var etwDir = "/"
-var modPath = "IS_Files/"
-var dataPath = "data/"
-var campaignPath = dataPath + "campaigns/imperial_splendour/"
-var fileListFile = "IS_FileList.txt"
-var appDataDir = ""
-
 // API .
 type API struct {
 	runtime *wails.Runtime
@@ -94,7 +85,7 @@ func (a *API) setStatus(isActive bool) error {
 		return err
 	}
 
-	err = ioutil.WriteFile(etwDir+modPath+"IS_info.json", newInfoJSON, 0644)
+	err = ioutil.WriteFile(etwDir+modPath+infoFile, newInfoJSON, 0644)
 	if err != nil {
 		a.logger.Errorf("%v", err)
 		return err

@@ -17,6 +17,17 @@ func getExecDirectory() string {
 	return filepath.Dir(ex)
 }
 
+func (a *API) loadInfoFromFile() {
+	jsonFile, err := os.Open(etwDir + modPath + infoFile)
+	if err != nil {
+		a.logger.Errorf("%v", err)
+	}
+	defer jsonFile.Close()
+
+	byteValue, _ := ioutil.ReadAll(jsonFile)
+	json.Unmarshal(byteValue, &a.info)
+}
+
 // WailsInit is the init fuction for the wails runtime
 func (a *API) WailsInit(runtime *wails.Runtime) error {
 	a.runtime = runtime
@@ -24,35 +35,17 @@ func (a *API) WailsInit(runtime *wails.Runtime) error {
 
 	etwDir = getExecDirectory() + "/"
 	a.logger.Infof("ETW/Current directory: %s", etwDir)
+
 	// appDataDir = os.Getenv("APPDATA") + "appDataPath
 	appDataDir = etwDir + "appDataFolder/" + appDataPath
 	a.logger.Infof("AppData directory: %s", appDataDir)
 
-	jsonFile, err := os.Open(etwDir + modPath + "IS_info.json")
-	if err != nil {
-		a.logger.Warnf("%v", err)
-	}
-	defer jsonFile.Close()
-
-	byteValue, _ := ioutil.ReadAll(jsonFile)
-
-	a.logger.Warnf("Info content %s", string(byteValue))
-
-	var info Info
-
-	json.Unmarshal(byteValue, &info)
-	a.logger.Warnf("Info loaded ext %v", info)
-	a.info = info
-	a.logger.Warnf("Info loaded %v", a.info)
+	a.loadInfoFromFile()
+	a.logger.Infof("Info loaded %v", a.info)
 
 	return nil
 }
 
 // WailsShutdown is the shutdown function that is called when wails shuts down
 func (a *API) WailsShutdown() {
-	// a.store.close()
-	// if a.cancelMonitoring != nil {
-	// 	a.cancelMonitoring()
-	// }
-
 }
