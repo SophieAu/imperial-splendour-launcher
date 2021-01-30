@@ -5,6 +5,8 @@
   let version;
   let pageTitle = "Imperial Splendour: Rise of the Republic";
 
+  let switchStatus = "Not switched";
+
   const { API } = window.backend;
 
   window.backend.version().then((result) => {
@@ -14,14 +16,19 @@
   const handlePlay = () => {
     API.Play();
   };
-  const handleSwitch = () => {
-    window.backend.switchMode();
+  const handleSwitch = async () => {
+    try {
+      await API.Switch();
+      switchStatus = "nice";
+    } catch {
+      switchStatus = "oh noes ";
+    }
   };
   const handleWebsite = () => {
     API.GoToWebsite();
   };
   const handleUninstall = () => {
-    window.backend.uninstall();
+    API.Uninstall();
   };
   const handleExit = () => {
     API.Exit();
@@ -35,6 +42,7 @@
   <h1>
     <img src={headerLogo} title={pageTitle} alt={pageTitle} />
   </h1>
+  Switch status: {switchStatus}
   <div class="buttonContainer">
     <Button text={"Play"} handleClick={handlePlay} />
     <Button text={"Switch"} handleClick={handleSwitch} />

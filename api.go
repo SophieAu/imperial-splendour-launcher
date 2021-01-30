@@ -1,9 +1,7 @@
 package main
 
 import (
-	"fmt"
 	"os"
-	"path/filepath"
 
 	"github.com/wailsapp/wails"
 	"github.com/wailsapp/wails/lib/logger"
@@ -14,6 +12,7 @@ var etwDir = "/"
 var modPath = "IS_Files/"
 var dataPath = "data/"
 var campaignPath = dataPath + "campaigns/imperial_splendour/"
+var fileListFile = "IS_FileList.txt"
 
 // API .
 type API struct {
@@ -21,54 +20,14 @@ type API struct {
 	logger  *logger.CustomLogger
 }
 
-// WailsInit is the init fuction for the wails runtime
-func (a *API) WailsInit(runtime *wails.Runtime) error {
-	a.runtime = runtime
-	a.logger = runtime.Log.New("API")
-
-	a.logger.Info("This is fine")
-	feeling := "okay"
-	a.logger.Infof("I'm %s with the events that are currently unfolding", feeling)
-
-	ex, err := os.Executable()
+func (a *API) moveFile() error {
+	oldLocation := etwDir + "/test.txt"
+	newLocation := etwDir + "/src/test.txt"
+	a.logger.Infof("Moving from %s to %s", oldLocation, newLocation)
+	err := os.Rename(oldLocation, newLocation)
 	if err != nil {
-		panic(err)
-	}
-	exPath := filepath.Dir(ex)
-	fmt.Println(exPath)
-
-	etwDir = exPath
-
-	return nil
-}
-
-// GoToWebsite .
-func (a *API) GoToWebsite() {
-	a.runtime.Browser.OpenURL("https://imperialsplendour.com/")
-}
-
-// Exit .
-func (a *API) Exit() {
-	a.runtime.Window.Close()
-
-}
-
-// Play .
-func (a *API) Play() error {
-	err := a.runtime.Browser.OpenURL("steam://rungameid/10500")
-	if err != nil {
+		a.logger.Errorf("%v", err)
 		return err
-		// return thrown promise here asking the user if they have steam installed
 	}
-	a.Exit()
 	return nil
-}
-
-// WailsShutdown is the shutdown function that is called when wails shuts down
-func (a *API) WailsShutdown() {
-	// a.store.close()
-	// if a.cancelMonitoring != nil {
-	// 	a.cancelMonitoring()
-	// }
-
 }
