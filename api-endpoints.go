@@ -1,72 +1,64 @@
 package main
 
+// Version .
+func (a *API) Version() string {
+	a.logger.Infof("Version: %s", a.info.Version)
+	return a.info.Version
+}
+
+// IsActive .
+func (a *API) IsActive() bool {
+	a.logger.Infof("IsActive: %s", a.info.IsActive)
+	return a.info.IsActive
+}
+
 // Play .
 func (a *API) Play() error {
 	err := a.runtime.Browser.OpenURL(etwSteamURI)
 	if err != nil {
 		return err
-		// return thrown promise here asking the user if they have steam installed
 	}
+
 	a.Exit()
 	return nil
 }
 
 // Switch .
 func (a *API) Switch() error {
-	a.logger.Info("Switching")
-	var err error
-
+	var switchFn func() error
 	if a.info.IsActive {
-		err = a.deactivateImpSplen()
+		switchFn = a.deactivateImpSplen
 	} else {
-		err = a.activateImpSplen()
+		switchFn = a.activateImpSplen
 	}
+
+	err := switchFn()
 	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// GoToWebsite .
+func (a *API) GoToWebsite() error {
+	a.logger.Infof("Navigating to %s", websiteURL)
+
+	err := a.runtime.Browser.OpenURL(websiteURL)
+	if err != nil {
+		a.logger.Errorf("Could not open website: %v", err)
 		return err
 	}
 	return nil
 }
 
-// GoToWebsite .
-	err := a.runtime.Browser.OpenURL(websiteURL)
-	if err != nil {
-		a.logger.Errorf("%v", err)
-	}
-}
-
 // Uninstall .
-func (a *API) Uninstall() {
+func (a *API) Uninstall() error {
 	a.logger.Info("Uninstalling")
+	return nil
 }
 
 // Exit .
 func (a *API) Exit() {
 	a.runtime.Window.Close()
 }
-
-// Version .
-func (a *API) Version() string {
-	return a.info.Version
-}
-
-// IsActive .
-func (a *API) IsActive() bool {
-	a.logger.Infof("Version: %s", a.info.Version)
-	return a.info.IsActive
-}
-
-// STARTUP CHECKS
-// * is mod active
-// * is in correct folder
-
-// WHERE TO MOVE WHAT
-/*
-reading from file list
-
-data files
-from mod-diretory
-
-
-
-
-*/

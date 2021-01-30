@@ -5,6 +5,8 @@ import (
 	"github.com/wailsapp/wails"
 )
 
+var appName = "Imperial Splendour: Rise of the Republic"
+
 var appDataDir = ""
 var appDataPath = "The Creative Assembly/Empire/scripts/"
 
@@ -25,13 +27,13 @@ func main() {
 	css := mewn.String("./frontend/public/build/bundle.css")
 
 	app := wails.CreateApp(&wails.AppConfig{
-		Width:     1280,
-		Height:    800,
-		Resizable: false,
-		Title:     "Imperial Splendour: Rise of the Republic",
-		JS:        js,
-		CSS:       css,
-		Colour:    "#131313",
+		Width:            1280,
+		Height:           800,
+		Resizable:        false,
+		Title:            appName,
+		JS:               js,
+		CSS:              css,
+		DisableInspector: true,
 	})
 
 	app.Bind(&API{})

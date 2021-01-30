@@ -96,7 +96,7 @@ func (a *API) setStatus(isActive bool) error {
 }
 
 func (a *API) activateImpSplen() error {
-	a.logger.Info("Activating ImpSplen")
+	a.logger.Debug("Activating ImpSplen")
 
 	files, err := a.readFileList()
 	if err != nil {
@@ -118,11 +118,12 @@ func (a *API) activateImpSplen() error {
 	a.moveFile(etwDir+modPath+userScript, appDataDir+userScript)
 
 	a.setStatus(true)
+	a.logger.Debug("ImpSplen activated")
 	return nil
 }
 
 func (a *API) deactivateImpSplen() error {
-	a.logger.Info("Deactivating ImpSplen")
+	a.logger.Debug("Deactivating ImpSplen")
 
 	files, err := a.readFileList()
 	if err != nil {
@@ -144,5 +145,6 @@ func (a *API) deactivateImpSplen() error {
 	a.moveFile(appDataDir+userScript, etwDir+modPath+userScript)
 
 	a.setStatus(false)
+	a.logger.Debug("ImpSplen deactivated")
 	return nil
 }
