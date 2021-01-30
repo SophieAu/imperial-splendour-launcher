@@ -1,6 +1,6 @@
 <script>
   import Button from "./Button.svelte";
-  import headerLogo from "../assets/hero_logo.png";
+  import headerLogo from "./assets/hero_logo.png";
 
   let pageTitle = "Imperial Splendour: Rise of the Republic";
   let version = "";
