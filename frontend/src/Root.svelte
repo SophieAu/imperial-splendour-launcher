@@ -1,5 +1,5 @@
 <script>
-  import App from "./Components/App.svelte";
+  import App from "./App.svelte";
   import background from "./assets/background.png";
   import textureBtn from "./assets/texture_btn.png";
 </script>
