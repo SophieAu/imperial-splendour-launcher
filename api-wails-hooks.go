@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -18,14 +17,15 @@ func getExecDirectory() string {
 }
 
 func (a *API) loadInfoFromFile() {
-	jsonFile, err := os.Open(etwDir + modPath + infoFile)
+	byteValue, err := a.fh.ReadFile(etwDir + modPath + infoFile)
 	if err != nil {
-		a.logger.Errorf("%v", err)
+		panic(err)
 	}
-	defer jsonFile.Close()
 
-	byteValue, _ := ioutil.ReadAll(jsonFile)
-	json.Unmarshal(byteValue, &a.info)
+	err = json.Unmarshal(byteValue, &a.info)
+	if err != nil {
+		panic(err)
+	}
 }
 
 // WailsInit is the init fuction for the wails runtime

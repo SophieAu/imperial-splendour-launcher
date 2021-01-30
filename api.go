@@ -1,11 +1,7 @@
 package main
 
 import (
-	"bufio"
 	"encoding/json"
-	"fmt"
-	"io/ioutil"
-	"os"
 	"strings"
 
 	"github.com/wailsapp/wails"
@@ -16,6 +12,7 @@ import (
 type API struct {
 	runtime *wails.Runtime
 	logger  *logger.CustomLogger
+	fh      *FileHandler
 	info    Info
 }
 
@@ -32,42 +29,33 @@ type ModFiles struct {
 }
 
 func (a *API) readFileList() (*ModFiles, error) {
-	file, err := os.Open(etwDir + modPath + fileListFile)
-	if err != nil {
-		a.logger.Fatalf("%v", err)
-	}
-	defer file.Close()
-
 	modFiles := ModFiles{
 		dataFiles:     []string{},
 		campaignFiles: []string{},
 	}
 
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		item := scanner.Text()
-
-		if strings.HasSuffix(item, ".pack") {
-			modFiles.dataFiles = append(modFiles.dataFiles, item)
-		} else if strings.HasSuffix(item, ".tga") || strings.HasSuffix(item, ".esf") || strings.HasSuffix(item, ".lua") {
-			modFiles.campaignFiles = append(modFiles.campaignFiles, item)
-		} else {
-			a.logger.Warnf("Unknown file '%s' found in file list", item)
-		}
-
-		fmt.Println(item)
+	fileBlob, err := a.fh.ReadFile(etwDir + modPath + fileListFile)
+	if err != nil {
+		a.logger.Fatalf("%v", err)
 	}
 
-	if err := scanner.Err(); err != nil {
-		a.logger.Fatalf("%v", err)
+	for _, file := range strings.Split(string(fileBlob), "\n") {
+		if strings.HasSuffix(file, ".pack") {
+			modFiles.dataFiles = append(modFiles.dataFiles, file)
+		} else if strings.HasSuffix(file, ".tga") || strings.HasSuffix(file, ".esf") || strings.HasSuffix(file, ".lua") {
+			modFiles.campaignFiles = append(modFiles.campaignFiles, file)
+		} else if file != "" {
+			a.logger.Warnf("Unknown file '%s' found in file list", file)
+		}
 	}
 
 	return &modFiles, nil
 }
 
 func (a *API) moveFile(source, destination string) error {
-	a.logger.Infof("Moving from %s to %s", source, destination)
-	err := os.Rename(source, destination)
+	a.logger.Debugf("Moving from %s to %s", source, destination)
+
+	err := a.fh.MoveFile(source, destination)
 	if err != nil {
 		a.logger.Errorf("%v", err)
 		return err
@@ -85,7 +73,7 @@ func (a *API) setStatus(isActive bool) error {
 		return err
 	}
 
-	err = ioutil.WriteFile(etwDir+modPath+infoFile, newInfoJSON, 0644)
+	err = a.fh.WriteFile(etwDir+modPath+infoFile, newInfoJSON, 0644)
 	if err != nil {
 		a.logger.Errorf("%v", err)
 		return err

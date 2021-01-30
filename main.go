@@ -36,6 +36,6 @@ func main() {
 		DisableInspector: true,
 	})
 
-	app.Bind(&API{})
+	app.Bind(&API{fh: &FileHandler{}})
 	app.Run()
 }
