@@ -12,7 +12,7 @@ import (
 type API struct {
 	runtime *wails.Runtime
 	logger  *logger.CustomLogger
-	fh      *FileHandler
+	fh      Handler
 	info    Info
 }
 
