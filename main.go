@@ -5,13 +5,6 @@ import (
 	"github.com/wailsapp/wails"
 )
 
-func switchMode() {}
-func uninstall()  {}
-
-func version() string {
-	return "2.0"
-}
-
 func main() {
 	js := mewn.String("./frontend/public/build/bundle.js")
 	css := mewn.String("./frontend/public/build/bundle.css")
@@ -27,8 +20,5 @@ func main() {
 	})
 
 	app.Bind(&API{})
-	app.Bind(switchMode)
-	app.Bind(uninstall)
-	app.Bind(version)
 	app.Run()
 }

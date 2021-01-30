@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -20,8 +22,28 @@ func (a *API) WailsInit(runtime *wails.Runtime) error {
 	a.runtime = runtime
 	a.logger = runtime.Log.New("API")
 
-	etwDir = getExecDirectory()
+	etwDir = getExecDirectory() + "/"
 	a.logger.Infof("ETW/Current directory: %s", etwDir)
+	// appDataDir = os.Getenv("APPDATA") + "appDataPath
+	appDataDir = etwDir + "appDataFolder/" + appDataPath
+	a.logger.Infof("AppData directory: %s", appDataDir)
+
+	jsonFile, err := os.Open(etwDir + modPath + "IS_info.json")
+	if err != nil {
+		a.logger.Warnf("%v", err)
+	}
+	defer jsonFile.Close()
+
+	byteValue, _ := ioutil.ReadAll(jsonFile)
+
+	a.logger.Warnf("Info content %s", string(byteValue))
+
+	var info Info
+
+	json.Unmarshal(byteValue, &info)
+	a.logger.Warnf("Info loaded ext %v", info)
+	a.info = info
+	a.logger.Warnf("Info loaded %v", a.info)
 
 	return nil
 }

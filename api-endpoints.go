@@ -14,8 +14,13 @@ func (a *API) Play() error {
 // Switch .
 func (a *API) Switch() error {
 	a.logger.Info("Switching")
+	var err error
 
-	err := a.moveFile()
+	if a.info.IsActive {
+		err = a.deactivateImpSplen()
+	} else {
+		err = a.activateImpSplen()
+	}
 	if err != nil {
 		return err
 	}
@@ -24,7 +29,7 @@ func (a *API) Switch() error {
 
 // GoToWebsite .
 func (a *API) GoToWebsite() {
-	err := a.runtime.Browser.OpenURL("kdlfjhttps://imperialsplendour.com/")
+	err := a.runtime.Browser.OpenURL("https://imperialsplendour.com/")
 	if err != nil {
 		a.logger.Errorf("%v", err)
 	}
@@ -39,3 +44,30 @@ func (a *API) Uninstall() {
 func (a *API) Exit() {
 	a.runtime.Window.Close()
 }
+
+// Version .
+func (a *API) Version() string {
+	return a.info.Version
+}
+
+// IsActive .
+func (a *API) IsActive() bool {
+	a.logger.Infof("Version: %s", a.info.Version)
+	return a.info.IsActive
+}
+
+// STARTUP CHECKS
+// * is mod active
+// * is in correct folder
+
+// WHERE TO MOVE WHAT
+/*
+reading from file list
+
+data files
+from mod-diretory
+
+
+
+
+*/

@@ -2,15 +2,18 @@
   import Button from "./Button.svelte";
   import headerLogo from "../assets/hero_logo.png";
 
-  let version;
   let pageTitle = "Imperial Splendour: Rise of the Republic";
-
+  let version = "";
   let switchStatus = "Not switched";
 
   const { API } = window.backend;
 
-  window.backend.version().then((result) => {
+  API.Version().then((result) => {
     version = result;
+  });
+
+  API.IsActive().then((result) => {
+    switchStatus = result ? "active" : "not active";
   });
 
   const handlePlay = () => {
@@ -19,10 +22,13 @@
   const handleSwitch = async () => {
     try {
       await API.Switch();
-      switchStatus = "nice";
+      console.log("switched");
     } catch {
-      switchStatus = "oh noes ";
+      console.log("oh noes");
     }
+    API.IsActive().then((result) => {
+      switchStatus = result ? "active" : "not active";
+    });
   };
   const handleWebsite = () => {
     API.GoToWebsite();
