@@ -30,7 +30,8 @@ func (a *API) loadInfoFromFile() {
 
 // WailsInit is the init fuction for the wails runtime
 func (a *API) WailsInit(runtime *wails.Runtime) error {
-	a.runtime = runtime
+	a.browser = runtime.Browser
+	a.window = runtime.Window
 	a.logger = runtime.Log.New("API")
 
 	etwDir = getExecDirectory() + "/"

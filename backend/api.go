@@ -3,9 +3,6 @@ package backend
 import (
 	"encoding/json"
 	"strings"
-
-	"github.com/wailsapp/wails"
-	"github.com/wailsapp/wails/lib/logger"
 )
 
 // AppName .
@@ -28,8 +25,9 @@ var etwSteamURI = "steam://rungameid/10500"
 
 // API .
 type API struct {
-	runtime *wails.Runtime
-	logger  *logger.CustomLogger
+	logger  Logger
+	browser Browser
+	window  Window
 	Fh      Handler
 	info    Info
 }

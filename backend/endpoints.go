@@ -14,7 +14,7 @@ func (a *API) IsActive() bool {
 
 // Play .
 func (a *API) Play() error {
-	err := a.runtime.Browser.OpenURL(etwSteamURI)
+	err := a.browser.OpenURL(etwSteamURI)
 	if err != nil {
 		return err
 	}
@@ -44,7 +44,7 @@ func (a *API) Switch() error {
 func (a *API) GoToWebsite() error {
 	a.logger.Infof("Navigating to %s", websiteURL)
 
-	err := a.runtime.Browser.OpenURL(websiteURL)
+	err := a.browser.OpenURL(websiteURL)
 	if err != nil {
 		a.logger.Errorf("Could not open website: %v", err)
 		return err
@@ -60,5 +60,5 @@ func (a *API) Uninstall() error {
 
 // Exit .
 func (a *API) Exit() {
-	a.runtime.Window.Close()
+	a.window.Close()
 }
