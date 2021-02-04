@@ -28,7 +28,7 @@ type API struct {
 	logger  Logger
 	browser Browser
 	window  Window
-	Fh      Handler
+	Sh      Handler
 	info    Info
 }
 
@@ -50,7 +50,7 @@ func (a *API) readFileList() (*ModFiles, error) {
 		campaignFiles: []string{},
 	}
 
-	fileBlob, err := a.Fh.ReadFile(etwDir + modPath + fileListFile)
+	fileBlob, err := a.Sh.ReadFile(etwDir + modPath + fileListFile)
 	if err != nil {
 		a.logger.Fatalf("%v", err)
 	}
@@ -71,7 +71,7 @@ func (a *API) readFileList() (*ModFiles, error) {
 func (a *API) moveFile(source, destination string) error {
 	a.logger.Debugf("Moving from %s to %s", source, destination)
 
-	err := a.Fh.MoveFile(source, destination)
+	err := a.Sh.MoveFile(source, destination)
 	if err != nil {
 		a.logger.Errorf("%v", err)
 		return err
@@ -89,7 +89,7 @@ func (a *API) setStatus(isActive bool) error {
 		return err
 	}
 
-	err = a.Fh.WriteFile(etwDir+modPath+infoFile, newInfoJSON, 0644)
+	err = a.Sh.WriteFile(etwDir+modPath+infoFile, newInfoJSON)
 	if err != nil {
 		a.logger.Errorf("%v", err)
 		return err

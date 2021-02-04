@@ -2,14 +2,13 @@ package backend
 
 import (
 	"encoding/json"
-	"os"
 	"path/filepath"
 
 	"github.com/wailsapp/wails"
 )
 
-func getExecDirectory() string {
-	ex, err := os.Executable()
+func (a *API) getExecDirectory() string {
+	ex, err := a.Sh.Executable()
 	if err != nil {
 		panic(err)
 	}
@@ -17,7 +16,7 @@ func getExecDirectory() string {
 }
 
 func (a *API) loadInfoFromFile() {
-	byteValue, err := a.Fh.ReadFile(etwDir + modPath + infoFile)
+	byteValue, err := a.Sh.ReadFile(etwDir + modPath + infoFile)
 	if err != nil {
 		panic(err)
 	}
@@ -34,10 +33,10 @@ func (a *API) WailsInit(runtime *wails.Runtime) error {
 	a.window = runtime.Window
 	a.logger = runtime.Log.New("API")
 
-	etwDir = getExecDirectory() + "/"
+	etwDir = a.getExecDirectory() + "/"
 	a.logger.Infof("ETW/Current directory: %s", etwDir)
 
-	// appDataDir = os.Getenv("APPDATA") + "appDataPath
+	// appDataDir = Sh.Getenv("APPDATA") + "appDataPath"
 	appDataDir = etwDir + "appDataFolder/" + appDataPath
 	a.logger.Infof("AppData directory: %s", appDataDir)
 
