@@ -1,4 +1,4 @@
-package main
+package backend
 
 import (
 	"encoding/json"
@@ -8,11 +8,29 @@ import (
 	"github.com/wailsapp/wails/lib/logger"
 )
 
+// AppName .
+var AppName = "Imperial Splendour: Rise of the Republic"
+
+var appDataDir = ""
+var appDataPath = "The Creative Assembly/Empire/scripts/"
+
+var etwDir = ""
+var modPath = "IS_Files/"
+var dataPath = "data/"
+var campaignPath = dataPath + "campaigns/imperial_splendour/"
+
+var userScript = "user.empire_script.txt"
+var fileListFile = "IS_FileList.txt"
+var infoFile = "IS_info.json"
+
+var websiteURL = "https://imperialsplendour.com/"
+var etwSteamURI = "steam://rungameid/10500"
+
 // API .
 type API struct {
 	runtime *wails.Runtime
 	logger  *logger.CustomLogger
-	fh      Handler
+	Fh      Handler
 	info    Info
 }
 
@@ -34,7 +52,7 @@ func (a *API) readFileList() (*ModFiles, error) {
 		campaignFiles: []string{},
 	}
 
-	fileBlob, err := a.fh.ReadFile(etwDir + modPath + fileListFile)
+	fileBlob, err := a.Fh.ReadFile(etwDir + modPath + fileListFile)
 	if err != nil {
 		a.logger.Fatalf("%v", err)
 	}
@@ -55,7 +73,7 @@ func (a *API) readFileList() (*ModFiles, error) {
 func (a *API) moveFile(source, destination string) error {
 	a.logger.Debugf("Moving from %s to %s", source, destination)
 
-	err := a.fh.MoveFile(source, destination)
+	err := a.Fh.MoveFile(source, destination)
 	if err != nil {
 		a.logger.Errorf("%v", err)
 		return err
@@ -73,7 +91,7 @@ func (a *API) setStatus(isActive bool) error {
 		return err
 	}
 
-	err = a.fh.WriteFile(etwDir+modPath+infoFile, newInfoJSON, 0644)
+	err = a.Fh.WriteFile(etwDir+modPath+infoFile, newInfoJSON, 0644)
 	if err != nil {
 		a.logger.Errorf("%v", err)
 		return err

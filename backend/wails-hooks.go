@@ -1,4 +1,4 @@
-package main
+package backend
 
 import (
 	"encoding/json"
@@ -17,7 +17,7 @@ func getExecDirectory() string {
 }
 
 func (a *API) loadInfoFromFile() {
-	byteValue, err := a.fh.ReadFile(etwDir + modPath + infoFile)
+	byteValue, err := a.Fh.ReadFile(etwDir + modPath + infoFile)
 	if err != nil {
 		panic(err)
 	}

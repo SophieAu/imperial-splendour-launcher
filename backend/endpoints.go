@@ -1,4 +1,4 @@
-package main
+package backend
 
 // Version .
 func (a *API) Version() string {
