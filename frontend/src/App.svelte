@@ -1,10 +1,11 @@
 <script>
   import Button from "./Button.svelte";
-  import headerLogo from "./assets/hero_logo.png";
+  import isLogo from "./assets/hero_logo_is.png";
+  import etwLogo from "./assets/hero_logo_etw.png";
 
   let pageTitle = "Imperial Splendour: Rise of the Republic";
   let version = "";
-  let switchStatus = "Not switched";
+  let isISActive = undefined;
 
   const { API } = window.backend;
 
@@ -13,7 +14,7 @@
   });
 
   API.IsActive().then((result) => {
-    switchStatus = result ? "active" : "not active";
+    isISActive = result;
   });
 
   const handlePlay = () => {
@@ -27,7 +28,7 @@
       console.log("oh noes");
     }
     API.IsActive().then((result) => {
-      switchStatus = result ? "active" : "not active";
+      isISActive = result;
     });
   };
   const handleWebsite = () => {
@@ -46,9 +47,13 @@
 </svelte:head>
 <main>
   <h1>
-    <img src={headerLogo} title={pageTitle} alt={pageTitle} />
+    <img
+      src={isISActive ? isLogo : etwLogo}
+      title={pageTitle}
+      alt={pageTitle}
+    />
   </h1>
-  Switch status: {switchStatus}
+  Switch status: {isISActive ? "woop" : "doop"}
   <div class="buttonContainer">
     <Button text={"Play"} handleClick={handlePlay} />
     <Button text={"Switch"} handleClick={handleSwitch} />
@@ -83,6 +88,8 @@
 
   h1 > img {
     width: calc(var(--width-ratio) * 1000);
+    height: calc(var(--width-ratio) * 374);
+    object-fit: contain;
   }
 
   .buttonContainer {
