@@ -21,6 +21,6 @@ func main() {
 		DisableInspector: true,
 	})
 
-	app.Bind(&backend.API{Fh: &backend.SystemHandler{}})
-	app.Run()
+	app.Bind(&backend.API{})
+	_ = app.Run()
 }

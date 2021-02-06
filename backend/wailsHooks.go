@@ -12,7 +12,7 @@ func (a *API) getExecDirectory() string {
 	if err != nil {
 		panic(err)
 	}
-	return filepath.Dir(ex)
+	return filepath.Dir(ex) + "/"
 }
 
 func (a *API) loadInfoFromFile() {
@@ -29,11 +29,16 @@ func (a *API) loadInfoFromFile() {
 
 // WailsInit is the init fuction for the wails runtime
 func (a *API) WailsInit(runtime *wails.Runtime) error {
-	a.browser = runtime.Browser
-	a.window = runtime.Window
-	a.logger = runtime.Log.New("API")
+	return a.Init(runtime.Browser, runtime.Window, runtime.Log.New("API"), &SystemHandler{})
+}
 
-	etwDir = a.getExecDirectory() + "/"
+func (a *API) Init(browser Browser, window Window, logger Logger, systemHandler Handler) error {
+	a.browser = browser
+	a.window = window
+	a.logger = logger
+	a.Sh = systemHandler
+
+	etwDir = a.getExecDirectory()
 	a.logger.Infof("ETW/Current directory: %s", etwDir)
 
 	// appDataDir = Sh.Getenv("APPDATA") + "appDataPath"
