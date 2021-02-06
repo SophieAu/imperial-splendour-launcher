@@ -2,7 +2,6 @@ package backend
 
 import "github.com/wailsapp/wails/lib/logger"
 
-// Logger .
 type Logger interface {
 	Infof(message string, args ...interface{})
 	Debug(message string)
@@ -24,12 +23,10 @@ type Logger interface {
 	PanicFields(message string, fields logger.Fields)
 }
 
-// Browser .
 type Browser interface {
 	OpenURL(url string) error
 }
 
-// Window .
 type Window interface {
 	Close()
 }

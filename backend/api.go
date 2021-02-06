@@ -5,25 +5,27 @@ import (
 	"strings"
 )
 
-// AppName .
-var AppName = "Imperial Splendour: Rise of the Republic"
+const (
+	AppName = "Imperial Splendour: Rise of the Republic"
 
-var appDataDir = ""
-var appDataPath = "The Creative Assembly/Empire/scripts/"
+	appDataPath  = "The Creative Assembly/Empire/scripts/"
+	modPath      = "IS_Files/"
+	dataPath     = "data/"
+	campaignPath = dataPath + "campaigns/imperial_splendour/"
 
-var etwDir = ""
-var modPath = "IS_Files/"
-var dataPath = "data/"
-var campaignPath = dataPath + "campaigns/imperial_splendour/"
+	userScript   = "user.empire_script.txt"
+	fileListFile = "IS_FileList.txt"
+	infoFile     = "IS_info.json"
 
-var userScript = "user.empire_script.txt"
-var fileListFile = "IS_FileList.txt"
-var infoFile = "IS_info.json"
+	websiteURL  = "https://imperialsplendour.com/"
+	etwSteamURI = "steam://rungameid/10500"
+)
 
-var websiteURL = "https://imperialsplendour.com/"
-var etwSteamURI = "steam://rungameid/10500"
+var (
+	etwDir     = ""
+	appDataDir = ""
+)
 
-// API .
 type API struct {
 	logger  Logger
 	browser Browser
@@ -32,13 +34,11 @@ type API struct {
 	info    Info
 }
 
-// Info .
 type Info struct {
 	IsActive bool   `json:"isActive"`
 	Version  string `json:"version"`
 }
 
-// ModFiles .
 type ModFiles struct {
 	dataFiles     []string
 	campaignFiles []string

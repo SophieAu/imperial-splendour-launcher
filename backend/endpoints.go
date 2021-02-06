@@ -1,18 +1,15 @@
 package backend
 
-// Version .
 func (a *API) Version() string {
 	a.logger.Infof("Version: %s", a.info.Version)
 	return a.info.Version
 }
 
-// IsActive .
 func (a *API) IsActive() bool {
 	a.logger.Infof("IsActive: %s", a.info.IsActive)
 	return a.info.IsActive
 }
 
-// Play .
 func (a *API) Play() error {
 	err := a.browser.OpenURL(etwSteamURI)
 	if err != nil {
@@ -23,7 +20,6 @@ func (a *API) Play() error {
 	return nil
 }
 
-// Switch .
 func (a *API) Switch() error {
 	var switchFn func() error
 	if a.info.IsActive {
@@ -40,7 +36,6 @@ func (a *API) Switch() error {
 	return nil
 }
 
-// GoToWebsite .
 func (a *API) GoToWebsite() error {
 	a.logger.Infof("Navigating to %s", websiteURL)
 
@@ -52,13 +47,11 @@ func (a *API) GoToWebsite() error {
 	return nil
 }
 
-// Uninstall .
 func (a *API) Uninstall() error {
 	a.logger.Info("Uninstalling")
 	return nil
 }
 
-// Exit .
 func (a *API) Exit() {
 	a.window.Close()
 }

@@ -27,11 +27,6 @@ func (a *API) loadInfoFromFile() {
 	}
 }
 
-// WailsInit is the init fuction for the wails runtime
-func (a *API) WailsInit(runtime *wails.Runtime) error {
-	return a.Init(runtime.Browser, runtime.Window, runtime.Log.New("API"), &SystemHandler{})
-}
-
 func (a *API) Init(browser Browser, window Window, logger Logger, systemHandler Handler) error {
 	a.browser = browser
 	a.window = window
@@ -51,6 +46,9 @@ func (a *API) Init(browser Browser, window Window, logger Logger, systemHandler 
 	return nil
 }
 
-// WailsShutdown is the shutdown function that is called when wails shuts down
+func (a *API) WailsInit(runtime *wails.Runtime) error {
+	return a.Init(runtime.Browser, runtime.Window, runtime.Log.New("API"), &SystemHandler{})
+}
+
 func (a *API) WailsShutdown() {
 }
