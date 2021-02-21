@@ -31,21 +31,21 @@ type API struct {
 	browser Browser
 	window  Window
 	Sh      Handler
-	info    Info
+	info    info
 }
 
-type Info struct {
+type info struct {
 	IsActive bool   `json:"isActive"`
 	Version  string `json:"version"`
 }
 
-type ModFiles struct {
+type modFiles struct {
 	dataFiles     []string
 	campaignFiles []string
 }
 
-func (a *API) readFileList() (*ModFiles, error) {
-	modFiles := ModFiles{
+func (a *API) readFileList() (*modFiles, error) {
+	modFiles := modFiles{
 		dataFiles:     []string{},
 		campaignFiles: []string{},
 	}
