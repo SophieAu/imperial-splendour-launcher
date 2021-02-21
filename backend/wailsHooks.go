@@ -7,24 +7,23 @@ import (
 	"github.com/wailsapp/wails"
 )
 
-func (a *API) getExecDirectory() string {
+func (a *API) getExecDirectory() (string, error) {
 	ex, err := a.Sh.Executable()
-	if err != nil {
-		panic(err)
-	}
-	return filepath.Dir(ex) + "/"
+	return filepath.Dir(ex) + "/", err
 }
 
-func (a *API) loadInfoFromFile() {
+func (a *API) loadInfoFromFile() error {
 	byteValue, err := a.Sh.ReadFile(etwDir + modPath + infoFile)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	err = json.Unmarshal(byteValue, &a.info)
 	if err != nil {
-		panic(err)
+		return err
 	}
+
+	return nil
 }
 
 func (a *API) Init(browser Browser, window Window, logger Logger, systemHandler Handler) error {
@@ -33,14 +32,20 @@ func (a *API) Init(browser Browser, window Window, logger Logger, systemHandler 
 	a.logger = logger
 	a.Sh = systemHandler
 
-	etwDir = a.getExecDirectory()
+	etwDir, err := a.getExecDirectory()
+	if err != nil {
+		return err
+	}
 	a.logger.Infof("ETW/Current directory: %s", etwDir)
 
 	// appDataDir = Sh.Getenv("APPDATA") + "appDataPath"
 	appDataDir = etwDir + "appDataFolder/" + appDataPath
 	a.logger.Infof("AppData directory: %s", appDataDir)
 
-	a.loadInfoFromFile()
+	err = a.loadInfoFromFile()
+	if err != nil {
+		return err
+	}
 	a.logger.Infof("Info loaded %v", a.info)
 
 	return nil
