@@ -26,7 +26,7 @@ func variableBefore(version string, isActive bool) (*backend.API, *mock.Browser,
 	mockW.On("Close").Return()
 	mockL.On("Infof", testifyMock.Anything, testifyMock.Anything).Return()
 	mockL.On("Errorf", testifyMock.Anything, testifyMock.Anything).Return()
-	mockS.On("ReadFile", testifyMock.Anything).Return([]byte("{\"isActive\": "+strconv.FormatBool(isActive)+", \"version\": \""+version+"\"}"), nil)
+	mockS.On("ReadFile", "IS_Files/IS_info.json").Return([]byte("{\"isActive\": "+strconv.FormatBool(isActive)+", \"version\": \""+version+"\"}"), nil)
 
 	api := &backend.API{}
 	err := api.Init(mockB, mockW, mockL, mockS)
