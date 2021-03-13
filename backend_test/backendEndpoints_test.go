@@ -13,10 +13,10 @@ import (
 )
 
 func before() (*backend.API, *mock.Browser, *mock.Window, *mock.Logger, *mock.SystemHandler) {
-	return variableBefore("2.0", true)
+	return variableBefore("2.0", true, "test")
 }
 
-func variableBefore(version string, isActive bool) (*backend.API, *mock.Browser, *mock.Window, *mock.Logger, *mock.SystemHandler) {
+func variableBefore(version string, isActive bool, usChecksum string) (*backend.API, *mock.Browser, *mock.Window, *mock.Logger, *mock.SystemHandler) {
 	mockS := &mock.SystemHandler{}
 	mockB := &mock.Browser{}
 	mockW := &mock.Window{}
@@ -26,7 +26,7 @@ func variableBefore(version string, isActive bool) (*backend.API, *mock.Browser,
 	mockW.On("Close").Return()
 	mockL.On("Infof", testifyMock.Anything, testifyMock.Anything).Return()
 	mockL.On("Errorf", testifyMock.Anything, testifyMock.Anything).Return()
-	mockS.On("ReadFile", "IS_Files/IS_info.json").Return([]byte("{\"isActive\": "+strconv.FormatBool(isActive)+", \"version\": \""+version+"\"}"), nil)
+	mockS.On("ReadFile", "IS_Files/IS_info.json").Return([]byte("{\"isActive\": "+strconv.FormatBool(isActive)+", \"version\": \""+version+"\", \"usChecksum\": \""+usChecksum+"\"}"), nil)
 
 	api := &backend.API{}
 	err := api.Init(mockB, mockW, mockL, mockS)
@@ -41,7 +41,7 @@ func after(api backend.API) {
 }
 
 func TestVersion(t *testing.T) {
-	api, _, _, _, _ := variableBefore("2.1", false)
+	api, _, _, _, _ := variableBefore("2.1", false, "test")
 
 	version := api.Version()
 	assert.Equal(t, "2.1", version)
@@ -50,12 +50,12 @@ func TestVersion(t *testing.T) {
 }
 
 func TestIsActive(t *testing.T) {
-	api, _, _, _, _ := variableBefore("2.1", false)
+	api, _, _, _, _ := variableBefore("2.1", false, "test")
 
 	isActive := api.IsActive()
 	assert.Equal(t, false, isActive)
 
-	api, _, _, _, _ = variableBefore("2.1", true)
+	api, _, _, _, _ = variableBefore("2.1", true, "test")
 
 	isActive = api.IsActive()
 	assert.Equal(t, true, isActive)

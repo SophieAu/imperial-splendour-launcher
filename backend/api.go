@@ -35,8 +35,9 @@ type API struct {
 }
 
 type info struct {
-	IsActive bool   `json:"isActive"`
-	Version  string `json:"version"`
+	IsActive           bool   `json:"isActive"`
+	Version            string `json:"version"`
+	UserScriptChecksum string `json:"usChecksum"`
 }
 
 type modFiles struct {

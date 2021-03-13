@@ -59,7 +59,39 @@ func TestInit(t *testing.T) {
 
 		mockL.AssertCalled(t, "Infof", expectFmt("ETW/Current directory: %s", "./"))
 		mockL.AssertCalled(t, "Infof", expectFmt("AppData directory: %s", "./appDataFolder/The Creative Assembly/Empire/scripts/"))
-		assert.NotNil(t, err)
+		assert.Equal(t, "unexpected end of JSON input", err.Error())
+	}
+
+	var corruptedVersion = func() {
+		mockS := &mock.SystemHandler{}
+		mockB := &mock.Browser{}
+		mockW := &mock.Window{}
+		api := &backend.API{}
+
+		mockS.On("Executable").Return(".", nil).Once()
+		mockS.On("ReadFile", testifyMock.Anything).Return([]byte("{\"isActive\": true, \"version\": \"\", \"usChecksum\": \"test\"}"), nil).Once()
+
+		err := api.Init(mockB, mockW, mockL, mockS)
+
+		mockL.AssertCalled(t, "Infof", expectFmt("ETW/Current directory: %s", "./"))
+		mockL.AssertCalled(t, "Infof", expectFmt("AppData directory: %s", "./appDataFolder/The Creative Assembly/Empire/scripts/"))
+		assert.Equal(t, "Corrupt Info File", err.Error())
+	}
+
+	var corruptedChecksum = func() {
+		mockS := &mock.SystemHandler{}
+		mockB := &mock.Browser{}
+		mockW := &mock.Window{}
+		api := &backend.API{}
+
+		mockS.On("Executable").Return(".", nil).Once()
+		mockS.On("ReadFile", testifyMock.Anything).Return([]byte("{\"isActive\": true, \"version\": \"2.0\", \"usChecksum\": \"\"}"), nil).Once()
+
+		err := api.Init(mockB, mockW, mockL, mockS)
+
+		mockL.AssertCalled(t, "Infof", expectFmt("ETW/Current directory: %s", "./"))
+		mockL.AssertCalled(t, "Infof", expectFmt("AppData directory: %s", "./appDataFolder/The Creative Assembly/Empire/scripts/"))
+		assert.Equal(t, "Corrupt Info File", err.Error())
 	}
 
 	var everythingWorks = func() {
@@ -69,7 +101,7 @@ func TestInit(t *testing.T) {
 		api := &backend.API{}
 
 		mockS.On("Executable").Return(".", nil).Once()
-		mockS.On("ReadFile", testifyMock.Anything).Return([]byte("{\"isActive\": true, \"version\": \"2.0\"}"), nil).Once()
+		mockS.On("ReadFile", testifyMock.Anything).Return([]byte("{\"isActive\": true, \"version\": \"2.0\", \"usChecksum\": \"test\"}"), nil).Once()
 
 		err := api.Init(mockB, mockW, mockL, mockS)
 
@@ -81,5 +113,7 @@ func TestInit(t *testing.T) {
 	errorsOutWhenExecutableCannotBeRead()
 	errorsOutWhenThereWereIssuesLoadingTheInfoFile()
 	errorsOutWhenThereWereIssuesReadingTheInfoFile()
+	corruptedVersion()
+	corruptedChecksum()
 	everythingWorks()
 }

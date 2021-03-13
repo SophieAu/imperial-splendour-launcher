@@ -21,5 +21,4 @@ func TestAll(t *testing.T) {
 
 func expectFmt(message string, args ...interface{}) []interface{} {
 	return append([]interface{}{message}, args...)
-
 }

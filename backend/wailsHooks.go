@@ -2,6 +2,7 @@ package backend
 
 import (
 	"encoding/json"
+	"errors"
 	"path/filepath"
 
 	"github.com/wailsapp/wails"
@@ -21,6 +22,10 @@ func (a *API) loadInfoFromFile() error {
 	err = json.Unmarshal(byteValue, &a.info)
 	if err != nil {
 		return err
+	}
+
+	if a.info.UserScriptChecksum == "" || a.info.Version == "" {
+		return errors.New("Corrupt Info File")
 	}
 
 	return nil
