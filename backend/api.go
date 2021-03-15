@@ -2,6 +2,8 @@ package backend
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"strings"
 )
 
@@ -53,19 +55,23 @@ func (a *API) readFileList() (*modFiles, error) {
 
 	fileBlob, err := a.Sh.ReadFile(etwDir + modPath + fileListFile)
 	if err != nil {
-		a.logger.Fatalf("%v", err)
+		a.logger.Errorf("%v", err)
+		return nil, err
 	}
 
+	var errMsg string
 	for _, file := range strings.Split(string(fileBlob), "\n") {
 		if strings.HasSuffix(file, ".pack") {
 			modFiles.dataFiles = append(modFiles.dataFiles, file)
 		} else if strings.HasSuffix(file, ".tga") || strings.HasSuffix(file, ".esf") || strings.HasSuffix(file, ".lua") {
 			modFiles.campaignFiles = append(modFiles.campaignFiles, file)
 		} else if file != "" {
-			a.logger.Warnf("Unknown file '%s' found in file list", file)
+			errMsg = errMsg + fmt.Sprintf("Unknown file '%s' found in file list\n", file)
 		}
 	}
-
+	if errMsg != "" {
+		return nil, errors.New(errMsg)
+	}
 	return &modFiles, nil
 }
 
@@ -111,18 +117,34 @@ func (a *API) activateImpSplen() error {
 
 	a.logger.Debug("Moving data files")
 	for _, v := range (*files).dataFiles {
-		a.moveFile(etwDir+modPath+v, etwDir+dataPath+v)
+		err := a.moveFile(etwDir+modPath+v, etwDir+dataPath+v)
+		if err != nil {
+			_ = a.deactivateImpSplen()
+			return err
+		}
 	}
 
 	a.logger.Debug("Moving campaign files")
 	for _, v := range (*files).campaignFiles {
-		a.moveFile(etwDir+modPath+v, etwDir+campaignPath+v)
+		err := a.moveFile(etwDir+modPath+v, etwDir+campaignPath+v)
+		if err != nil {
+			_ = a.deactivateImpSplen()
+			return err
+		}
 	}
 
 	a.logger.Debug("Moving User Script")
-	a.moveFile(etwDir+modPath+userScript, appDataDir+userScript)
+	err = a.moveFile(etwDir+modPath+userScript, appDataDir+userScript)
+	if err != nil {
+		_ = a.deactivateImpSplen()
+		return err
+	}
 
-	a.setStatus(true)
+	err = a.setStatus(true)
+	if err != nil {
+		_ = a.deactivateImpSplen()
+		return err
+	}
 	a.logger.Debug("ImpSplen activated")
 	return nil
 }
@@ -138,18 +160,27 @@ func (a *API) deactivateImpSplen() error {
 
 	a.logger.Debug("Moving data files")
 	for _, v := range files.dataFiles {
-		a.moveFile(etwDir+dataPath+v, etwDir+modPath+v)
+		err := a.moveFile(etwDir+dataPath+v, etwDir+modPath+v)
+		if err != nil {
+			a.logger.Errorf("%v", err)
+		}
 	}
 
 	a.logger.Debug("Moving campaign files")
 	for _, v := range files.campaignFiles {
-		a.moveFile(etwDir+campaignPath+v, etwDir+modPath+v)
+		err := a.moveFile(etwDir+campaignPath+v, etwDir+modPath+v)
+		if err != nil {
+			a.logger.Errorf("%v", err)
+		}
 	}
 
 	a.logger.Debug("Moving User Script")
-	a.moveFile(appDataDir+userScript, etwDir+modPath+userScript)
+	err = a.moveFile(appDataDir+userScript, etwDir+modPath+userScript)
+	if err != nil {
+		a.logger.Errorf("%v", err)
+	}
 
-	a.setStatus(false)
+	err = a.setStatus(false)
 	a.logger.Debug("ImpSplen deactivated")
-	return nil
+	return err
 }

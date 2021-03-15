@@ -1,6 +1,7 @@
 package backend_test
 
 import (
+	"strconv"
 	"testing"
 )
 
@@ -21,4 +22,8 @@ func TestAll(t *testing.T) {
 
 func expectFmt(message string, args ...interface{}) []interface{} {
 	return append([]interface{}{message}, args...)
+}
+
+func fmtInfoFile(isActive bool, version, usChecksum string) []byte {
+	return []byte("{\n\t\"isActive\": " + strconv.FormatBool(isActive) + ",\n\t\"version\": \"" + version + "\",\n\t\"usChecksum\": \"" + usChecksum + "\"\n}")
 }
