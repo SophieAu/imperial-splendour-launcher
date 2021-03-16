@@ -10,6 +10,7 @@ type Handler interface {
 	WriteFile(filePath string, data []byte) error
 	ReadFile(filePath string) ([]byte, error)
 	MoveFile(source, destination string) error
+	Remove(path string) error
 	Executable() (string, error)
 	Getenv(key string) string
 }
@@ -27,6 +28,10 @@ func (w *SystemHandler) ReadFile(filePath string) ([]byte, error) {
 
 func (w *SystemHandler) MoveFile(source, destination string) error {
 	return os.Rename(source, destination)
+}
+
+func (w *SystemHandler) Remove(path string) error {
+	return os.RemoveAll(path)
 }
 
 func (w *SystemHandler) Executable() (string, error) {

@@ -29,6 +29,11 @@ func (w *SystemHandler) MoveFile(source, destination string) error {
 	return args.Error(0)
 }
 
+func (w *SystemHandler) Remove(path string) error {
+	args := w.Called(path)
+	return args.Error(0)
+}
+
 func (w *SystemHandler) Executable() (string, error) {
 	args := w.Called()
 	return args.Get(0).(string), args.Error(1)

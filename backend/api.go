@@ -184,3 +184,8 @@ func (a *API) deactivateImpSplen() error {
 	a.logger.Debug("ImpSplen deactivated")
 	return err
 }
+
+func (a *API) deleteAllFiles() error {
+	err := a.Sh.Remove(etwDir + modPath)
+	return err
+}

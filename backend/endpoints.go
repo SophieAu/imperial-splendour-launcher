@@ -1,5 +1,7 @@
 package backend
 
+import "errors"
+
 func (a *API) Version() string {
 	a.logger.Infof("Version: %s", a.info.Version)
 	return a.info.Version
@@ -49,7 +51,17 @@ func (a *API) GoToWebsite() error {
 
 func (a *API) Uninstall() error {
 	a.logger.Info("Uninstalling")
-	return nil
+
+	if a.info.IsActive {
+		err := a.deactivateImpSplen()
+		if err != nil {
+			return errors.New("Could not uninstall")
+		}
+	}
+
+	err := a.deleteAllFiles()
+
+	return err
 }
 
 func (a *API) Exit() {

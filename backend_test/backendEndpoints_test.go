@@ -25,6 +25,7 @@ func variableBefore(version string, isActive bool, usChecksum string) (*backend.
 	mockS.On("Executable").Return(".", nil)
 	mockW.On("Close").Return()
 	mockL.On("Infof", testifyMock.Anything, testifyMock.Anything).Return()
+	mockL.On("Info", testifyMock.Anything).Return()
 	mockL.On("Errorf", testifyMock.Anything, testifyMock.Anything).Return()
 	mockL.On("Warnf", testifyMock.Anything, testifyMock.Anything).Return()
 	mockL.On("Debugf", testifyMock.Anything, testifyMock.Anything).Return()
@@ -129,30 +130,6 @@ func TestSwitch(t *testing.T) {
 	}
 	TestUnknownFileInFileList(t)
 
-	TestSuccessfullyDeactivateImpSplen := func(t *testing.T) {
-		fileList := "merp.pack\nderp.pack\nx.tga\ny.esf\nz.lua"
-
-		api, _, _, _, sysHandler := variableBefore("2.0", true, "test")
-		sysHandler.On("ReadFile", "IS_Files/IS_FileList.txt").Return([]byte(fileList), nil).Once()
-		sysHandler.On("MoveFile", testifyMock.Anything, testifyMock.Anything).Return(nil)
-		sysHandler.On("WriteFile", "IS_Files/IS_info.json", fmtInfoFile(false, "2.0", "test")).Return(nil)
-
-		err := api.Switch()
-
-		assert.Nil(t, err)
-		sysHandler.AssertCalled(t, "MoveFile", "data/merp.pack", "IS_Files/merp.pack")
-		sysHandler.AssertCalled(t, "MoveFile", "data/derp.pack", "IS_Files/derp.pack")
-		sysHandler.AssertCalled(t, "MoveFile", "data/campaigns/imperial_splendour/x.tga", "IS_Files/x.tga")
-		sysHandler.AssertCalled(t, "MoveFile", "data/campaigns/imperial_splendour/y.esf", "IS_Files/y.esf")
-		sysHandler.AssertCalled(t, "MoveFile", "data/campaigns/imperial_splendour/z.lua", "IS_Files/z.lua")
-		sysHandler.AssertCalled(t, "MoveFile", "./appDataFolder/The Creative Assembly/Empire/scripts/user.empire_script.txt", "IS_Files/user.empire_script.txt")
-		sysHandler.AssertCalled(t, "WriteFile", "IS_Files/IS_info.json", fmtInfoFile(false, "2.0", "test"))
-		assert.False(t, api.IsActive())
-
-		after(*api)
-	}
-	TestSuccessfullyDeactivateImpSplen(t)
-
 	TestSwallowErrorsWhenDeactivating := func(t *testing.T) {
 		fileList := "merp.pack\nderp.pack\nx.tga\ny.esf\nz.lua"
 
@@ -177,6 +154,30 @@ func TestSwitch(t *testing.T) {
 		after(*api)
 	}
 	TestSwallowErrorsWhenDeactivating(t)
+
+	TestSuccessfullyDeactivateImpSplen := func(t *testing.T) {
+		fileList := "merp.pack\nderp.pack\nx.tga\ny.esf\nz.lua"
+
+		api, _, _, _, sysHandler := variableBefore("2.0", true, "test")
+		sysHandler.On("ReadFile", "IS_Files/IS_FileList.txt").Return([]byte(fileList), nil).Once()
+		sysHandler.On("MoveFile", testifyMock.Anything, testifyMock.Anything).Return(nil)
+		sysHandler.On("WriteFile", "IS_Files/IS_info.json", fmtInfoFile(false, "2.0", "test")).Return(nil)
+
+		err := api.Switch()
+
+		assert.Nil(t, err)
+		sysHandler.AssertCalled(t, "MoveFile", "data/merp.pack", "IS_Files/merp.pack")
+		sysHandler.AssertCalled(t, "MoveFile", "data/derp.pack", "IS_Files/derp.pack")
+		sysHandler.AssertCalled(t, "MoveFile", "data/campaigns/imperial_splendour/x.tga", "IS_Files/x.tga")
+		sysHandler.AssertCalled(t, "MoveFile", "data/campaigns/imperial_splendour/y.esf", "IS_Files/y.esf")
+		sysHandler.AssertCalled(t, "MoveFile", "data/campaigns/imperial_splendour/z.lua", "IS_Files/z.lua")
+		sysHandler.AssertCalled(t, "MoveFile", "./appDataFolder/The Creative Assembly/Empire/scripts/user.empire_script.txt", "IS_Files/user.empire_script.txt")
+		sysHandler.AssertCalled(t, "WriteFile", "IS_Files/IS_info.json", fmtInfoFile(false, "2.0", "test"))
+		assert.False(t, api.IsActive())
+
+		after(*api)
+	}
+	TestSuccessfullyDeactivateImpSplen(t)
 
 	TestRollbackOnErrorWhileActivating := func(t *testing.T) {
 		fileList := "merp.pack\nderp.pack\nx.tga\ny.esf\nz.lua"
@@ -270,8 +271,29 @@ func TestGoToWebsite(t *testing.T) {
 }
 
 func TestUninstall(t *testing.T) {
-	assert.True(t, false)
+	TestSuccessfullyUninstallImpSplen := func(t *testing.T) {
+		fileList := "merp.pack\nz.lua"
 
+		api, _, _, _, sysHandler := variableBefore("2.0", true, "test")
+		sysHandler.On("ReadFile", "IS_Files/IS_FileList.txt").Return([]byte(fileList), nil).Once()
+		sysHandler.On("MoveFile", testifyMock.Anything, testifyMock.Anything).Return(nil)
+		sysHandler.On("WriteFile", "IS_Files/IS_info.json", fmtInfoFile(false, "2.0", "test")).Return(nil)
+		sysHandler.On("Remove", testifyMock.Anything, testifyMock.Anything).Return(nil)
+
+		err := api.Uninstall()
+
+		assert.Nil(t, err)
+		// deactivating
+		sysHandler.AssertCalled(t, "MoveFile", "data/merp.pack", "IS_Files/merp.pack")
+		sysHandler.AssertCalled(t, "MoveFile", "data/campaigns/imperial_splendour/z.lua", "IS_Files/z.lua")
+		sysHandler.AssertCalled(t, "MoveFile", "./appDataFolder/The Creative Assembly/Empire/scripts/user.empire_script.txt", "IS_Files/user.empire_script.txt")
+		sysHandler.AssertCalled(t, "WriteFile", "IS_Files/IS_info.json", fmtInfoFile(false, "2.0", "test"))
+		//deleting
+		sysHandler.AssertCalled(t, "Remove", "IS_Files/")
+
+		after(*api)
+	}
+	TestSuccessfullyUninstallImpSplen(t)
 }
 
 func TestExit(t *testing.T) {
