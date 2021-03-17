@@ -1,21 +1,32 @@
 <script>
-  import Button from "./Button.svelte";
-  import isLogo from "./assets/hero_logo_is.png";
-  import etwLogo from "./assets/hero_logo_etw.png";
+  import { onMount } from 'svelte';
 
-  let pageTitle = "Imperial Splendour: Rise of the Republic";
-  let version = "";
+  import Button from './Button.svelte';
+  import isLogo from './assets/hero_logo_is.png';
+  import etwLogo from './assets/hero_logo_etw.png';
+
+  export let API;
+
+  const pageTitle = 'Imperial Splendour: Rise of the Republic';
+  const etwTitle = 'Empire: Total War';
+
+  let version = '';
   let isISActive = undefined;
+  let errorMessage = '';
 
-  const { API } = window.backend;
+  // onMount(async () => {
+  //   API.Version()
+  //     .then((result) => {
+  //       version = result;
+  //     })
+  //     .catch((e) => console.log('kjlsgj'));
 
-  API.Version().then((result) => {
-    version = result;
-  });
-
-  API.IsActive().then((result) => {
-    isISActive = result;
-  });
+  //   //   API.IsActive()
+  //   //     .then((result) => {
+  //   //       isISActive = result;
+  //   //     })
+  //   //     .catch();
+  // });
 
   const handlePlay = () => {
     API.Play();
@@ -23,9 +34,9 @@
   const handleSwitch = async () => {
     try {
       await API.Switch();
-      console.log("switched");
+      console.log('switched');
     } catch {
-      console.log("oh noes");
+      console.log('oh noes');
     }
     API.IsActive().then((result) => {
       isISActive = result;
@@ -40,6 +51,10 @@
   const handleExit = () => {
     API.Exit();
   };
+
+  const dismissError = () => {
+    errorMessage = '';
+  };
 </script>
 
 <svelte:head>
@@ -47,23 +62,26 @@
 </svelte:head>
 <main>
   <h1>
-    <img
-      src={isISActive ? isLogo : etwLogo}
-      title={pageTitle}
-      alt={pageTitle}
-    />
+    <img src={isISActive ? isLogo : etwLogo} alt={isISActive ? pageTitle : etwTitle} />
   </h1>
-  Switch status: {isISActive ? "woop" : "doop"}
   <div class="buttonContainer">
-    <Button text={"Play"} handleClick={handlePlay} />
-    <Button text={"Switch"} handleClick={handleSwitch} />
-    <Button text={"Website"} handleClick={handleWebsite} />
-    <Button text={"Uninstall"} handleClick={handleUninstall} />
-    <Button text={"Exit"} handleClick={handleExit} />
+    <Button text={'Play'} handleClick={handlePlay} />
+    <Button text={'Switch'} handleClick={handleSwitch} />
+    <Button text={'Website'} handleClick={handleWebsite} />
+    <Button text={'Uninstall'} handleClick={handleUninstall} />
+    <Button text={'Exit'} handleClick={handleExit} />
   </div>
   <footer>
     <span class="prefix">v</span><span class="version">{version}</span>
   </footer>
+  {#if errorMessage}
+    <div>
+      <div>
+        <p>{errorMessage}</p>
+        <Button test={'OK'} handleClick={dismissError} />
+      </div>
+    </div>
+  {/if}
 </main>
 
 <style>
@@ -103,7 +121,7 @@
     text-align: right;
     margin-bottom: -0.25rem;
     padding-right: 0.25rem;
-    font-family: "IM FELL English";
+    font-family: 'IM FELL English';
   }
 
   footer > .prefix {
