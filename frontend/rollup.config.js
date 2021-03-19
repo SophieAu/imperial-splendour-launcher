@@ -6,6 +6,7 @@ import { terser } from 'rollup-plugin-terser';
 import image from '@rollup/plugin-image';
 import babel from 'rollup-plugin-babel';
 import polyfill from 'rollup-plugin-polyfill';
+import url from '@rollup/plugin-url';
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -48,6 +49,13 @@ export default {
       css: (css) => {
         css.write('bundle.css');
       },
+    }),
+    url({
+      //   // by default, rollup-plugin-url will not handle font files
+      include: ['**/*.woff', '**/*.woff2'],
+      //   // setting infinite limit will ensure that the files
+      //   // are always bundled with the code, not copied to /dist
+      limit: Infinity,
     }),
 
     // If you have external dependencies installed from
