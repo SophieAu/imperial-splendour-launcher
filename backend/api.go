@@ -23,19 +23,19 @@ const (
 	etwSteamURI = "steam://rungameid/10500"
 )
 
-var (
-	etwDir     = ""
-	appDataDir = ""
-)
-
 type API struct {
 	logger  Logger
 	browser Browser
 	window  Window
 	Sh      Handler
+	dirs    dirs
 	info    info
 }
 
+type dirs struct {
+	etw     string
+	appData string
+}
 type info struct {
 	IsActive           bool   `json:"isActive"`
 	Version            string `json:"version"`
@@ -53,7 +53,7 @@ func (a *API) readFileList() (*modFiles, error) {
 		campaignFiles: []string{},
 	}
 
-	fileBlob, err := a.Sh.ReadFile(etwDir + modPath + fileListFile)
+	fileBlob, err := a.Sh.ReadFile(a.dirs.etw + modPath + fileListFile)
 	if err != nil {
 		a.logger.Errorf("%v", err)
 		return nil, err
@@ -96,7 +96,7 @@ func (a *API) setStatus(isActive bool) error {
 		return err
 	}
 
-	err = a.Sh.WriteFile(etwDir+modPath+infoFile, newInfoJSON)
+	err = a.Sh.WriteFile(a.dirs.etw+modPath+infoFile, newInfoJSON)
 	if err != nil {
 		a.logger.Errorf("%v", err)
 		return err
@@ -117,7 +117,7 @@ func (a *API) activateImpSplen() error {
 
 	a.logger.Debug("Moving data files")
 	for _, v := range (*files).dataFiles {
-		err := a.moveFile(etwDir+modPath+v, etwDir+dataPath+v)
+		err := a.moveFile(a.dirs.etw+modPath+v, a.dirs.etw+dataPath+v)
 		if err != nil {
 			_ = a.deactivateImpSplen()
 			return err
@@ -126,7 +126,7 @@ func (a *API) activateImpSplen() error {
 
 	a.logger.Debug("Moving campaign files")
 	for _, v := range (*files).campaignFiles {
-		err := a.moveFile(etwDir+modPath+v, etwDir+campaignPath+v)
+		err := a.moveFile(a.dirs.etw+modPath+v, a.dirs.etw+campaignPath+v)
 		if err != nil {
 			_ = a.deactivateImpSplen()
 			return err
@@ -134,7 +134,7 @@ func (a *API) activateImpSplen() error {
 	}
 
 	a.logger.Debug("Moving User Script")
-	err = a.moveFile(etwDir+modPath+userScript, appDataDir+userScript)
+	err = a.moveFile(a.dirs.etw+modPath+userScript, a.dirs.appData+userScript)
 	if err != nil {
 		_ = a.deactivateImpSplen()
 		return err
@@ -160,7 +160,7 @@ func (a *API) deactivateImpSplen() error {
 
 	a.logger.Debug("Moving data files")
 	for _, v := range files.dataFiles {
-		err := a.moveFile(etwDir+dataPath+v, etwDir+modPath+v)
+		err := a.moveFile(a.dirs.etw+dataPath+v, a.dirs.etw+modPath+v)
 		if err != nil {
 			a.logger.Errorf("%v", err)
 		}
@@ -168,14 +168,14 @@ func (a *API) deactivateImpSplen() error {
 
 	a.logger.Debug("Moving campaign files")
 	for _, v := range files.campaignFiles {
-		err := a.moveFile(etwDir+campaignPath+v, etwDir+modPath+v)
+		err := a.moveFile(a.dirs.etw+campaignPath+v, a.dirs.etw+modPath+v)
 		if err != nil {
 			a.logger.Errorf("%v", err)
 		}
 	}
 
 	a.logger.Debug("Moving User Script")
-	err = a.moveFile(appDataDir+userScript, etwDir+modPath+userScript)
+	err = a.moveFile(a.dirs.appData+userScript, a.dirs.etw+modPath+userScript)
 	if err != nil {
 		a.logger.Errorf("%v", err)
 	}
@@ -186,6 +186,6 @@ func (a *API) deactivateImpSplen() error {
 }
 
 func (a *API) deleteAllFiles() error {
-	err := a.Sh.Remove(etwDir + modPath)
+	err := a.Sh.Remove(a.dirs.etw + modPath)
 	return err
 }

@@ -14,7 +14,7 @@ func (a *API) getExecDirectory() (string, error) {
 }
 
 func (a *API) loadInfoFromFile() error {
-	byteValue, err := a.Sh.ReadFile(etwDir + modPath + infoFile)
+	byteValue, err := a.Sh.ReadFile(a.dirs.etw + modPath + infoFile)
 	if err != nil {
 		return err
 	}
@@ -41,11 +41,12 @@ func (a *API) Init(browser Browser, window Window, logger Logger, systemHandler 
 	if err != nil {
 		return err
 	}
-	a.logger.Infof("ETW/Current directory: %s", etwDir)
+	a.dirs.etw = etwDir
+	a.logger.Infof("ETW/Current directory: %s", a.dirs.etw)
 
 	// appDataDir = Sh.Getenv("APPDATA") + "appDataPath"
-	appDataDir = etwDir + "appDataFolder/" + appDataPath
-	a.logger.Infof("AppData directory: %s", appDataDir)
+	a.dirs.appData = etwDir + "appDataFolder/" + appDataPath
+	a.logger.Infof("AppData directory: %s", a.dirs.appData)
 
 	err = a.loadInfoFromFile()
 	if err != nil {
