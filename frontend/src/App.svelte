@@ -4,6 +4,7 @@
   import Button from './Button.svelte';
   import isLogo from './assets/hero_logo_is.png';
   import etwLogo from './assets/hero_logo_etw.png';
+  import Modal from './Modal.svelte';
 
   export let API;
 
@@ -14,19 +15,20 @@
   let isISActive = undefined;
   let errorMessage = '';
 
-  // onMount(async () => {
-  //   API.Version()
-  //     .then((result) => {
-  //       version = result;
-  //     })
-  //     .catch((e) => console.log('kjlsgj'));
+  onMount(async () => {
+    API.Version()
+      .then((result) => {
+        errorMessage = result;
+        version = result;
+      })
+      .catch((e) => console.log('kjlsgj'));
 
-  //   //   API.IsActive()
-  //   //     .then((result) => {
-  //   //       isISActive = result;
-  //   //     })
-  //   //     .catch();
-  // });
+    //   //   API.IsActive()
+    //   //     .then((result) => {
+    //   //       isISActive = result;
+    //   //     })
+    //   //     .catch();
+  });
 
   const handlePlay = () => {
     API.Play();
@@ -75,20 +77,12 @@
     <span class="prefix">v</span><span class="version">{version}</span>
   </footer>
   {#if errorMessage}
-    <div>
-      <div>
-        <p>{errorMessage}</p>
-        <Button test={'OK'} handleClick={dismissError} />
-      </div>
-    </div>
+    <Modal message={errorMessage} onClick={dismissError} />
   {/if}
 </main>
 
 <style>
   main {
-    --font-size-factor: calc(40 * calc((100vh - 800px) / (1200 - 800)));
-    --font-size: clamp(32px, var(--font-size-factor), 40px);
-
     background: center / contain var(--img-bg);
     height: calc(100vw / 1.6);
     overflow: hidden;
@@ -121,11 +115,11 @@
     text-align: right;
     margin-bottom: -0.25rem;
     padding-right: 0.25rem;
-    font-family: 'IM FELL English';
+    font-family: var(--font-family-body);
   }
 
   footer > .prefix {
-    font-size: 2rem;
+    font-size: var(--font-size-body);
   }
 
   footer > .version {

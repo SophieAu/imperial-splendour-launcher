@@ -1,9 +1,19 @@
 <script>
   import App from './App.svelte';
-  import { root } from './rootStyles.js';
   import imFellReg2 from './assets/imfellenglish.woff2';
   import imFellSC2 from './assets/imfellenglishsc.woff2';
   import { onMount } from 'svelte';
+  import { css } from '@emotion/css/dist/emotion-css.umd.min.js';
+
+  import background from './assets/background.png';
+  import textureBtn from './assets/texture_btn.png';
+  import textureBg from './assets/texture_bg.jpg';
+
+  const rootStyle = css`
+    --img-bg: url(${background});
+    --button-texture: url(${textureBtn});
+    --modal-bg: url(${textureBg});
+  `;
 
   const { API } = window.backend || { API: undefined };
 
@@ -21,7 +31,7 @@
   });
 </script>
 
-<div class={root}>
+<div class={rootStyle}>
   <App {API} />
 </div>
 
@@ -34,5 +44,13 @@
     margin: 0;
     height: 100vh;
     width: 100vw;
+
+    --font-size-factor: calc(40 * calc((100vh - 800px) / (1200 - 800)));
+    --font-size: clamp(32px, var(--font-size-factor), 40px);
+    --font-family-heading: 'IM FELL English SC';
+
+    --font-size-factor-body: calc(28 * calc((100vh - 800px) / (1200 - 800)));
+    --font-size-body: clamp(20px, var(--font-size-factor), 28px);
+    --font-family-body: 'IM FELL English';
   }
 </style>
