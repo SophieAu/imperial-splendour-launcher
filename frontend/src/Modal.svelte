@@ -1,7 +1,7 @@
 <script>
   import Button from './Button.svelte';
 
-  // export let message;
+  export let message;
   export let onClick;
 
   const buttonText = 'OK';
@@ -10,10 +10,10 @@
 <div class="overlay">
   <div class="modal">
     <p class="message">
-      We couldn't cleanly uninstall Imperial Splendour. Please manully delete any remaining files.
+      {message}
     </p>
     <div class="modalButton">
-      <Button text={buttonText} handleClick={onClick} />
+      <Button text={buttonText} {onClick} />
     </div>
   </div>
 </div>

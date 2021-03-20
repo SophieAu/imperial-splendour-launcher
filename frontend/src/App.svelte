@@ -5,53 +5,34 @@
   import isLogo from './assets/hero_logo_is.png';
   import etwLogo from './assets/hero_logo_etw.png';
   import Modal from './Modal.svelte';
+  import { pageTitle, etwTitle, apiErrors } from './strings';
+
+  let version = '';
+  let isISActive = true;
+  let errorMessage = '';
 
   export let API;
 
-  const pageTitle = 'Imperial Splendour: Rise of the Republic';
-  const etwTitle = 'Empire: Total War';
-
-  let version = '';
-  let isISActive = undefined;
-  let errorMessage = '';
+  const callAPI = async (callback, errorCode) => {
+    try {
+      await callback();
+    } catch (e) {
+      console.log(e);
+      errorMessage = apiErrors[errorCode];
+    }
+  };
 
   onMount(async () => {
-    API.Version()
-      .then((result) => {
-        errorMessage = result;
-        version = result;
-      })
-      .catch((e) => console.log('kjlsgj'));
-
-    //   //   API.IsActive()
-    //   //     .then((result) => {
-    //   //       isISActive = result;
-    //   //     })
-    //   //     .catch();
+    await callAPI(async () => {
+      version = await API.Version();
+      isISActive = await API.IsActive();
+    }, 'startup');
   });
 
-  const handlePlay = () => {
-    API.Play();
-  };
-  const handleSwitch = async () => {
-    try {
-      await API.Switch();
-      console.log('switched');
-    } catch {
-      console.log('oh noes');
-    }
-    API.IsActive().then((result) => {
-      isISActive = result;
-    });
-  };
-  const handleWebsite = () => {
-    API.GoToWebsite();
-  };
-  const handleUninstall = () => {
-    API.Uninstall();
-  };
-  const handleExit = () => {
-    API.Exit();
+  const switchError = () => (isISActive ? 'switchToETW' : 'switchToIS');
+  const switchMode = async () => {
+    await API.Switch();
+    isISActive = await API.IsActive();
   };
 
   const dismissError = () => {
@@ -67,11 +48,11 @@
     <img src={isISActive ? isLogo : etwLogo} alt={isISActive ? pageTitle : etwTitle} />
   </h1>
   <div class="buttonContainer">
-    <Button text={'Play'} handleClick={handlePlay} />
-    <Button text={'Switch'} handleClick={handleSwitch} />
-    <Button text={'Website'} handleClick={handleWebsite} />
-    <Button text={'Uninstall'} handleClick={handleUninstall} />
-    <Button text={'Exit'} handleClick={handleExit} />
+    <Button text={'Play'} onClick={async () => callAPI(API.Play, 'play')} />
+    <Button text={'Switch'} onClick={async () => callAPI(switchMode, switchError())} />
+    <Button text={'Website'} onClick={async () => callAPI(API.GoToWebsite, 'website')} />
+    <Button text={'Uninstall'} onClick={async () => callAPI(API.Uninstall, 'uninstall')} />
+    <Button text={'Exit'} onClick={async () => callAPI(API.Exit, 'exit')} />
   </div>
   <footer>
     <span class="prefix">v</span><span class="version">{version}</span>
