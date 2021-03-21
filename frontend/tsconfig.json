@@ -2,15 +2,9 @@
   "extends": "@tsconfig/svelte/tsconfig.json",
 
   "compilerOptions": {
-    "esModuleInterop": true,
-    "lib": ["dom", "esnext"],
-    "moduleResolution": "node",
-    "target": "esnext",
-    "noEmit": true,
     "strict": true,
-    "skipLibCheck": true,
     "types": [ "jest", "@testing-library/jest-dom"],
-    "typeRoots": ["./src/types", "node_modules/@types"],
+    "typeRoots": ["./src", "node_modules/@types"],
   },
   "include": ["src/**/*", "src/node_modules" ],
   "exclude": ["node_modules/*", "public/*"],

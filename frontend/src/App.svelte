@@ -1,15 +1,3 @@
-<script context="module" lang="ts">
-  export type APIType = {
-    Version: () => Promise<string>;
-    IsActive: () => Promise<boolean>;
-    Play: () => Promise<void>;
-    Switch: () => Promise<void>;
-    GoToWebsite: () => Promise<void>;
-    Uninstall: () => Promise<void>;
-    Exit: () => Promise<void>;
-  };
-</script>
-
 <script lang="ts">
   import { onMount } from 'svelte';
 
@@ -18,6 +6,16 @@
   import etwLogo from './assets/hero_logo_etw.png';
   import Modal from './Modal.svelte';
   import { pageTitle, etwTitle, apiErrors } from './strings';
+
+ type APIType = {
+  Version: () => Promise<string>;
+  IsActive: () => Promise<boolean>;
+  Play: () => Promise<void>;
+  Switch: () => Promise<void>;
+  GoToWebsite: () => Promise<void>;
+  Uninstall: () => Promise<void>;
+  Exit: () => Promise<void>;
+};
 
   let version = '';
   let isISActive = true;

@@ -8,7 +8,17 @@
   import textureBtn from './assets/texture_btn.png';
   import textureBg from './assets/texture_bg.jpg';
 
-  import App, { APIType } from './App.svelte';
+  import App from './App.svelte';
+
+   type APIType = {
+  Version: () => Promise<string>;
+  IsActive: () => Promise<boolean>;
+  Play: () => Promise<void>;
+  Switch: () => Promise<void>;
+  GoToWebsite: () => Promise<void>;
+  Uninstall: () => Promise<void>;
+  Exit: () => Promise<void>;
+};
 
   const rootStyle = css`
     --img-bg: url(${background});
