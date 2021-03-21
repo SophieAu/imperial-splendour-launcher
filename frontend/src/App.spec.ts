@@ -1,7 +1,8 @@
 import '@testing-library/jest-dom/extend-expect';
 
 import { render, waitFor } from '@testing-library/svelte';
-import App from './App';
+
+import App from './App.svelte';
 
 const mockVersion = jest.fn();
 const mockIsActive = jest.fn();

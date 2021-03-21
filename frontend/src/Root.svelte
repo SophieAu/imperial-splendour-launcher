@@ -1,13 +1,14 @@
-<script>
-  import App from './App.svelte';
-  import imFellReg2 from './assets/imfellenglish.woff2';
-  import imFellSC2 from './assets/imfellenglishsc.woff2';
+<script lang="ts">
   import { onMount } from 'svelte';
   import { css } from '@emotion/css/dist/emotion-css.umd.min.js';
 
+  import imFellReg2 from './assets/imfellenglish.woff2';
+  import imFellSC2 from './assets/imfellenglishsc.woff2';
   import background from './assets/background.png';
   import textureBtn from './assets/texture_btn.png';
   import textureBg from './assets/texture_bg.jpg';
+
+  import App, { APIType } from './App.svelte';
 
   const rootStyle = css`
     --img-bg: url(${background});
@@ -15,10 +16,10 @@
     --modal-bg: url(${textureBg});
   `;
 
-  const { API } = window.backend || { API: undefined };
+  const API = (window as any)?.backend?.API as APIType;
 
   onMount(async () => {
-    const src = (url) => `url(${url}) format('woff2')`;
+    const src = (url: string) => `url(${url}) format('woff2')`;
     const descriptors = { weight: 'normal', style: 'normal' };
 
     const reg = new FontFace('IM FELL English', src(imFellReg2), descriptors);

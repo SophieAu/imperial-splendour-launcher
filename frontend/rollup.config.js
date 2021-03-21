@@ -1,12 +1,16 @@
-import svelte from 'rollup-plugin-svelte';
-import resolve from '@rollup/plugin-node-resolve';
+// @ts-check
+
 import commonjs from '@rollup/plugin-commonjs';
-import livereload from 'rollup-plugin-livereload';
-import { terser } from 'rollup-plugin-terser';
 import image from '@rollup/plugin-image';
-import babel from 'rollup-plugin-babel';
-import polyfill from 'rollup-plugin-polyfill';
+import resolve from '@rollup/plugin-node-resolve';
+import typescript from '@rollup/plugin-typescript';
 import url from '@rollup/plugin-url';
+import babel from 'rollup-plugin-babel';
+import livereload from 'rollup-plugin-livereload';
+import polyfill from 'rollup-plugin-polyfill';
+import svelte from 'rollup-plugin-svelte';
+import { terser } from 'rollup-plugin-terser';
+import autoPreprocess from 'svelte-preprocess';
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -20,6 +24,7 @@ function serve() {
   return {
     writeBundle() {
       if (server) return;
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
       server = require('child_process').spawn('npm', ['run', 'start', '--', '--dev'], {
         stdio: ['ignore', 'inherit', 'inherit'],
         shell: true,
@@ -42,22 +47,19 @@ export default {
   plugins: [
     image(),
     svelte({
-      // enable run-time checks when not in production
-      dev: !production,
-      // we'll extract any component CSS out into
-      // a separate file - better for performance
-      css: (css) => {
-        css.write('bundle.css');
+      compilerOptions: {
+        dev: !production, // enable run-time checks when not in production
+        css: true,
+        cssOutputFilename: 'bundle.css',
       },
+      preprocess: autoPreprocess(),
     }),
     url({
-      //   // by default, rollup-plugin-url will not handle font files
-      include: ['**/*.woff', '**/*.woff2'],
-      //   // setting infinite limit will ensure that the files
-      //   // are always bundled with the code, not copied to /dist
-      limit: Infinity,
+      include: ['**/*.woff', '**/*.woff2'], // by default, rollup-plugin-url will not handle font files
+      limit: Infinity, // ensure that the files are always bundled with the code
     }),
 
+    typescript({ sourceMap: !production }),
     // If you have external dependencies installed from
     // npm, you'll most likely need these plugins. In
     // some cases you'll need additional configuration -
@@ -69,13 +71,11 @@ export default {
     }),
     commonjs(),
 
-    // In dev mode, call `npm run start` once
-    // the bundle has been generated
+    // In dev mode, call `npm run start` once the bundle has been generated
     !production && serve(),
 
-    // Watch the `public` directory and refresh the
-    // browser on changes when not in production
-    !production && livereload('public'),
+    // Watch the `public` directory and refresh the browser on changes when not in production
+    !production && livereload({ watch: 'public' }),
 
     // Credit: https://blog.az.sg/posts/svelte-and-ie11/
     babel({
@@ -103,8 +103,7 @@ export default {
 
     polyfill(['@webcomponents/webcomponentsjs']),
 
-    // If we're building for production (npm run build
-    // instead of npm run dev), minify
+    // If we're building for production (npm run build instead of npm run dev), minify
     production && terser(),
   ],
   watch: {

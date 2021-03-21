@@ -1,8 +1,8 @@
 import Root from './Root.svelte';
 
-import * as Wails from '@wailsapp/runtime';
+import Wails from '@wailsapp/runtime';
 
-let app;
+let app: Root | undefined;
 
 Wails.Init(() => {
   app = new Root({ target: document.body });

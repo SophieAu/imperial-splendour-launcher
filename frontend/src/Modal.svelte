@@ -1,8 +1,8 @@
-<script>
+<script lang="ts">
   import Button from './Button.svelte';
 
-  export let message;
-  export let onClick;
+  export let message: string;
+  export let onClick: () => void;
 
   const buttonText = 'OK';
 </script>

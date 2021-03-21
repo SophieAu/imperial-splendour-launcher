@@ -1,4 +1,16 @@
-<script>
+<script context="module" lang="ts">
+  export type APIType = {
+    Version: () => Promise<string>;
+    IsActive: () => Promise<boolean>;
+    Play: () => Promise<void>;
+    Switch: () => Promise<void>;
+    GoToWebsite: () => Promise<void>;
+    Uninstall: () => Promise<void>;
+    Exit: () => Promise<void>;
+  };
+</script>
+
+<script lang="ts">
   import { onMount } from 'svelte';
 
   import Button from './Button.svelte';
@@ -11,9 +23,9 @@
   let isISActive = true;
   let errorMessage = '';
 
-  export let API;
+  export let API: APIType;
 
-  const callAPI = async (callback, errorCode) => {
+  const callAPI = async (callback: () => Promise<void>, errorCode: keyof typeof apiErrors) => {
     try {
       await callback();
     } catch (e) {
