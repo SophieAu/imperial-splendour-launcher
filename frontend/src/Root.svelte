@@ -10,15 +10,15 @@
 
   import App from './App.svelte';
 
-   type APIType = {
-  Version: () => Promise<string>;
-  IsActive: () => Promise<boolean>;
-  Play: () => Promise<void>;
-  Switch: () => Promise<void>;
-  GoToWebsite: () => Promise<void>;
-  Uninstall: () => Promise<void>;
-  Exit: () => Promise<void>;
-};
+  type APIType = {
+    Version: () => Promise<string>;
+    IsActive: () => Promise<boolean>;
+    Play: () => Promise<void>;
+    Switch: () => Promise<void>;
+    GoToWebsite: () => Promise<void>;
+    Uninstall: () => Promise<void>;
+    Exit: () => Promise<void>;
+  };
 
   const rootStyle = css`
     --img-bg: url(${background});
