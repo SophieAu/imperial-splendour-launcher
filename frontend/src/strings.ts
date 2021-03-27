@@ -1,6 +1,8 @@
 export const pageTitle = 'Imperial Splendour: Rise of the Republic';
 export const etwTitle = 'Empire: Total War';
 
+export const versionPrefix = 'v';
+
 export const apiErrors = {
   startup: "There was an error on startup. Please let us know and we'll look into it",
   play:
@@ -14,3 +16,5 @@ export const apiErrors = {
   uninstall: "Couldn't completely uninstall the game. Please delete any remaining files manually.",
   exit: "Couldn't exit the launcher. This should be impossible. Please tell us how you did this...",
 };
+
+export const modalButtonText = 'OK';

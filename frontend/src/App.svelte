@@ -5,7 +5,8 @@
   import isLogo from './assets/hero_logo_is.png';
   import etwLogo from './assets/hero_logo_etw.png';
   import Modal from './Modal.svelte';
-  import { pageTitle, etwTitle, apiErrors } from './strings';
+  import { pageTitle, etwTitle, apiErrors, versionPrefix } from './strings';
+  import * as styles from './styles.app';
 
   type APIType = {
     Version: () => Promise<string>;
@@ -19,7 +20,7 @@
 
   let version = '';
   let isISActive = true;
-  let errorMessage = '';
+  let errorMessage = 'test';
 
   export let API: APIType;
 
@@ -52,67 +53,27 @@
 <svelte:head>
   <title>{pageTitle}</title>
 </svelte:head>
-<main>
-  <h1>
-    <img src={isISActive ? isLogo : etwLogo} alt={isISActive ? pageTitle : etwTitle} />
-  </h1>
-  <div class="buttonContainer">
-    <Button text={'Play'} onClick={async () => callAPI(API.Play, 'play')} />
-    <Button text={'Switch'} onClick={async () => callAPI(switchMode, switchError())} />
-    <Button text={'Website'} onClick={async () => callAPI(API.GoToWebsite, 'website')} />
-    <Button text={'Uninstall'} onClick={async () => callAPI(API.Uninstall, 'uninstall')} />
-    <Button text={'Exit'} onClick={async () => callAPI(API.Exit, 'exit')} />
-  </div>
-  <footer>
-    <span class="prefix">v</span><span class="version">{version}</span>
-  </footer>
+<main class={styles.root}>
+  {#if isISActive !== undefined}
+    <h1 class={styles.heading}>
+      <img
+        src={isISActive ? isLogo : etwLogo}
+        class={styles.headingImg}
+        alt={isISActive ? pageTitle : etwTitle}
+      />
+    </h1>
+    <div class={styles.buttonContainer}>
+      <Button text={'Play'} onClick={async () => callAPI(API.Play, 'play')} />
+      <Button text={'Switch'} onClick={async () => callAPI(switchMode, switchError())} />
+      <Button text={'Website'} onClick={async () => callAPI(API.GoToWebsite, 'website')} />
+      <Button text={'Uninstall'} onClick={async () => callAPI(API.Uninstall, 'uninstall')} />
+      <Button text={'Exit'} onClick={async () => callAPI(API.Exit, 'exit')} />
+    </div>
+    <footer class={styles.footer}>
+      <span class="prefix">{versionPrefix}</span><span class="version">{version}</span>
+    </footer>
+  {/if}
   {#if errorMessage}
     <Modal message={errorMessage} onClick={dismissError} />
   {/if}
 </main>
-
-<style>
-  main {
-    background: center / contain var(--img-bg);
-    height: calc(100vw / 1.6);
-    overflow: hidden;
-
-    display: flex;
-    flex-direction: column;
-  }
-
-  h1 {
-    margin: 0 auto;
-    padding: calc(var(--height-ratio) * 58) 0 calc(var(--height-ratio) * 128);
-    display: grid;
-    place-items: center;
-  }
-
-  h1 > img {
-    width: calc(var(--width-ratio) * 1000);
-    height: calc(var(--width-ratio) * 374);
-    object-fit: contain;
-  }
-
-  .buttonContainer {
-    flex: 1;
-    display: flex;
-    justify-content: space-evenly;
-    align-items: flex-start;
-  }
-
-  footer {
-    text-align: right;
-    margin-bottom: -0.25rem;
-    padding-right: 0.25rem;
-    font-family: var(--font-family-body);
-  }
-
-  footer > .prefix {
-    font-size: var(--font-size-body);
-  }
-
-  footer > .version {
-    font-size: var(--font-size);
-  }
-</style>
