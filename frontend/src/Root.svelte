@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { css } from '@emotion/css/dist/emotion-css.umd.min.js';
+  import { css, injectGlobal } from '@emotion/css/dist/emotion-css.umd.min.js';
 
   import imFellReg2 from './assets/imfellenglish.woff2';
   import imFellSC2 from './assets/imfellenglishsc.woff2';
@@ -28,18 +28,21 @@
 
   const API = (window as any)?.backend?.API as APIType;
 
-  onMount(async () => {
-    const src = (url: string) => `url(${url}) format('woff2')`;
-    const descriptors = { weight: 'normal', style: 'normal' };
+  injectGlobal`
+    @font-face {
+      font-family: 'IM FELL English';
+      src: url(${imFellReg2}) format('woff2');
+      font-weight: 'normal';
+      font-style: 'normal';
+    }
 
-    const reg = new FontFace('IM FELL English', src(imFellReg2), descriptors);
-    const sc = new FontFace('IM FELL English SC', src(imFellSC2), descriptors);
-    await reg.load();
-    await sc.load();
-
-    document.fonts.add(reg);
-    document.fonts.add(sc);
-  });
+  @font-face {
+    font-family: 'IM FELL English SC';
+    src: url(${imFellSC2}) format('woff2');
+    font-weight: 'normal';
+    font-style: 'normal';
+  }
+  `;
 </script>
 
 <div class={rootStyle}>
