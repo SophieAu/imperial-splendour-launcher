@@ -9,7 +9,7 @@ import (
 
 func main() {
 	js := mewn.String("./frontend/public/build/bundle.js")
-	css := mewn.String("./frontend/public/build/bundle.css")
+	css := "" // no css since all is bundled into the .js using emotion
 
 	app := wails.CreateApp(&wails.AppConfig{
 		Width:            1280,
