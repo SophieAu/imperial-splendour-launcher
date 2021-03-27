@@ -44,9 +44,9 @@ func (a *API) Init(browser Browser, window Window, logger Logger, systemHandler 
 	a.dirs.etw = etwDir
 	a.logger.Infof("ETW/Current directory: %s", a.dirs.etw)
 
-	appDataDir := a.Sh.Getenv("APPDATA")
+	appDataDir := a.Sh.Getenv("APPDATA") + "/"
 	// for non-windows:
-	if appDataDir == "" {
+	if appDataDir == "/" {
 		appDataDir = etwDir + "appDataFolder/"
 	}
 	a.dirs.appData = appDataDir + appDataPath
