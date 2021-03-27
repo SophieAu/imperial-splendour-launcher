@@ -44,8 +44,12 @@ func (a *API) Init(browser Browser, window Window, logger Logger, systemHandler 
 	a.dirs.etw = etwDir
 	a.logger.Infof("ETW/Current directory: %s", a.dirs.etw)
 
-	// appDataDir = Sh.Getenv("APPDATA") + "appDataPath"
-	a.dirs.appData = etwDir + "appDataFolder/" + appDataPath
+	appDataDir := a.Sh.Getenv("APPDATA")
+	// for non-windows:
+	if appDataDir == "" {
+		appDataDir = etwDir + "appDataFolder/"
+	}
+	a.dirs.appData = appDataDir + appDataPath
 	a.logger.Infof("AppData directory: %s", a.dirs.appData)
 
 	err = a.loadInfoFromFile()
