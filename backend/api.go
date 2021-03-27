@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
+	"os"
 	"strings"
 )
 
@@ -134,7 +136,7 @@ func (a *API) activateImpSplen() error {
 	}
 
 	a.logger.Debug("Moving User Script")
-	err = a.moveFile(a.dirs.etw+modPath+userScript, a.dirs.appData+userScript)
+	err = a.moveUserScript(a.dirs.etw+modPath+userScript, a.dirs.appData+userScript)
 	if err != nil {
 		_ = a.deactivateImpSplen()
 		return err
@@ -188,4 +190,35 @@ func (a *API) deactivateImpSplen() error {
 func (a *API) deleteAllFiles() error {
 	err := a.Sh.Remove(a.dirs.etw + modPath)
 	return err
+}
+
+func (a *API) moveUserScript(sourcePath, destPath string) error {
+	inputFile, err := os.Open(sourcePath)
+	if err != nil {
+		a.logger.Errorf("Couldn't open source file: %s", err)
+		return err
+	}
+	outputFile, err := os.Create(destPath)
+	if err != nil {
+		inputFile.Close()
+		a.logger.Errorf("Couldn't open dest file: %s", err)
+		return err
+	}
+
+	defer outputFile.Close()
+	_, err = io.Copy(outputFile, inputFile)
+	inputFile.Close()
+	if err != nil {
+		a.logger.Errorf("Writing to output file failed: %s", err)
+		return err
+	}
+
+	// The copy was successful, so now delete the original file
+	err = os.Remove(sourcePath)
+	if err != nil {
+		a.logger.Errorf("Failed removing original file: %s", err)
+		return err
+	}
+
+	return nil
 }
