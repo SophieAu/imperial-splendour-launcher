@@ -177,7 +177,7 @@ func (a *API) deactivateImpSplen() error {
 	}
 
 	a.logger.Debug("Moving User Script")
-	err = a.moveFile(a.dirs.appData+userScript, a.dirs.etw+modPath+userScript)
+	err = a.moveUserScript(a.dirs.appData+userScript, a.dirs.etw+modPath+userScript)
 	if err != nil {
 		a.logger.Errorf("%v", err)
 	}
