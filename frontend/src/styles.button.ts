@@ -1,11 +1,13 @@
 import { css } from '@emotion/css/dist/emotion-css.umd.min.js';
 
-import { buttonTexture, heightRatio, largeFontFamily, largeFontSize, widthRatio } from './styles';
-
-const buttonHeight = heightRatio * 100;
-const buttonWidth = widthRatio * 290;
-
-const linkHoverColor = '#5c4e3c';
+import {
+  buttonHeight,
+  buttonTexture,
+  buttonWidth,
+  largeFontFamily,
+  largeFontSize,
+  linkHoverColor,
+} from './styles';
 
 export const root = css`
   background: no-repeat center/100% ${buttonTexture};

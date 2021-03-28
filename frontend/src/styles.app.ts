@@ -1,18 +1,19 @@
 import { css } from '@emotion/css/dist/emotion-css.umd.min.js';
 
 import {
+  buttonWidth,
   heightRatio,
   imgBG,
   largeFontSize,
   smallFontFamily,
   smallFontSize,
   widthRatio,
-  windowWidth,
 } from './styles';
 
 export const root = css`
   background: left top / cover ${imgBG};
-  height: ${windowWidth / 1.6}px;
+  width: 100vw;
+  height: 100vh;
   overflow: hidden;
 
   display: flex;
@@ -35,11 +36,21 @@ export const heading = css`
   }
 `;
 
-export const buttonContainer = css`
-  width: ${windowWidth};
-  flex: 1;
+export const buttonContainerNonIE = css`
+  width: 100vw;
+  flex: 1 1 0%;
   display: flex;
   justify-content: space-evenly;
+  align-items: flex-start;
+`;
+
+export const buttonContainer = css`
+  box-sizing: border-box;
+  width: 100vw;
+  flex: 1 1 0%;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 calc(100vw / 6 - 5 * ${buttonWidth}px / 6);
   align-items: flex-start;
 `;
 
