@@ -56,11 +56,7 @@
 <main class={styles.root}>
   {#if isISActive !== undefined}
     <h1 class={styles.heading}>
-      <img
-        src={isISActive ? isLogo : etwLogo}
-        class={styles.headingImg}
-        alt={isISActive ? pageTitle : etwTitle}
-      />
+      <img src={isISActive ? isLogo : etwLogo} alt={isISActive ? pageTitle : etwTitle} />
     </h1>
     <div class={styles.buttonContainer}>
       <Button text={'Play'} onClick={async () => callAPI(API.Play, 'play')} />
