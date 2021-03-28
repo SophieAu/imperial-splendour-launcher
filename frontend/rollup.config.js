@@ -6,7 +6,6 @@ import resolve from '@rollup/plugin-node-resolve';
 import typescript from '@rollup/plugin-typescript';
 import url from '@rollup/plugin-url';
 import babel from 'rollup-plugin-babel';
-import css from 'rollup-plugin-css-only';
 import livereload from 'rollup-plugin-livereload';
 import polyfill from 'rollup-plugin-polyfill';
 import svelte from 'rollup-plugin-svelte';
@@ -48,18 +47,14 @@ export default {
   plugins: [
     image(),
     svelte({
-      compilerOptions: {
-        dev: !production, // enable run-time checks when not in production
-        css: false,
-        cssOutputFilename: 'bundle.css',
-      },
+      emitCss: false,
+      compilerOptions: { dev: !production }, // enable run-time checks when not in production
       preprocess: autoPreprocess(),
     }),
     url({
       include: ['**/*.woff', '**/*.woff2'], // by default, rollup-plugin-url will not handle font files
       limit: Infinity, // ensure that the files are always bundled with the code
     }),
-    css({ output: 'bundle.css' }),
 
     typescript({ sourceMap: !production, rootDir: './src' }),
     // If you have external dependencies installed from
