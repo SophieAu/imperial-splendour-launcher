@@ -20,7 +20,7 @@
 
   let version = '';
   let isISActive = true;
-  let errorMessage = 'test';
+  let errorMessage = '';
 
   export let API: APIType;
 
