@@ -17,4 +17,7 @@ export const apiErrors = {
   exit: "Couldn't exit the launcher. This should be impossible. Please tell us how you did this...",
 };
 
+export const newVersion =
+  'We released a new Version of Imperial Splendour. Go to our Website to download it.';
+
 export const modalButtonText = 'OK';

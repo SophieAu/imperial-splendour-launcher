@@ -5,8 +5,9 @@
   import isLogo from './assets/hero_logo_is.png';
   import etwLogo from './assets/hero_logo_etw.png';
   import Modal from './Modal.svelte';
-  import { pageTitle, etwTitle, apiErrors, versionPrefix } from './strings';
+  import { pageTitle, etwTitle, apiErrors, versionPrefix, newVersion } from './strings';
   import * as styles from './styles.app';
+  import 'isomorphic-fetch';
 
   type APIType = {
     Version: () => Promise<string>;
@@ -37,6 +38,15 @@
       version = await API.Version();
       isISActive = await API.IsActive();
     }, 'startup');
+
+    try {
+      const response = await fetch('https://imperialsplendour.com/version');
+      const newestVersion = await response.json();
+
+      if (version < newestVersion) {
+        errorMessage = newVersion;
+      }
+    } catch {}
   });
 
   const switchError = () => (isISActive ? 'switchToETW' : 'switchToIS');
