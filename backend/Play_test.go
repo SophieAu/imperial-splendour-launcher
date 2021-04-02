@@ -11,23 +11,30 @@ import (
 )
 
 func TestPlay(t *testing.T) {
-	api, browser, window, _, _ := testHelpers.Before()
+	t.Run("Error launching game", func(t *testing.T) {
+		api, browser, window, _, _ := testHelpers.Before()
 
-	// error in opening URL
-	browser.On("OpenURL", testifyMock.Anything).Return(errors.New("error")).Once()
-	err := api.Play()
+		// error in opening URL
+		browser.On("OpenURL", testifyMock.Anything).Return(errors.New("error")).Once()
+		err := api.Play()
 
-	assert.NotNil(t, err)
-	browser.AssertCalled(t, "OpenURL", "steam://rungameid/10500")
-	window.AssertNotCalled(t, "Close")
+		assert.NotNil(t, err)
+		browser.AssertCalled(t, "OpenURL", "steam://rungameid/10500")
+		window.AssertNotCalled(t, "Close")
 
-	// working properly
-	browser.On("OpenURL", testifyMock.Anything).Return(nil).Once()
-	err = api.Play()
+		testHelpers.After(*api)
+	})
 
-	assert.Nil(t, err)
-	browser.AssertCalled(t, "OpenURL", "steam://rungameid/10500")
-	window.AssertCalled(t, "Close")
+	t.Run("Successfully launch game", func(t *testing.T) {
+		api, browser, window, _, _ := testHelpers.Before()
 
-	testHelpers.After(*api)
+		browser.On("OpenURL", testifyMock.Anything).Return(nil).Once()
+		err := api.Play()
+
+		assert.Nil(t, err)
+		browser.AssertCalled(t, "OpenURL", "steam://rungameid/10500")
+		window.AssertCalled(t, "Close")
+
+		testHelpers.After(*api)
+	})
 }
