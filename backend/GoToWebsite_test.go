@@ -2,6 +2,7 @@ package backend_test
 
 import (
 	"errors"
+	"imperial-splendour-launcher/backend/testHelpers"
 
 	"github.com/stretchr/testify/assert"
 	testifyMock "github.com/stretchr/testify/mock"
@@ -10,7 +11,7 @@ import (
 )
 
 func TestGoToWebsite(t *testing.T) {
-	api, browser, window, _, _ := before()
+	api, browser, window, _, _ := testHelpers.Before()
 
 	// error in opening URL
 	browser.On("OpenURL", testifyMock.Anything).Return(errors.New("error")).Once()
@@ -28,5 +29,5 @@ func TestGoToWebsite(t *testing.T) {
 	browser.AssertCalled(t, "OpenURL", "https://imperialsplendour.com/")
 	window.AssertCalled(t, "Close")
 
-	after(*api)
+	testHelpers.After(*api)
 }

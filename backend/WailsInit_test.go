@@ -4,6 +4,7 @@ import (
 	"errors"
 	"imperial-splendour-launcher/backend"
 	"imperial-splendour-launcher/backend/mock"
+	"imperial-splendour-launcher/backend/testHelpers"
 
 	"testing"
 
@@ -43,8 +44,8 @@ func TestInit(t *testing.T) {
 
 		err := api.Init(mockB, mockW, mockL, mockS)
 
-		mockL.AssertCalled(t, "Infof", expectFmt("ETW/Current directory: %s", "./"))
-		mockL.AssertCalled(t, "Infof", expectFmt("AppData directory: %s", "APPDATA/The Creative Assembly/Empire/scripts/"))
+		mockL.AssertCalled(t, "Infof", testHelpers.ExpectFmt("ETW/Current directory: %s", "./"))
+		mockL.AssertCalled(t, "Infof", testHelpers.ExpectFmt("AppData directory: %s", "APPDATA/The Creative Assembly/Empire/scripts/"))
 		assert.Equal(t, "FileNotFound", err.Error())
 	}
 
@@ -60,8 +61,8 @@ func TestInit(t *testing.T) {
 
 		err := api.Init(mockB, mockW, mockL, mockS)
 
-		mockL.AssertCalled(t, "Infof", expectFmt("ETW/Current directory: %s", "./"))
-		mockL.AssertCalled(t, "Infof", expectFmt("AppData directory: %s", "APPDATA/The Creative Assembly/Empire/scripts/"))
+		mockL.AssertCalled(t, "Infof", testHelpers.ExpectFmt("ETW/Current directory: %s", "./"))
+		mockL.AssertCalled(t, "Infof", testHelpers.ExpectFmt("AppData directory: %s", "APPDATA/The Creative Assembly/Empire/scripts/"))
 		assert.Equal(t, "unexpected end of JSON input", err.Error())
 	}
 
@@ -77,8 +78,8 @@ func TestInit(t *testing.T) {
 
 		err := api.Init(mockB, mockW, mockL, mockS)
 
-		mockL.AssertCalled(t, "Infof", expectFmt("ETW/Current directory: %s", "./"))
-		mockL.AssertCalled(t, "Infof", expectFmt("AppData directory: %s", "APPDATA/The Creative Assembly/Empire/scripts/"))
+		mockL.AssertCalled(t, "Infof", testHelpers.ExpectFmt("ETW/Current directory: %s", "./"))
+		mockL.AssertCalled(t, "Infof", testHelpers.ExpectFmt("AppData directory: %s", "APPDATA/The Creative Assembly/Empire/scripts/"))
 		assert.Equal(t, "Corrupt Info File", err.Error())
 	}
 
@@ -94,8 +95,8 @@ func TestInit(t *testing.T) {
 
 		err := api.Init(mockB, mockW, mockL, mockS)
 
-		mockL.AssertCalled(t, "Infof", expectFmt("ETW/Current directory: %s", "./"))
-		mockL.AssertCalled(t, "Infof", expectFmt("AppData directory: %s", "APPDATA/The Creative Assembly/Empire/scripts/"))
+		mockL.AssertCalled(t, "Infof", testHelpers.ExpectFmt("ETW/Current directory: %s", "./"))
+		mockL.AssertCalled(t, "Infof", testHelpers.ExpectFmt("AppData directory: %s", "APPDATA/The Creative Assembly/Empire/scripts/"))
 		assert.Equal(t, "Corrupt Info File", err.Error())
 	}
 
@@ -111,8 +112,8 @@ func TestInit(t *testing.T) {
 
 		err := api.Init(mockB, mockW, mockL, mockS)
 
-		mockL.AssertCalled(t, "Infof", expectFmt("ETW/Current directory: %s", "./"))
-		mockL.AssertCalled(t, "Infof", expectFmt("AppData directory: %s", "APPDATA/The Creative Assembly/Empire/scripts/"))
+		mockL.AssertCalled(t, "Infof", testHelpers.ExpectFmt("ETW/Current directory: %s", "./"))
+		mockL.AssertCalled(t, "Infof", testHelpers.ExpectFmt("AppData directory: %s", "APPDATA/The Creative Assembly/Empire/scripts/"))
 		assert.Nil(t, err)
 	}
 

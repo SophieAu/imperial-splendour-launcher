@@ -1,4 +1,4 @@
-package backend_test
+package testHelpers
 
 import (
 	"imperial-splendour-launcher/backend"
@@ -8,19 +8,19 @@ import (
 	testifyMock "github.com/stretchr/testify/mock"
 )
 
-func expectFmt(message string, args ...interface{}) []interface{} {
+func ExpectFmt(message string, args ...interface{}) []interface{} {
 	return append([]interface{}{message}, args...)
 }
 
-func fmtInfoFile(isActive bool, version, usChecksum string) []byte {
+func FmtInfoFile(isActive bool, version, usChecksum string) []byte {
 	return []byte("{\n\t\"isActive\": " + strconv.FormatBool(isActive) + ",\n\t\"version\": \"" + version + "\",\n\t\"usChecksum\": \"" + usChecksum + "\"\n}")
 }
 
-func before() (*backend.API, *mock.Browser, *mock.Window, *mock.Logger, *mock.SystemHandler) {
-	return variableBefore("2.0", true, "test")
+func Before() (*backend.API, *mock.Browser, *mock.Window, *mock.Logger, *mock.SystemHandler) {
+	return VariableBefore("2.0", true, "test")
 }
 
-func variableBefore(version string, isActive bool, usChecksum string) (*backend.API, *mock.Browser, *mock.Window, *mock.Logger, *mock.SystemHandler) {
+func VariableBefore(version string, isActive bool, usChecksum string) (*backend.API, *mock.Browser, *mock.Window, *mock.Logger, *mock.SystemHandler) {
 	mockS := &mock.SystemHandler{}
 	mockB := &mock.Browser{}
 	mockW := &mock.Window{}
@@ -36,7 +36,7 @@ func variableBefore(version string, isActive bool, usChecksum string) (*backend.
 
 	mockS.On("Executable").Return(".", nil)
 	mockS.On("Getenv", "APPDATA").Return("APPDATA")
-	mockS.On("ReadFile", "./IS_Files/IS_info.json").Return(fmtInfoFile(isActive, version, usChecksum), nil)
+	mockS.On("ReadFile", "./IS_Files/IS_info.json").Return(FmtInfoFile(isActive, version, usChecksum), nil)
 
 	api := &backend.API{}
 
@@ -47,5 +47,5 @@ func variableBefore(version string, isActive bool, usChecksum string) (*backend.
 	return api, mockB, mockW, mockL, mockS
 }
 
-func after(api backend.API) {
+func After(api backend.API) {
 }
