@@ -19,7 +19,7 @@ func TestUninstall(t *testing.T) {
 
 		err := api.Uninstall()
 
-		assert.Equal(t, "Could not uninstall", err.Error())
+		assert.EqualError(t, err, "Could not uninstall")
 		sysHandler.AssertNotCalled(t, "Remove", testifyMock.Anything)
 
 		testHelpers.After(*api)
@@ -34,7 +34,7 @@ func TestUninstall(t *testing.T) {
 
 		err := api.Uninstall()
 
-		assert.Equal(t, "Could not delete files", err.Error())
+		assert.EqualError(t, err, "Could not delete files")
 		sysHandler.AssertCalled(t, "MoveFile", "./data/merp.pack", "./IS_Files/merp.pack")
 		sysHandler.AssertCalled(t, "Remove", "./IS_Files/")
 
@@ -63,7 +63,7 @@ func TestUninstall(t *testing.T) {
 
 		err := api.Uninstall()
 
-		assert.Equal(t, "Could not delete files", err.Error())
+		assert.EqualError(t, err, "Could not delete files")
 		sysHandler.AssertNotCalled(t, "MoveFile", testifyMock.Anything, testifyMock.Anything)
 		sysHandler.AssertCalled(t, "Remove", "./IS_Files/")
 

@@ -24,7 +24,7 @@ func TestInit(t *testing.T) {
 
 		err := api.Init(&mock.Browser{}, &mock.Window{}, logger, sysHandler)
 
-		assert.Equal(t, "Error getting exe dir", err.Error())
+		assert.EqualError(t, err, "Error getting exe dir")
 		sysHandler.AssertNotCalled(t, "ReadFile", testifyMock.Anything)
 	})
 
@@ -36,7 +36,7 @@ func TestInit(t *testing.T) {
 
 		err := api.Init(&mock.Browser{}, &mock.Window{}, logger, sysHandler)
 
-		assert.Equal(t, "Couldn't get user's APPDATA dir", err.Error())
+		assert.EqualError(t, err, "Couldn't get user's APPDATA dir")
 		sysHandler.AssertNotCalled(t, "ReadFile", testifyMock.Anything)
 	})
 
@@ -51,7 +51,7 @@ func TestInit(t *testing.T) {
 		err := api.Init(&mock.Browser{}, &mock.Window{}, logger, sysHandler)
 
 		sysHandler.AssertCalled(t, "ReadFile", "./IS_Files/IS_info.json")
-		assert.Equal(t, "FileNotFound", err.Error())
+		assert.EqualError(t, err, "FileNotFound")
 	})
 
 	t.Run("Cannot unmarshal info file", func(t *testing.T) {
@@ -64,7 +64,7 @@ func TestInit(t *testing.T) {
 		err := api.Init(&mock.Browser{}, &mock.Window{}, logger, sysHandler)
 
 		sysHandler.AssertCalled(t, "ReadFile", "./IS_Files/IS_info.json")
-		assert.Equal(t, "unexpected end of JSON input", err.Error())
+		assert.EqualError(t, err, "unexpected end of JSON input")
 	})
 
 	t.Run("No user script checksum in info file", func(t *testing.T) {
@@ -77,7 +77,7 @@ func TestInit(t *testing.T) {
 		err := api.Init(&mock.Browser{}, &mock.Window{}, logger, sysHandler)
 
 		sysHandler.AssertCalled(t, "ReadFile", "./IS_Files/IS_info.json")
-		assert.Equal(t, "Corrupt Info File", err.Error())
+		assert.EqualError(t, err, "Corrupt Info File")
 	})
 
 	t.Run("No version in info file", func(t *testing.T) {
@@ -90,7 +90,7 @@ func TestInit(t *testing.T) {
 		err := api.Init(&mock.Browser{}, &mock.Window{}, logger, sysHandler)
 
 		sysHandler.AssertCalled(t, "ReadFile", "./IS_Files/IS_info.json")
-		assert.Equal(t, "Corrupt Info File", err.Error())
+		assert.EqualError(t, err, "Corrupt Info File")
 	})
 
 	t.Run("Successfully initialize the Launcher", func(t *testing.T) {

@@ -14,7 +14,7 @@ func TestIsActive(t *testing.T) {
 
 		isActive := api.IsActive()
 
-		assert.Equal(t, false, isActive)
+		assert.False(t, isActive)
 
 		testHelpers.After(*api)
 	})
@@ -24,7 +24,7 @@ func TestIsActive(t *testing.T) {
 
 		isActive := api.IsActive()
 
-		assert.Equal(t, true, isActive)
+		assert.True(t, isActive)
 
 		testHelpers.After(*api)
 	})
