@@ -3,6 +3,7 @@ package backend
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"path/filepath"
 
 	"github.com/wailsapp/wails"
@@ -44,19 +45,18 @@ func (a *API) Init(browser Browser, window Window, logger Logger, systemHandler 
 	a.dirs.etw = etwDir
 	a.logger.Infof("ETW/Current directory: %s", a.dirs.etw)
 
-	appDataDir := a.Sh.Getenv("APPDATA") + "/"
-	// for non-windows:
-	if appDataDir == "/" {
-		appDataDir = etwDir + "appDataFolder/"
+	appDataDir := a.Sh.Getenv("APPDATA")
+	if appDataDir == "" {
+		return errors.New("Couldn't get user's APPDATA dir")
 	}
-	a.dirs.appData = appDataDir + appDataPath
+	a.dirs.appData = appDataDir + "/" + appDataPath
 	a.logger.Infof("AppData directory: %s", a.dirs.appData)
 
 	if err = a.loadInfoFromFile(); err != nil {
 		a.logger.Warnf(err.Error())
 		return err
 	}
-	a.logger.Infof("Info loaded %v", a.info)
+	a.logger.Infof("Info loaded %v", fmt.Sprintf("%v", a.info))
 
 	return nil
 }

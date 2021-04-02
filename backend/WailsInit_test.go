@@ -17,110 +17,94 @@ func TestInit(t *testing.T) {
 	mockL.On("Infof", testifyMock.Anything, testifyMock.Anything).Return()
 	mockL.On("Warnf", testifyMock.Anything, testifyMock.Anything).Return()
 
-	var errorsOutWhenExecutableCannotBeRead = func() {
+	t.Run("Cannot get current exe's directory", func(t *testing.T) {
 		mockS := &mock.SystemHandler{}
-		mockB := &mock.Browser{}
-		mockW := &mock.Window{}
 		api := &backend.API{}
+		mockS.On("Executable").Return("", errors.New("Error getting exe dir")).Once()
 
-		mockS.On("Executable").Return("", errors.New("Could not find executable")).Once()
+		err := api.Init(&mock.Browser{}, &mock.Window{}, mockL, mockS)
 
-		err := api.Init(mockB, mockW, mockL, mockS)
-
-		assert.Equal(t, "Could not find executable", err.Error())
+		assert.Equal(t, "Error getting exe dir", err.Error())
 		mockS.AssertNotCalled(t, "ReadFile", testifyMock.Anything)
-	}
+	})
 
-	// TODO: THIS ERROR SHOULD BE SEMI-RECOVERABLE
-	var errorsOutWhenThereWereIssuesLoadingTheInfoFile = func() {
+	t.Run("Cannot get app data directory", func(t *testing.T) {
 		mockS := &mock.SystemHandler{}
-		mockB := &mock.Browser{}
-		mockW := &mock.Window{}
 		api := &backend.API{}
+		mockS.On("Executable").Return(".", nil).Once()
+		mockS.On("Getenv", "APPDATA").Return("").Once()
 
+		err := api.Init(&mock.Browser{}, &mock.Window{}, mockL, mockS)
+
+		assert.Equal(t, "Couldn't get user's APPDATA dir", err.Error())
+		mockS.AssertNotCalled(t, "ReadFile", testifyMock.Anything)
+	})
+
+	// load from info file
+	t.Run("Cannot read info file", func(t *testing.T) {
+		mockS := &mock.SystemHandler{}
+		api := &backend.API{}
 		mockS.On("Executable").Return(".", nil).Once()
 		mockS.On("Getenv", "APPDATA").Return("APPDATA")
 		mockS.On("ReadFile", testifyMock.Anything).Return(nil, errors.New("FileNotFound")).Once()
 
-		err := api.Init(mockB, mockW, mockL, mockS)
+		err := api.Init(&mock.Browser{}, &mock.Window{}, mockL, mockS)
 
-		mockL.AssertCalled(t, "Infof", testHelpers.ExpectFmt("ETW/Current directory: %s", "./"))
-		mockL.AssertCalled(t, "Infof", testHelpers.ExpectFmt("AppData directory: %s", "APPDATA/The Creative Assembly/Empire/scripts/"))
+		mockS.AssertCalled(t, "ReadFile", "./IS_Files/IS_info.json")
 		assert.Equal(t, "FileNotFound", err.Error())
-	}
+	})
 
-	var errorsOutWhenThereWereIssuesReadingTheInfoFile = func() {
+	t.Run("Cannot unmarshal info file", func(t *testing.T) {
 		mockS := &mock.SystemHandler{}
-		mockB := &mock.Browser{}
-		mockW := &mock.Window{}
 		api := &backend.API{}
-
 		mockS.On("Executable").Return(".", nil).Once()
 		mockS.On("Getenv", "APPDATA").Return("APPDATA")
 		mockS.On("ReadFile", testifyMock.Anything).Return([]byte{}, nil).Once()
 
-		err := api.Init(mockB, mockW, mockL, mockS)
+		err := api.Init(&mock.Browser{}, &mock.Window{}, mockL, mockS)
 
-		mockL.AssertCalled(t, "Infof", testHelpers.ExpectFmt("ETW/Current directory: %s", "./"))
-		mockL.AssertCalled(t, "Infof", testHelpers.ExpectFmt("AppData directory: %s", "APPDATA/The Creative Assembly/Empire/scripts/"))
+		mockS.AssertCalled(t, "ReadFile", "./IS_Files/IS_info.json")
 		assert.Equal(t, "unexpected end of JSON input", err.Error())
-	}
+	})
 
-	var corruptedVersion = func() {
+	t.Run("No user script checksum in info file", func(t *testing.T) {
 		mockS := &mock.SystemHandler{}
-		mockB := &mock.Browser{}
-		mockW := &mock.Window{}
 		api := &backend.API{}
-
 		mockS.On("Executable").Return(".", nil).Once()
 		mockS.On("Getenv", "APPDATA").Return("APPDATA")
-		mockS.On("ReadFile", testifyMock.Anything).Return([]byte("{\"isActive\": true, \"version\": \"\", \"usChecksum\": \"test\"}"), nil).Once()
+		mockS.On("ReadFile", testifyMock.Anything).Return(testHelpers.FmtInfoFile(true, "2.0", ""), nil).Once()
 
-		err := api.Init(mockB, mockW, mockL, mockS)
+		err := api.Init(&mock.Browser{}, &mock.Window{}, mockL, mockS)
 
-		mockL.AssertCalled(t, "Infof", testHelpers.ExpectFmt("ETW/Current directory: %s", "./"))
-		mockL.AssertCalled(t, "Infof", testHelpers.ExpectFmt("AppData directory: %s", "APPDATA/The Creative Assembly/Empire/scripts/"))
+		mockS.AssertCalled(t, "ReadFile", "./IS_Files/IS_info.json")
 		assert.Equal(t, "Corrupt Info File", err.Error())
-	}
+	})
 
-	var corruptedChecksum = func() {
+	t.Run("No version in info file", func(t *testing.T) {
 		mockS := &mock.SystemHandler{}
-		mockB := &mock.Browser{}
-		mockW := &mock.Window{}
 		api := &backend.API{}
-
 		mockS.On("Executable").Return(".", nil).Once()
 		mockS.On("Getenv", "APPDATA").Return("APPDATA")
-		mockS.On("ReadFile", testifyMock.Anything).Return([]byte("{\"isActive\": true, \"version\": \"2.0\", \"usChecksum\": \"\"}"), nil).Once()
+		mockS.On("ReadFile", testifyMock.Anything).Return(testHelpers.FmtInfoFile(true, "", "test"), nil).Once()
 
-		err := api.Init(mockB, mockW, mockL, mockS)
+		err := api.Init(&mock.Browser{}, &mock.Window{}, mockL, mockS)
 
-		mockL.AssertCalled(t, "Infof", testHelpers.ExpectFmt("ETW/Current directory: %s", "./"))
-		mockL.AssertCalled(t, "Infof", testHelpers.ExpectFmt("AppData directory: %s", "APPDATA/The Creative Assembly/Empire/scripts/"))
+		mockS.AssertCalled(t, "ReadFile", "./IS_Files/IS_info.json")
 		assert.Equal(t, "Corrupt Info File", err.Error())
-	}
+	})
 
-	var everythingWorks = func() {
+	t.Run("Successfully initialize the Launcher", func(t *testing.T) {
 		mockS := &mock.SystemHandler{}
-		mockB := &mock.Browser{}
-		mockW := &mock.Window{}
+		mockL := &mock.Logger{}
 		api := &backend.API{}
-
+		mockL.On("Infof", testifyMock.Anything, testifyMock.Anything).Return()
 		mockS.On("Executable").Return(".", nil).Once()
 		mockS.On("Getenv", "APPDATA").Return("APPDATA")
-		mockS.On("ReadFile", testifyMock.Anything).Return([]byte("{\"isActive\": true, \"version\": \"2.0\", \"usChecksum\": \"test\"}"), nil).Once()
+		mockS.On("ReadFile", testifyMock.Anything).Return(testHelpers.FmtInfoFile(true, "2.0", "test"), nil).Once()
 
-		err := api.Init(mockB, mockW, mockL, mockS)
+		err := api.Init(&mock.Browser{}, &mock.Window{}, mockL, mockS)
 
-		mockL.AssertCalled(t, "Infof", testHelpers.ExpectFmt("ETW/Current directory: %s", "./"))
-		mockL.AssertCalled(t, "Infof", testHelpers.ExpectFmt("AppData directory: %s", "APPDATA/The Creative Assembly/Empire/scripts/"))
+		mockL.AssertCalled(t, "Infof", testHelpers.ExpectFmt("Info loaded %v", "{true 2.0 test}"))
 		assert.Nil(t, err)
-	}
-
-	errorsOutWhenExecutableCannotBeRead()
-	errorsOutWhenThereWereIssuesLoadingTheInfoFile()
-	errorsOutWhenThereWereIssuesReadingTheInfoFile()
-	corruptedVersion()
-	corruptedChecksum()
-	everythingWorks()
+	})
 }
