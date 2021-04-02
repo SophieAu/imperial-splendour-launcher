@@ -13,8 +13,9 @@ func (a *API) IsActive() bool {
 }
 
 func (a *API) Play() error {
-	err := a.browser.OpenURL(etwSteamURI)
-	if err != nil {
+	a.logger.Infof("Starting Game")
+
+	if err := a.browser.OpenURL(etwSteamURI); err != nil {
 		return err
 	}
 
@@ -30,8 +31,8 @@ func (a *API) Switch() error {
 		switchFn = a.activateImpSplen
 	}
 
-	err := switchFn()
-	if err != nil {
+	if err := switchFn(); err != nil {
+		a.logger.Warnf("%v", err)
 		return err
 	}
 
@@ -41,9 +42,8 @@ func (a *API) Switch() error {
 func (a *API) GoToWebsite() error {
 	a.logger.Infof("Navigating to %s", websiteURL)
 
-	err := a.browser.OpenURL(websiteURL)
-	if err != nil {
-		a.logger.Errorf("Could not open website: %v", err)
+	if err := a.browser.OpenURL(websiteURL); err != nil {
+		a.logger.Warnf("Could not open website: %v", err)
 		return err
 	}
 	return nil
@@ -53,14 +53,16 @@ func (a *API) Uninstall() error {
 	a.logger.Info("Uninstalling")
 
 	if a.info.IsActive {
-		err := a.deactivateImpSplen()
-		if err != nil {
+		if err := a.deactivateImpSplen(); err != nil {
+			a.logger.Warnf("%v", err)
 			return errors.New("Could not uninstall")
 		}
 	}
 
 	err := a.deleteAllFiles()
 
+	// TODO: run script to delete self?
+	// TODO: delete shortcuts
 	return err
 }
 

@@ -1,6 +1,8 @@
 package backend
 
 import (
+	"errors"
+	"io"
 	"io/ioutil"
 	"os"
 )
@@ -18,16 +20,42 @@ type Handler interface {
 type SystemHandler struct {
 }
 
+func rename(source, destination string) error {
+	return os.Rename(source, destination)
+}
+
+func moveAcrossDrives(sourcePath, destPath string) error {
+	inputFile, err := os.Open(sourcePath)
+	if err != nil {
+		return errors.New("Couldn't open source file: " + err.Error())
+	}
+	outputFile, err := os.Create(destPath)
+	if err != nil {
+		inputFile.Close()
+		return errors.New("Couldn't open dest file: " + err.Error())
+	}
+
+	defer outputFile.Close()
+	_, err = io.Copy(outputFile, inputFile)
+	inputFile.Close()
+	if err != nil {
+		return errors.New("Writing to output file failed: " + err.Error())
+	}
+
+	// The copy was successful, so now delete the original file
+	if os.Remove(sourcePath); err != nil {
+		return errors.New("Failed removing original file: " + err.Error())
+	}
+
+	return nil
+}
+
 func (w *SystemHandler) WriteFile(filePath string, data []byte) error {
 	return ioutil.WriteFile(filePath, data, os.FileMode(0644))
 }
 
 func (w *SystemHandler) ReadFile(filePath string) ([]byte, error) {
 	return ioutil.ReadFile(filePath)
-}
-
-func (w *SystemHandler) MoveFile(source, destination string) error {
-	return os.Rename(source, destination)
 }
 
 func (w *SystemHandler) Remove(path string) error {
@@ -40,4 +68,18 @@ func (w *SystemHandler) Executable() (string, error) {
 
 func (w *SystemHandler) Getenv(key string) string {
 	return os.Getenv(key)
+}
+
+func (w *SystemHandler) MoveFile(source, destination string) error {
+	var moveFunc func(sourcePath string, destPath string) error
+	sourceDrive := source
+	targetDrive := destination
+
+	if sourceDrive != targetDrive {
+		moveFunc = moveAcrossDrives
+	} else {
+		moveFunc = rename
+	}
+
+	return moveFunc(source, destination)
 }

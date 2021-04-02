@@ -1,11 +1,8 @@
 package backend
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
-	"os"
 	"strings"
 )
 
@@ -30,18 +27,11 @@ type API struct {
 	browser Browser
 	window  Window
 	Sh      Handler
-	dirs    dirs
-	info    info
-}
-
-type dirs struct {
-	etw     string
-	appData string
-}
-type info struct {
-	IsActive           bool   `json:"isActive"`
-	Version            string `json:"version"`
-	UserScriptChecksum string `json:"usChecksum"`
+	dirs    struct {
+		etw     string
+		appData string
+	}
+	info info
 }
 
 type modFiles struct {
@@ -57,7 +47,7 @@ func (a *API) readFileList() (*modFiles, error) {
 
 	fileBlob, err := a.Sh.ReadFile(a.dirs.etw + modPath + fileListFile)
 	if err != nil {
-		a.logger.Errorf("%v", err)
+		a.logger.Warnf("%v", err)
 		return nil, err
 	}
 
@@ -80,31 +70,10 @@ func (a *API) readFileList() (*modFiles, error) {
 func (a *API) moveFile(source, destination string) error {
 	a.logger.Debugf("Moving from %s to %s", source, destination)
 
-	err := a.Sh.MoveFile(source, destination)
-	if err != nil {
-		a.logger.Errorf("%v", err)
+	if err := a.Sh.MoveFile(source, destination); err != nil {
+		a.logger.Warnf("%v", err)
 		return err
 	}
-	return nil
-}
-
-func (a *API) setStatus(isActive bool) error {
-	newInfo := a.info
-	newInfo.IsActive = isActive
-
-	newInfoJSON, err := json.MarshalIndent(newInfo, "", "\t")
-	if err != nil {
-		a.logger.Errorf("%v", err)
-		return err
-	}
-
-	err = a.Sh.WriteFile(a.dirs.etw+modPath+infoFile, newInfoJSON)
-	if err != nil {
-		a.logger.Errorf("%v", err)
-		return err
-	}
-
-	a.info.IsActive = isActive
 	return nil
 }
 
@@ -113,14 +82,13 @@ func (a *API) activateImpSplen() error {
 
 	files, err := a.readFileList()
 	if err != nil {
-		a.logger.Errorf("%v", err)
+		a.logger.Warnf("%v", err)
 		return err
 	}
 
 	a.logger.Debug("Moving data files")
 	for _, v := range (*files).dataFiles {
-		err := a.moveFile(a.dirs.etw+modPath+v, a.dirs.etw+dataPath+v)
-		if err != nil {
+		if err := a.moveFile(a.dirs.etw+modPath+v, a.dirs.etw+dataPath+v); err != nil {
 			_ = a.deactivateImpSplen()
 			return err
 		}
@@ -128,22 +96,19 @@ func (a *API) activateImpSplen() error {
 
 	a.logger.Debug("Moving campaign files")
 	for _, v := range (*files).campaignFiles {
-		err := a.moveFile(a.dirs.etw+modPath+v, a.dirs.etw+campaignPath+v)
-		if err != nil {
+		if err := a.moveFile(a.dirs.etw+modPath+v, a.dirs.etw+campaignPath+v); err != nil {
 			_ = a.deactivateImpSplen()
 			return err
 		}
 	}
 
 	a.logger.Debug("Moving User Script")
-	err = a.moveUserScript(a.dirs.etw+modPath+userScript, a.dirs.appData+userScript)
-	if err != nil {
+	if err = a.moveFile(a.dirs.etw+modPath+userScript, a.dirs.appData+userScript); err != nil {
 		_ = a.deactivateImpSplen()
 		return err
 	}
 
-	err = a.setStatus(true)
-	if err != nil {
+	if err = a.setStatus(true); err != nil {
 		_ = a.deactivateImpSplen()
 		return err
 	}
@@ -156,7 +121,7 @@ func (a *API) deactivateImpSplen() error {
 
 	files, err := a.readFileList()
 	if err != nil {
-		a.logger.Errorf("%v", err)
+		a.logger.Warnf("%v", err)
 		return err
 	}
 
@@ -164,7 +129,7 @@ func (a *API) deactivateImpSplen() error {
 	for _, v := range files.dataFiles {
 		err := a.moveFile(a.dirs.etw+dataPath+v, a.dirs.etw+modPath+v)
 		if err != nil {
-			a.logger.Errorf("%v", err)
+			a.logger.Warnf("%v", err)
 		}
 	}
 
@@ -172,14 +137,14 @@ func (a *API) deactivateImpSplen() error {
 	for _, v := range files.campaignFiles {
 		err := a.moveFile(a.dirs.etw+campaignPath+v, a.dirs.etw+modPath+v)
 		if err != nil {
-			a.logger.Errorf("%v", err)
+			a.logger.Warnf("%v", err)
 		}
 	}
 
 	a.logger.Debug("Moving User Script")
-	err = a.moveUserScript(a.dirs.appData+userScript, a.dirs.etw+modPath+userScript)
+	err = a.moveFile(a.dirs.appData+userScript, a.dirs.etw+modPath+userScript)
 	if err != nil {
-		a.logger.Errorf("%v", err)
+		a.logger.Warnf("%v", err)
 	}
 
 	err = a.setStatus(false)
@@ -188,37 +153,5 @@ func (a *API) deactivateImpSplen() error {
 }
 
 func (a *API) deleteAllFiles() error {
-	err := a.Sh.Remove(a.dirs.etw + modPath)
-	return err
-}
-
-func (a *API) moveUserScript(sourcePath, destPath string) error {
-	inputFile, err := os.Open(sourcePath)
-	if err != nil {
-		a.logger.Errorf("Couldn't open source file: %s", err)
-		return err
-	}
-	outputFile, err := os.Create(destPath)
-	if err != nil {
-		inputFile.Close()
-		a.logger.Errorf("Couldn't open dest file: %s", err)
-		return err
-	}
-
-	defer outputFile.Close()
-	_, err = io.Copy(outputFile, inputFile)
-	inputFile.Close()
-	if err != nil {
-		a.logger.Errorf("Writing to output file failed: %s", err)
-		return err
-	}
-
-	// The copy was successful, so now delete the original file
-	err = os.Remove(sourcePath)
-	if err != nil {
-		a.logger.Errorf("Failed removing original file: %s", err)
-		return err
-	}
-
-	return nil
+	return a.Sh.Remove(a.dirs.etw + modPath)
 }

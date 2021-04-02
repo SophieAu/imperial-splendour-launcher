@@ -14,6 +14,7 @@ import (
 func TestInit(t *testing.T) {
 	mockL := &mock.Logger{}
 	mockL.On("Infof", testifyMock.Anything, testifyMock.Anything).Return()
+	mockL.On("Warnf", testifyMock.Anything, testifyMock.Anything).Return()
 
 	var errorsOutWhenExecutableCannotBeRead = func() {
 		mockS := &mock.SystemHandler{}
@@ -37,12 +38,13 @@ func TestInit(t *testing.T) {
 		api := &backend.API{}
 
 		mockS.On("Executable").Return(".", nil).Once()
+		mockS.On("Getenv", "APPDATA").Return("APPDATA")
 		mockS.On("ReadFile", testifyMock.Anything).Return(nil, errors.New("FileNotFound")).Once()
 
 		err := api.Init(mockB, mockW, mockL, mockS)
 
 		mockL.AssertCalled(t, "Infof", expectFmt("ETW/Current directory: %s", "./"))
-		mockL.AssertCalled(t, "Infof", expectFmt("AppData directory: %s", "./appDataFolder/The Creative Assembly/Empire/scripts/"))
+		mockL.AssertCalled(t, "Infof", expectFmt("AppData directory: %s", "APPDATA/The Creative Assembly/Empire/scripts/"))
 		assert.Equal(t, "FileNotFound", err.Error())
 	}
 
@@ -53,12 +55,13 @@ func TestInit(t *testing.T) {
 		api := &backend.API{}
 
 		mockS.On("Executable").Return(".", nil).Once()
+		mockS.On("Getenv", "APPDATA").Return("APPDATA")
 		mockS.On("ReadFile", testifyMock.Anything).Return([]byte{}, nil).Once()
 
 		err := api.Init(mockB, mockW, mockL, mockS)
 
 		mockL.AssertCalled(t, "Infof", expectFmt("ETW/Current directory: %s", "./"))
-		mockL.AssertCalled(t, "Infof", expectFmt("AppData directory: %s", "./appDataFolder/The Creative Assembly/Empire/scripts/"))
+		mockL.AssertCalled(t, "Infof", expectFmt("AppData directory: %s", "APPDATA/The Creative Assembly/Empire/scripts/"))
 		assert.Equal(t, "unexpected end of JSON input", err.Error())
 	}
 
@@ -69,12 +72,13 @@ func TestInit(t *testing.T) {
 		api := &backend.API{}
 
 		mockS.On("Executable").Return(".", nil).Once()
+		mockS.On("Getenv", "APPDATA").Return("APPDATA")
 		mockS.On("ReadFile", testifyMock.Anything).Return([]byte("{\"isActive\": true, \"version\": \"\", \"usChecksum\": \"test\"}"), nil).Once()
 
 		err := api.Init(mockB, mockW, mockL, mockS)
 
 		mockL.AssertCalled(t, "Infof", expectFmt("ETW/Current directory: %s", "./"))
-		mockL.AssertCalled(t, "Infof", expectFmt("AppData directory: %s", "./appDataFolder/The Creative Assembly/Empire/scripts/"))
+		mockL.AssertCalled(t, "Infof", expectFmt("AppData directory: %s", "APPDATA/The Creative Assembly/Empire/scripts/"))
 		assert.Equal(t, "Corrupt Info File", err.Error())
 	}
 
@@ -85,12 +89,13 @@ func TestInit(t *testing.T) {
 		api := &backend.API{}
 
 		mockS.On("Executable").Return(".", nil).Once()
+		mockS.On("Getenv", "APPDATA").Return("APPDATA")
 		mockS.On("ReadFile", testifyMock.Anything).Return([]byte("{\"isActive\": true, \"version\": \"2.0\", \"usChecksum\": \"\"}"), nil).Once()
 
 		err := api.Init(mockB, mockW, mockL, mockS)
 
 		mockL.AssertCalled(t, "Infof", expectFmt("ETW/Current directory: %s", "./"))
-		mockL.AssertCalled(t, "Infof", expectFmt("AppData directory: %s", "./appDataFolder/The Creative Assembly/Empire/scripts/"))
+		mockL.AssertCalled(t, "Infof", expectFmt("AppData directory: %s", "APPDATA/The Creative Assembly/Empire/scripts/"))
 		assert.Equal(t, "Corrupt Info File", err.Error())
 	}
 
@@ -101,12 +106,13 @@ func TestInit(t *testing.T) {
 		api := &backend.API{}
 
 		mockS.On("Executable").Return(".", nil).Once()
+		mockS.On("Getenv", "APPDATA").Return("APPDATA")
 		mockS.On("ReadFile", testifyMock.Anything).Return([]byte("{\"isActive\": true, \"version\": \"2.0\", \"usChecksum\": \"test\"}"), nil).Once()
 
 		err := api.Init(mockB, mockW, mockL, mockS)
 
 		mockL.AssertCalled(t, "Infof", expectFmt("ETW/Current directory: %s", "./"))
-		mockL.AssertCalled(t, "Infof", expectFmt("AppData directory: %s", "./appDataFolder/The Creative Assembly/Empire/scripts/"))
+		mockL.AssertCalled(t, "Infof", expectFmt("AppData directory: %s", "APPDATA/The Creative Assembly/Empire/scripts/"))
 		assert.Nil(t, err)
 	}
 

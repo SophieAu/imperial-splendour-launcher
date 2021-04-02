@@ -52,8 +52,8 @@ func (a *API) Init(browser Browser, window Window, logger Logger, systemHandler 
 	a.dirs.appData = appDataDir + appDataPath
 	a.logger.Infof("AppData directory: %s", a.dirs.appData)
 
-	err = a.loadInfoFromFile()
-	if err != nil {
+	if err = a.loadInfoFromFile(); err != nil {
+		a.logger.Warnf(err.Error())
 		return err
 	}
 	a.logger.Infof("Info loaded %v", a.info)
