@@ -13,98 +13,98 @@ import (
 )
 
 func TestInit(t *testing.T) {
-	mockL := &mock.Logger{}
-	mockL.On("Infof", testifyMock.Anything, testifyMock.Anything).Return()
-	mockL.On("Warnf", testifyMock.Anything, testifyMock.Anything).Return()
+	logger := &mock.Logger{}
+	logger.On("Infof", testifyMock.Anything, testifyMock.Anything).Return()
+	logger.On("Warnf", testifyMock.Anything, testifyMock.Anything).Return()
 
 	t.Run("Cannot get current exe's directory", func(t *testing.T) {
-		mockS := &mock.SystemHandler{}
+		sysHandler := &mock.SystemHandler{}
 		api := &backend.API{}
-		mockS.On("Executable").Return("", errors.New("Error getting exe dir")).Once()
+		sysHandler.On("Executable").Return("", errors.New("Error getting exe dir")).Once()
 
-		err := api.Init(&mock.Browser{}, &mock.Window{}, mockL, mockS)
+		err := api.Init(&mock.Browser{}, &mock.Window{}, logger, sysHandler)
 
 		assert.Equal(t, "Error getting exe dir", err.Error())
-		mockS.AssertNotCalled(t, "ReadFile", testifyMock.Anything)
+		sysHandler.AssertNotCalled(t, "ReadFile", testifyMock.Anything)
 	})
 
 	t.Run("Cannot get app data directory", func(t *testing.T) {
-		mockS := &mock.SystemHandler{}
+		sysHandler := &mock.SystemHandler{}
 		api := &backend.API{}
-		mockS.On("Executable").Return(".", nil).Once()
-		mockS.On("Getenv", "APPDATA").Return("").Once()
+		sysHandler.On("Executable").Return(".", nil).Once()
+		sysHandler.On("Getenv", "APPDATA").Return("").Once()
 
-		err := api.Init(&mock.Browser{}, &mock.Window{}, mockL, mockS)
+		err := api.Init(&mock.Browser{}, &mock.Window{}, logger, sysHandler)
 
 		assert.Equal(t, "Couldn't get user's APPDATA dir", err.Error())
-		mockS.AssertNotCalled(t, "ReadFile", testifyMock.Anything)
+		sysHandler.AssertNotCalled(t, "ReadFile", testifyMock.Anything)
 	})
 
 	// load from info file
 	t.Run("Cannot read info file", func(t *testing.T) {
-		mockS := &mock.SystemHandler{}
+		sysHandler := &mock.SystemHandler{}
 		api := &backend.API{}
-		mockS.On("Executable").Return(".", nil).Once()
-		mockS.On("Getenv", "APPDATA").Return("APPDATA")
-		mockS.On("ReadFile", testifyMock.Anything).Return(nil, errors.New("FileNotFound")).Once()
+		sysHandler.On("Executable").Return(".", nil).Once()
+		sysHandler.On("Getenv", "APPDATA").Return("APPDATA")
+		sysHandler.On("ReadFile", testifyMock.Anything).Return(nil, errors.New("FileNotFound")).Once()
 
-		err := api.Init(&mock.Browser{}, &mock.Window{}, mockL, mockS)
+		err := api.Init(&mock.Browser{}, &mock.Window{}, logger, sysHandler)
 
-		mockS.AssertCalled(t, "ReadFile", "./IS_Files/IS_info.json")
+		sysHandler.AssertCalled(t, "ReadFile", "./IS_Files/IS_info.json")
 		assert.Equal(t, "FileNotFound", err.Error())
 	})
 
 	t.Run("Cannot unmarshal info file", func(t *testing.T) {
-		mockS := &mock.SystemHandler{}
+		sysHandler := &mock.SystemHandler{}
 		api := &backend.API{}
-		mockS.On("Executable").Return(".", nil).Once()
-		mockS.On("Getenv", "APPDATA").Return("APPDATA")
-		mockS.On("ReadFile", testifyMock.Anything).Return([]byte{}, nil).Once()
+		sysHandler.On("Executable").Return(".", nil).Once()
+		sysHandler.On("Getenv", "APPDATA").Return("APPDATA")
+		sysHandler.On("ReadFile", testifyMock.Anything).Return([]byte{}, nil).Once()
 
-		err := api.Init(&mock.Browser{}, &mock.Window{}, mockL, mockS)
+		err := api.Init(&mock.Browser{}, &mock.Window{}, logger, sysHandler)
 
-		mockS.AssertCalled(t, "ReadFile", "./IS_Files/IS_info.json")
+		sysHandler.AssertCalled(t, "ReadFile", "./IS_Files/IS_info.json")
 		assert.Equal(t, "unexpected end of JSON input", err.Error())
 	})
 
 	t.Run("No user script checksum in info file", func(t *testing.T) {
-		mockS := &mock.SystemHandler{}
+		sysHandler := &mock.SystemHandler{}
 		api := &backend.API{}
-		mockS.On("Executable").Return(".", nil).Once()
-		mockS.On("Getenv", "APPDATA").Return("APPDATA")
-		mockS.On("ReadFile", testifyMock.Anything).Return(testHelpers.FmtInfoFile(true, "2.0", ""), nil).Once()
+		sysHandler.On("Executable").Return(".", nil).Once()
+		sysHandler.On("Getenv", "APPDATA").Return("APPDATA")
+		sysHandler.On("ReadFile", testifyMock.Anything).Return(testHelpers.FmtInfoFile(true, "2.0", ""), nil).Once()
 
-		err := api.Init(&mock.Browser{}, &mock.Window{}, mockL, mockS)
+		err := api.Init(&mock.Browser{}, &mock.Window{}, logger, sysHandler)
 
-		mockS.AssertCalled(t, "ReadFile", "./IS_Files/IS_info.json")
+		sysHandler.AssertCalled(t, "ReadFile", "./IS_Files/IS_info.json")
 		assert.Equal(t, "Corrupt Info File", err.Error())
 	})
 
 	t.Run("No version in info file", func(t *testing.T) {
-		mockS := &mock.SystemHandler{}
+		sysHandler := &mock.SystemHandler{}
 		api := &backend.API{}
-		mockS.On("Executable").Return(".", nil).Once()
-		mockS.On("Getenv", "APPDATA").Return("APPDATA")
-		mockS.On("ReadFile", testifyMock.Anything).Return(testHelpers.FmtInfoFile(true, "", "test"), nil).Once()
+		sysHandler.On("Executable").Return(".", nil).Once()
+		sysHandler.On("Getenv", "APPDATA").Return("APPDATA")
+		sysHandler.On("ReadFile", testifyMock.Anything).Return(testHelpers.FmtInfoFile(true, "", "test"), nil).Once()
 
-		err := api.Init(&mock.Browser{}, &mock.Window{}, mockL, mockS)
+		err := api.Init(&mock.Browser{}, &mock.Window{}, logger, sysHandler)
 
-		mockS.AssertCalled(t, "ReadFile", "./IS_Files/IS_info.json")
+		sysHandler.AssertCalled(t, "ReadFile", "./IS_Files/IS_info.json")
 		assert.Equal(t, "Corrupt Info File", err.Error())
 	})
 
 	t.Run("Successfully initialize the Launcher", func(t *testing.T) {
-		mockS := &mock.SystemHandler{}
-		mockL := &mock.Logger{}
+		sysHandler := &mock.SystemHandler{}
+		logger := &mock.Logger{}
 		api := &backend.API{}
-		mockL.On("Infof", testifyMock.Anything, testifyMock.Anything).Return()
-		mockS.On("Executable").Return(".", nil).Once()
-		mockS.On("Getenv", "APPDATA").Return("APPDATA")
-		mockS.On("ReadFile", testifyMock.Anything).Return(testHelpers.FmtInfoFile(true, "2.0", "test"), nil).Once()
+		logger.On("Infof", testifyMock.Anything, testifyMock.Anything).Return()
+		sysHandler.On("Executable").Return(".", nil).Once()
+		sysHandler.On("Getenv", "APPDATA").Return("APPDATA")
+		sysHandler.On("ReadFile", testifyMock.Anything).Return(testHelpers.FmtInfoFile(true, "2.0", "test"), nil).Once()
 
-		err := api.Init(&mock.Browser{}, &mock.Window{}, mockL, mockS)
+		err := api.Init(&mock.Browser{}, &mock.Window{}, logger, sysHandler)
 
-		mockL.AssertCalled(t, "Infof", testHelpers.ExpectFmt("Info loaded %v", "{true 2.0 test}"))
+		logger.AssertCalled(t, "Infof", testHelpers.ExpectFmt("Info loaded %v", "{true 2.0 test}"))
 		assert.Nil(t, err)
 	})
 }
