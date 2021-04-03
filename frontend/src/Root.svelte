@@ -1,12 +1,12 @@
 <script lang="ts">
   import { injectGlobal } from '@emotion/css/dist/emotion-css.umd.min.js';
 
-  import imFellReg2 from './assets/imfellenglish.woff2';
-  import imFellReg from './assets/imfellenglish.woff';
-  import imFellSC2 from './assets/imfellenglishsc.woff2';
-  import imFellSC from './assets/imfellenglishsc.woff';
-
   import App from './App.svelte';
+  import imFellReg from './assets/imfellenglish.woff';
+  import imFellReg2 from './assets/imfellenglish.woff2';
+  import imFellSC from './assets/imfellenglishsc.woff';
+  import imFellSC2 from './assets/imfellenglishsc.woff2';
+  import type { APIType } from './types';
 
   injectGlobal`
   :root {
@@ -34,16 +34,6 @@
     font-style: 'normal';
   }
   `;
-
-  type APIType = {
-    Version: () => Promise<string>;
-    IsActive: () => Promise<boolean>;
-    Play: () => Promise<void>;
-    Switch: () => Promise<void>;
-    GoToWebsite: () => Promise<void>;
-    Uninstall: () => Promise<void>;
-    Exit: () => Promise<void>;
-  };
 
   const API = (window as any)?.backend?.API as APIType;
 </script>

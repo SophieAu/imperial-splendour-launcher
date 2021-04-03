@@ -1,23 +1,14 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
-  import Button from './Button.svelte';
-  import isLogo from './assets/hero_logo_is.png';
   import etwLogo from './assets/hero_logo_etw.png';
+  import isLogo from './assets/hero_logo_is.png';
+  import Button from './Button.svelte';
+  import { getNewestVersion } from './helpers';
   import Modal from './Modal.svelte';
-  import { pageTitle, etwTitle, apiErrors, versionPrefix, newVersion } from './strings';
+  import { apiErrors, etwTitle, newVersion, pageTitle, versionPrefix } from './strings';
   import * as styles from './styles.app';
-  import 'isomorphic-fetch';
-
-  type APIType = {
-    Version: () => Promise<string>;
-    IsActive: () => Promise<boolean>;
-    Play: () => Promise<void>;
-    Switch: () => Promise<void>;
-    GoToWebsite: () => Promise<void>;
-    Uninstall: () => Promise<void>;
-    Exit: () => Promise<void>;
-  };
+  import type { APIType } from './types';
 
   let version = '';
   let isISActive = true;
@@ -29,6 +20,7 @@
     try {
       await callback();
     } catch (e) {
+      e.message();
       errorMessage = apiErrors[errorCode];
     }
   };
@@ -40,8 +32,7 @@
     }, 'startup');
 
     try {
-      const response = await fetch('https://imperialsplendour.com/version');
-      const newestVersion = await response.json();
+      const newestVersion = await getNewestVersion();
 
       if (version < newestVersion) {
         errorMessage = newVersion;
