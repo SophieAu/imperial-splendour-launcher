@@ -2,6 +2,7 @@ package backend_test
 
 import (
 	"errors"
+	"imperial-splendour-launcher/backend/customErrors"
 	"imperial-splendour-launcher/backend/testHelpers"
 
 	"github.com/stretchr/testify/assert"
@@ -19,7 +20,7 @@ func TestUninstall(t *testing.T) {
 
 		err := api.Uninstall()
 
-		assert.EqualError(t, err, "Could not uninstall")
+		assert.Equal(t, err, customErrors.Deactivation)
 		sysHandler.AssertNotCalled(t, "Remove", testifyMock.Anything)
 
 		testHelpers.After(*api)
@@ -34,7 +35,7 @@ func TestUninstall(t *testing.T) {
 
 		err := api.Uninstall()
 
-		assert.EqualError(t, err, "Could not delete files")
+		assert.Equal(t, err, customErrors.Uninstall)
 		sysHandler.AssertCalled(t, "MoveFile", "./data/merp.pack", "./IS_Files/merp.pack")
 		sysHandler.AssertCalled(t, "Remove", "./IS_Files/")
 
@@ -63,7 +64,7 @@ func TestUninstall(t *testing.T) {
 
 		err := api.Uninstall()
 
-		assert.EqualError(t, err, "Could not delete files")
+		assert.Equal(t, err, customErrors.Uninstall)
 		sysHandler.AssertNotCalled(t, "MoveFile", testifyMock.Anything, testifyMock.Anything)
 		sysHandler.AssertCalled(t, "Remove", "./IS_Files/")
 

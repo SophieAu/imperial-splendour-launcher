@@ -1,6 +1,8 @@
 package backend
 
-import "errors"
+import (
+	"imperial-splendour-launcher/backend/customErrors"
+)
 
 func (a *API) Uninstall() error {
 	a.logger.Info("Uninstalling")
@@ -8,13 +10,16 @@ func (a *API) Uninstall() error {
 	if a.info.IsActive {
 		if err := a.deactivateImpSplen(); err != nil {
 			a.logger.Warnf("%v", err)
-			return errors.New("Could not uninstall")
+			return customErrors.Deactivation
 		}
 	}
 
-	err := a.deleteAllFiles()
+	if err := a.deleteAllFiles(); err != nil {
+		a.logger.Warnf("%v", err)
+		return customErrors.Uninstall
+	}
 
 	// TODO: run script to delete self?
 	// TODO: delete shortcuts
-	return err
+	return nil
 }

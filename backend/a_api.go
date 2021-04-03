@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"imperial-splendour-launcher/backend/customErrors"
 	"strings"
 )
 
@@ -110,7 +111,7 @@ func (a *API) rollbackActivation(fileList []fileTuple) error {
 	}
 
 	if hasError {
-		return errors.New("RollbackError")
+		return customErrors.Rollback
 	}
 	return nil
 }
@@ -121,7 +122,7 @@ func (a *API) activateFile(fileName string, targetDir string, activeFiles *[]fil
 		if err = a.rollbackActivation(*activeFiles); err != nil {
 			return err
 		}
-		return errors.New("ActivationError")
+		return customErrors.Activation
 	}
 
 	*activeFiles = append(*activeFiles, fileTuple{fileName, targetDir})
@@ -135,7 +136,7 @@ func (a *API) activateImpSplen() error {
 	files, err := a.readFileList()
 	if err != nil {
 		a.logger.Warnf("%v", err)
-		return errors.New("FileListError")
+		return customErrors.FileList
 	}
 
 	a.logger.Debug("Moving data files")
@@ -162,7 +163,7 @@ func (a *API) activateImpSplen() error {
 		if err = a.rollbackActivation(filesMoved); err != nil {
 			return err
 		}
-		return errors.New("StatusUpdateError")
+		return customErrors.StatusUpdate
 	}
 	a.logger.Debug("ImpSplen activated")
 	return nil
@@ -174,7 +175,7 @@ func (a *API) deactivateImpSplen() error {
 	files, err := a.readFileList()
 	if err != nil {
 		a.logger.Warnf("%v", err)
-		return errors.New("FileListError")
+		return customErrors.FileList
 	}
 
 	hasError := false
@@ -202,12 +203,12 @@ func (a *API) deactivateImpSplen() error {
 
 	if err := a.setStatus(false); err != nil {
 		a.logger.Warnf("%v", err)
-		return errors.New("StatusUpdateError")
+		return customErrors.StatusUpdate
 	}
 
 	a.logger.Debug("ImpSplen deactivated")
 	if hasError {
-		return errors.New("DeactivationError")
+		return customErrors.Deactivation
 	}
 	return nil
 }
