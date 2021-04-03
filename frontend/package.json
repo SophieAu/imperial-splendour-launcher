@@ -50,6 +50,7 @@
     "svelte-check": "^1.2.6",
     "svelte-jester": "^1.3.0",
     "svelte-preprocess": "^4.6.9",
+    "svelte-testing-library": "^1.6.0",
     "ts-jest": "^26.5.4",
     "typescript": "^4.2.3"
   },
@@ -59,8 +60,7 @@
     "@webcomponents/webcomponentsjs": "^2.5.0",
     "isomorphic-fetch": "^3.0.0",
     "sirv-cli": "^1.0.0",
-    "svelte-simple-modal": "^0.6.0",
-    "svelte-testing-library": "^1.6.0"
+    "svelte-simple-modal": "^0.6.0"
   },
   "babel": {
     "presets": [
@@ -72,31 +72,6 @@
           }
         }
       ]
-    ]
-  },
-  "jest": {
-    "transform": {
-      "^.+\\.(ts|js)$": "babel-jest",
-      "^.+\\.svelte$": [
-        "svelte-jester",
-        {
-          "preprocess": true
-        }
-      ]
-    },
-    "moduleFileExtensions": [
-      "ts",
-      "js",
-      "svelte"
-    ],
-    "testMatch": [
-      "**/?(*.)spec.ts"
-    ],
-    "moduleNameMapper": {
-      "\\.(jpg|ico|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/mocks/fileMock.js"
-    },
-    "setupFilesAfterEnv": [
-      "@testing-library/jest-dom/extend-expect"
     ]
   }
 }
