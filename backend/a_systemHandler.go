@@ -3,7 +3,6 @@ package backend
 import (
 	"errors"
 	"io"
-	"io/ioutil"
 	"os"
 )
 
@@ -24,7 +23,7 @@ func rename(source, destination string) error {
 	return os.Rename(source, destination)
 }
 
-func moveAcrossDrives(sourcePath, destPath string) error {
+func copyPasteDeleteFile(sourcePath, destPath string) error {
 	inputFile, err := os.Open(sourcePath)
 	if err != nil {
 		return errors.New("Couldn't open source file: " + err.Error())
@@ -51,11 +50,11 @@ func moveAcrossDrives(sourcePath, destPath string) error {
 }
 
 func (w *SystemHandler) WriteFile(filePath string, data []byte) error {
-	return ioutil.WriteFile(filePath, data, os.FileMode(0644))
+	return os.WriteFile(filePath, data, os.FileMode(0644))
 }
 
 func (w *SystemHandler) ReadFile(filePath string) ([]byte, error) {
-	return ioutil.ReadFile(filePath)
+	return os.ReadFile(filePath)
 }
 
 func (w *SystemHandler) Remove(path string) error {
@@ -71,15 +70,8 @@ func (w *SystemHandler) Getenv(key string) string {
 }
 
 func (w *SystemHandler) MoveFile(source, destination string) error {
-	var moveFunc func(sourcePath string, destPath string) error
-	sourceDrive := source
-	targetDrive := destination
-
-	if sourceDrive != targetDrive {
-		moveFunc = moveAcrossDrives
-	} else {
-		moveFunc = rename
+	if err := rename(source, destination); err != nil {
+		return copyPasteDeleteFile(source, destination)
 	}
-
-	return moveFunc(source, destination)
+	return nil
 }
