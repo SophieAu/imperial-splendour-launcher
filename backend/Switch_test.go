@@ -5,23 +5,13 @@ import (
 	"imperial-splendour-launcher/backend"
 	"imperial-splendour-launcher/backend/mock"
 	"imperial-splendour-launcher/backend/testHelpers"
+	"strings"
 
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	testifyMock "github.com/stretchr/testify/mock"
 )
-
-/*
-ADDITIONAL TEST CASES ON SWITCH
-
-* error cases: cannot rename file (-> copy paste, then delete)
-* file doesn't exist (-> check for it in IS_Files, error maybe)
-* userscript wrong checksum (-> panic)
-* is info file doesn't exist (-> panic)
-* couldn't write to is info file (-> panic)
-
-*/
 
 func activeBefore() (*backend.API, *mock.Browser, *mock.Window, *mock.Logger, *mock.SystemHandler) {
 	return testHelpers.VariableBefore("2.0", true, "test")
@@ -31,8 +21,9 @@ func inactiveBefore() (*backend.API, *mock.Browser, *mock.Window, *mock.Logger, 
 	return testHelpers.VariableBefore("2.0", false, "test")
 }
 
-const fileCount = 6
-const fileList = "dataFile.pack\ndataFile2.pack\ncampaignTGA.tga\ncampaignESF.esf\ncampaignLUA.lua"
+var list = []string{"dataFile.pack", "dataFile2.pack", "campaignTGA.tga", "campaignESF.esf", "campaignLUA.lua"}
+var fileList = strings.Join(list, "\n")
+var fileCount = len(list) + 1 // list length + user script
 
 func TestDeactivate(t *testing.T) {
 	t.Run("Cannot deactivate because file list file cannot be read", func(t *testing.T) {
@@ -41,7 +32,8 @@ func TestDeactivate(t *testing.T) {
 
 		err := api.Switch()
 
-		assert.EqualError(t, err, "FileNotFound")
+		assert.EqualError(t, err, "FileListError")
+		sysHandler.AssertExpectations(t)
 		sysHandler.AssertNotCalled(t, "MoveFile", testifyMock.Anything, testifyMock.Anything)
 		assert.True(t, api.IsActive())
 
@@ -54,7 +46,8 @@ func TestDeactivate(t *testing.T) {
 
 		err := api.Switch()
 
-		assert.EqualError(t, err, "Unknown file 'a' found in file list\nUnknown file 'b' found in file list\n")
+		assert.EqualError(t, err, "FileListError")
+		sysHandler.AssertExpectations(t)
 		sysHandler.AssertNotCalled(t, "MoveFile", testifyMock.Anything, testifyMock.Anything)
 		assert.True(t, api.IsActive())
 
@@ -64,12 +57,13 @@ func TestDeactivate(t *testing.T) {
 	t.Run("Cannot deactivate because new status cannot be saved", func(t *testing.T) {
 		api, _, _, _, sysHandler := activeBefore()
 		sysHandler.On("ReadFile", "./IS_Files/IS_FileList.txt").Return([]byte(fileList), nil).Once()
-		sysHandler.On("WriteFile", "./IS_Files/IS_info.json", testifyMock.Anything).Return(errors.New("Cannot update Status")).Once()
+		sysHandler.On("WriteFile", "./IS_Files/IS_info.json", testifyMock.Anything).Return(errors.New("StatusUpdateError")).Once()
 		sysHandler.On("MoveFile", testifyMock.Anything, testifyMock.Anything).Return(nil)
 
 		err := api.Switch()
 
-		assert.EqualError(t, err, "Cannot update Status")
+		assert.EqualError(t, err, "StatusUpdateError")
+		sysHandler.AssertExpectations(t)
 		sysHandler.AssertNumberOfCalls(t, "MoveFile", fileCount)
 		sysHandler.AssertCalled(t, "WriteFile", "./IS_Files/IS_info.json", testHelpers.FmtInfoFile(false, "2.0", "test"))
 		assert.True(t, api.IsActive())
@@ -85,14 +79,15 @@ func TestDeactivate(t *testing.T) {
 
 		err := api.Switch()
 
-		assert.Nil(t, err)
+		assert.EqualError(t, err, "DeactivationError")
+		sysHandler.AssertExpectations(t)
 		sysHandler.AssertCalled(t, "MoveFile", "./data/dataFile.pack", "./IS_Files/dataFile.pack")
 		sysHandler.AssertCalled(t, "MoveFile", "./data/dataFile2.pack", "./IS_Files/dataFile2.pack")
 		sysHandler.AssertCalled(t, "MoveFile", "./data/campaigns/imperial_splendour/campaignTGA.tga", "./IS_Files/campaignTGA.tga")
 		sysHandler.AssertCalled(t, "MoveFile", "./data/campaigns/imperial_splendour/campaignESF.esf", "./IS_Files/campaignESF.esf")
 		sysHandler.AssertCalled(t, "MoveFile", "./data/campaigns/imperial_splendour/campaignLUA.lua", "./IS_Files/campaignLUA.lua")
 		sysHandler.AssertCalled(t, "MoveFile", "APPDATA/The Creative Assembly/Empire/scripts/user.empire_script.txt", "./IS_Files/user.empire_script.txt")
-		logger.AssertNumberOfCalls(t, "Warnf", fileCount)
+		logger.AssertNumberOfCalls(t, "Warnf", fileCount+1) // filecount times for moving files, 1x for endpoint return error
 		assert.False(t, api.IsActive())
 
 		testHelpers.After(*api)
@@ -107,6 +102,7 @@ func TestDeactivate(t *testing.T) {
 		err := api.Switch()
 
 		assert.Nil(t, err)
+		sysHandler.AssertExpectations(t)
 		sysHandler.AssertNumberOfCalls(t, "MoveFile", fileCount)
 		sysHandler.AssertCalled(t, "WriteFile", "./IS_Files/IS_info.json", testHelpers.FmtInfoFile(false, "2.0", "test"))
 		assert.False(t, api.IsActive())
@@ -122,7 +118,8 @@ func TestActivate(t *testing.T) {
 
 		err := api.Switch()
 
-		assert.EqualError(t, err, "FileNotFound")
+		assert.EqualError(t, err, "FileListError")
+		sysHandler.AssertExpectations(t)
 		sysHandler.AssertNotCalled(t, "MoveFile", testifyMock.Anything, testifyMock.Anything)
 		assert.False(t, api.IsActive())
 
@@ -135,78 +132,122 @@ func TestActivate(t *testing.T) {
 
 		err := api.Switch()
 
-		assert.EqualError(t, err, "Unknown file 'a' found in file list\nUnknown file 'b' found in file list\n")
+		assert.EqualError(t, err, "FileListError")
+		sysHandler.AssertExpectations(t)
 		sysHandler.AssertNotCalled(t, "MoveFile", testifyMock.Anything, testifyMock.Anything)
 		assert.False(t, api.IsActive())
 
 		testHelpers.After(*api)
 	})
 
-	// TestRollbackOnErrorWhileActivating := func(t *testing.T) {
-	// 	fileList := "merp.pack\nderp.pack\nx.tga\ny.esf\nz.lua"
+	/*
+	   ADDITIONAL TEST CASES ON SWITCH
 
-	// 	api, _, _, _, sysHandler := testHelpers.VariableBefore("2.0", false, "test")
-	// 	sysHandler.On("ReadFile", "./IS_Files/IS_FileList.txt").Return([]byte(fileList), nil).Once()
-	// 	sysHandler.On("ReadFile", "./IS_Files/IS_FileList.txt").Return([]byte(fileList), nil).Once()
-	// 	sysHandler.On("MoveFile", "./IS_Files/y.esf", "./data/campaigns/imperial_splendour/y.esf").Return(errors.New("FileNotFound"))
-	// 	sysHandler.On("MoveFile", testifyMock.Anything, testifyMock.Anything).Return(nil)
-	// 	sysHandler.On("WriteFile", testifyMock.Anything, testifyMock.Anything).Return(nil)
+	   * error cases: cannot rename file (-> copy paste, then delete)
+	   * file doesn't exist (-> check for it in IS_Files, error maybe)
+	   * userscript wrong checksum (-> panic)
+	   * couldn't write to is info file (-> panic)
+	*/
 
-	// 	err := api.Switch()
+	t.Run("Cancel and rollback everything if a data file cannot be moved", func(t *testing.T) {
+		api, _, _, _, sysHandler := inactiveBefore()
+		sysHandler.On("ReadFile", "./IS_Files/IS_FileList.txt").Return([]byte(fileList), nil)
+		sysHandler.On("WriteFile", testifyMock.Anything, testifyMock.Anything).Return(nil).Once()
+		sysHandler.On("MoveFile", "./IS_Files/dataFile.pack", testifyMock.Anything).Return(nil).Once()
+		sysHandler.On("MoveFile", "./IS_Files/dataFile2.pack", testifyMock.Anything).Return(errors.New("Couldn't move file")).Once()
+		sysHandler.On("MoveFile", testifyMock.Anything, testifyMock.Anything).Return(errors.New("Random Error"))
 
-	// 	assert.NotNil(t, err)
-	// 	sysHandler.AssertCalled(t, "MoveFile", "./IS_Files/merp.pack", "./data/merp.pack")
-	// 	sysHandler.AssertCalled(t, "MoveFile", "./IS_Files/derp.pack", "./data/derp.pack")
-	// 	sysHandler.AssertCalled(t, "MoveFile", "./IS_Files/x.tga", "./data/campaigns/imperial_splendour/x.tga")
-	// 	sysHandler.AssertCalled(t, "MoveFile", "./IS_Files/y.esf", "./data/campaigns/imperial_splendour/y.esf")
+		err := api.Switch()
 
-	// 	sysHandler.AssertCalled(t, "MoveFile", "./data/merp.pack", "./IS_Files/merp.pack")
-	// 	sysHandler.AssertCalled(t, "MoveFile", "./data/derp.pack", "./IS_Files/derp.pack")
-	// 	sysHandler.AssertCalled(t, "MoveFile", "./data/campaigns/imperial_splendour/x.tga", "./IS_Files/x.tga")
-	// 	sysHandler.AssertCalled(t, "MoveFile", "./data/campaigns/imperial_splendour/y.esf", "./IS_Files/y.esf")
-	// 	sysHandler.AssertCalled(t, "MoveFile", "./data/campaigns/imperial_splendour/z.lua", "./IS_Files/z.lua")
-	// 	sysHandler.AssertCalled(t, "MoveFile", "APPDATA/The Creative Assembly/Empire/scripts/user.empire_script.txt", "./IS_Files/user.empire_script.txt")
-	// 	sysHandler.AssertCalled(t, "WriteFile", "./IS_Files/IS_info.json", testHelpers.FmtInfoFile(false, "2.0", "test"))
+		assert.EqualError(t, err, "Couldn't move file")
+		sysHandler.AssertExpectations(t)
+		sysHandler.AssertNumberOfCalls(t, "MoveFile", 2+fileCount) // twice for activation move, fileCount times for undo
+		sysHandler.AssertCalled(t, "MoveFile", "./IS_Files/dataFile.pack", "./data/dataFile.pack")
+		sysHandler.AssertCalled(t, "MoveFile", "./IS_Files/dataFile2.pack", "./data/dataFile2.pack")
+		sysHandler.AssertCalled(t, "MoveFile", testifyMock.Anything, "./IS_Files/dataFile.pack")
+		sysHandler.AssertCalled(t, "MoveFile", testifyMock.Anything, "./IS_Files/dataFile2.pack")
+		sysHandler.AssertCalled(t, "MoveFile", testifyMock.Anything, "./IS_Files/campaignTGA.tga")
+		sysHandler.AssertCalled(t, "MoveFile", testifyMock.Anything, "./IS_Files/campaignESF.esf")
+		sysHandler.AssertCalled(t, "MoveFile", testifyMock.Anything, "./IS_Files/campaignLUA.lua")
+		sysHandler.AssertCalled(t, "MoveFile", testifyMock.Anything, "./IS_Files/user.empire_script.txt")
+		assert.False(t, api.IsActive())
 
-	// 	sysHandler.AssertNotCalled(t, "MoveFile", "./IS_Files/z.lua", "./data/campaigns/imperial_splendour/z.lua")
-	// 	sysHandler.AssertNotCalled(t, "MoveFile", "./IS_Files/user.empire_script.txt", "APPDATA/The Creative Assembly/Empire/scripts/user.empire_script.txt")
-	// 	sysHandler.AssertNotCalled(t, "WriteFile", "./IS_Files/IS_info.json", testHelpers.FmtInfoFile(true, "2.0", "test"))
+		testHelpers.After(*api)
+	})
 
-	// 	assert.False(t, api.IsActive())
+	t.Run("Cancel and rollback everything if a campaign file cannot be moved", func(t *testing.T) {
+		api, _, _, _, sysHandler := inactiveBefore()
+		sysHandler.On("ReadFile", "./IS_Files/IS_FileList.txt").Return([]byte(fileList), nil)
+		sysHandler.On("WriteFile", testifyMock.Anything, testifyMock.Anything).Return(nil).Once()
+		sysHandler.On("MoveFile", "./IS_Files/campaignTGA.tga", testifyMock.Anything).Return(errors.New("Couldn't move file")).Once()
+		sysHandler.On("MoveFile", testifyMock.Anything, testifyMock.Anything).Return(nil)
 
-	// 	testHelpers.After(*api)
-	// }
-	// TestRollbackOnErrorWhileActivating(t)
+		err := api.Switch()
 
-	// TestSuccessfullyActivateImpSplen := func(t *testing.T) {
-	// 	fileList := "merp.pack\nderp.pack\nx.tga\ny.esf\nz.lua"
+		assert.EqualError(t, err, "Couldn't move file")
+		sysHandler.AssertExpectations(t)
+		sysHandler.AssertNumberOfCalls(t, "MoveFile", 3+fileCount) // 3x for activation move, fileCount times for undo
+		sysHandler.AssertCalled(t, "MoveFile", "./IS_Files/dataFile.pack", "./data/dataFile.pack")
+		sysHandler.AssertCalled(t, "MoveFile", "./IS_Files/dataFile2.pack", "./data/dataFile2.pack")
+		sysHandler.AssertCalled(t, "MoveFile", "./IS_Files/campaignTGA.tga", "./data/campaigns/imperial_splendour/campaignTGA.tga")
+		sysHandler.AssertCalled(t, "MoveFile", testifyMock.Anything, "./IS_Files/dataFile.pack")
+		sysHandler.AssertCalled(t, "MoveFile", testifyMock.Anything, "./IS_Files/dataFile2.pack")
+		sysHandler.AssertCalled(t, "MoveFile", testifyMock.Anything, "./IS_Files/campaignTGA.tga")
+		sysHandler.AssertCalled(t, "MoveFile", testifyMock.Anything, "./IS_Files/campaignESF.esf")
+		sysHandler.AssertCalled(t, "MoveFile", testifyMock.Anything, "./IS_Files/campaignLUA.lua")
+		sysHandler.AssertCalled(t, "MoveFile", testifyMock.Anything, "./IS_Files/user.empire_script.txt")
+		assert.False(t, api.IsActive())
 
-	// 	api, _, _, _, sysHandler := testHelpers.VariableBefore("2.0", false, "test")
-	// 	sysHandler.On("ReadFile", "./IS_Files/IS_FileList.txt").Return([]byte(fileList), nil).Once()
-	// 	sysHandler.On("MoveFile", testifyMock.Anything, testifyMock.Anything).Return(nil)
-	// 	sysHandler.On("WriteFile", testifyMock.Anything, testifyMock.Anything).Return(nil)
+		testHelpers.After(*api)
+	})
 
-	// 	err := api.Switch()
+	t.Run("Cancel and rollback everything if the user script cannot be moved", func(t *testing.T) {
+		api, _, _, _, sysHandler := inactiveBefore()
+		sysHandler.On("ReadFile", "./IS_Files/IS_FileList.txt").Return([]byte(fileList), nil)
+		sysHandler.On("WriteFile", testifyMock.Anything, testifyMock.Anything).Return(nil).Once()
+		sysHandler.On("MoveFile", "./IS_Files/user.empire_script.txt", testifyMock.Anything).Return(errors.New("Couldn't move file"))
+		sysHandler.On("MoveFile", testifyMock.Anything, testifyMock.Anything).Return(nil)
 
-	// 	/*
-	// 		error cases: cannot rename file (-> copy paste, then delete)
-	// 		file doesn't exist (-> check for it in IS_Files, error maybe)
-	// 		userscript wrong checksum (-> panic)
-	// 		is info file doesn't exist (-> panic)
-	// 		couldn't write to is info file (-> panic)
-	// 	*/
+		err := api.Switch()
 
-	// 	assert.Nil(t, err)
-	// 	sysHandler.AssertCalled(t, "MoveFile", "./IS_Files/merp.pack", "./data/merp.pack")
-	// 	sysHandler.AssertCalled(t, "MoveFile", "./IS_Files/derp.pack", "./data/derp.pack")
-	// 	sysHandler.AssertCalled(t, "MoveFile", "./IS_Files/x.tga", "./data/campaigns/imperial_splendour/x.tga")
-	// 	sysHandler.AssertCalled(t, "MoveFile", "./IS_Files/y.esf", "./data/campaigns/imperial_splendour/y.esf")
-	// 	sysHandler.AssertCalled(t, "MoveFile", "./IS_Files/z.lua", "./data/campaigns/imperial_splendour/z.lua")
-	// 	sysHandler.AssertCalled(t, "MoveFile", "./IS_Files/user.empire_script.txt", "APPDATA/The Creative Assembly/Empire/scripts/user.empire_script.txt")
-	// 	sysHandler.AssertCalled(t, "WriteFile", "./IS_Files/IS_info.json", testHelpers.FmtInfoFile(true, "2.0", "test"))
-	// 	assert.True(t, api.IsActive())
+		assert.EqualError(t, err, "Couldn't move file")
+		sysHandler.AssertExpectations(t)
+		sysHandler.AssertNumberOfCalls(t, "MoveFile", 2*fileCount) // 1x activation move, 1x for undo
+		assert.False(t, api.IsActive())
 
-	// 	testHelpers.After(*api)
-	// }
-	// TestSuccessfullyActivateImpSplen(t)
+		testHelpers.After(*api)
+	})
+
+	t.Run("Cancel and rollback everything if status file cannot be updated", func(t *testing.T) {
+		api, _, _, _, sysHandler := inactiveBefore()
+		sysHandler.On("ReadFile", "./IS_Files/IS_FileList.txt").Return([]byte(fileList), nil)
+		sysHandler.On("WriteFile", "./IS_Files/IS_info.json", testifyMock.Anything).Return(errors.New("StatusUpdateError")).Twice()
+		sysHandler.On("MoveFile", testifyMock.Anything, testifyMock.Anything).Return(nil)
+
+		err := api.Switch()
+
+		assert.EqualError(t, err, "StatusUpdateError")
+		sysHandler.AssertExpectations(t)
+		sysHandler.AssertNumberOfCalls(t, "MoveFile", 2*fileCount) // twice for 1x activation and 1x undo
+		assert.False(t, api.IsActive())
+
+		testHelpers.After(*api)
+	})
+
+	t.Run("Successfully activate Imperial Splendour", func(t *testing.T) {
+		api, _, _, _, sysHandler := inactiveBefore()
+		sysHandler.On("ReadFile", "./IS_Files/IS_FileList.txt").Return([]byte(fileList), nil)
+		sysHandler.On("WriteFile", testifyMock.Anything, testifyMock.Anything).Return(nil).Once()
+		sysHandler.On("MoveFile", testifyMock.Anything, testifyMock.Anything).Return(nil)
+
+		err := api.Switch()
+
+		assert.Nil(t, err)
+		sysHandler.AssertExpectations(t)
+		sysHandler.AssertNumberOfCalls(t, "MoveFile", fileCount) // twice for activation move, fileCount times for undo
+		sysHandler.AssertCalled(t, "WriteFile", "./IS_Files/IS_info.json", testHelpers.FmtInfoFile(true, "2.0", "test"))
+		assert.True(t, api.IsActive())
+
+		testHelpers.After(*api)
+	})
 }

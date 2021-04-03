@@ -52,13 +52,10 @@ func (a *API) setStatus(isActive bool) error {
 
 	newInfoJSON, err := json.MarshalIndent(newInfo, "", "\t")
 	if err != nil {
-		a.logger.Warnf("%v", err)
 		return err
 	}
 
-	err = a.Sh.WriteFile(a.dirs.etw+modPath+infoFile, newInfoJSON)
-	if err != nil {
-		a.logger.Warnf("%v", err)
+	if err = a.Sh.WriteFile(a.dirs.etw+modPath+infoFile, newInfoJSON); err != nil {
 		return err
 	}
 
@@ -74,7 +71,6 @@ func (a *API) readFileList() (*modFiles, error) {
 
 	fileBlob, err := a.Sh.ReadFile(a.dirs.etw + modPath + fileListFile)
 	if err != nil {
-		a.logger.Warnf("%v", err)
 		return nil, err
 	}
 
@@ -96,34 +92,33 @@ func (a *API) readFileList() (*modFiles, error) {
 
 func (a *API) moveFile(source, destination string) error {
 	a.logger.Debugf("Moving from %s to %s", source, destination)
-
-	if err := a.Sh.MoveFile(source, destination); err != nil {
-		a.logger.Warnf("%v", err)
-		return err
-	}
-	return nil
+	return a.Sh.MoveFile(source, destination)
 }
 
 func (a *API) activateImpSplen() error {
 	a.logger.Debug("Activating ImpSplen")
+	var filesMoved [][]string
 
 	files, err := a.readFileList()
 	if err != nil {
 		a.logger.Warnf("%v", err)
-		return err
+		return errors.New("FileListError")
 	}
 
 	a.logger.Debug("Moving data files")
-	for _, v := range (*files).dataFiles {
-		if err := a.moveFile(a.dirs.etw+modPath+v, a.dirs.etw+dataPath+v); err != nil {
+	for _, file := range (*files).dataFiles {
+		src := a.dirs.etw + modPath + file
+		dest := a.dirs.etw + dataPath + file
+		if err := a.moveFile(src, dest); err != nil {
 			_ = a.deactivateImpSplen()
 			return err
 		}
+		filesMoved = append(filesMoved, []string{src, dest})
 	}
 
 	a.logger.Debug("Moving campaign files")
-	for _, v := range (*files).campaignFiles {
-		if err := a.moveFile(a.dirs.etw+modPath+v, a.dirs.etw+campaignPath+v); err != nil {
+	for _, file := range (*files).campaignFiles {
+		if err := a.moveFile(a.dirs.etw+modPath+file, a.dirs.etw+campaignPath+file); err != nil {
 			_ = a.deactivateImpSplen()
 			return err
 		}
@@ -149,34 +144,42 @@ func (a *API) deactivateImpSplen() error {
 	files, err := a.readFileList()
 	if err != nil {
 		a.logger.Warnf("%v", err)
-		return err
+		return errors.New("FileListError")
 	}
 
+	hasError := false
 	a.logger.Debug("Moving data files")
-	for _, v := range files.dataFiles {
-		err := a.moveFile(a.dirs.etw+dataPath+v, a.dirs.etw+modPath+v)
-		if err != nil {
+	for _, file := range files.dataFiles {
+		if err := a.moveFile(a.dirs.etw+dataPath+file, a.dirs.etw+modPath+file); err != nil {
 			a.logger.Warnf("%v", err)
+			hasError = true
 		}
 	}
 
 	a.logger.Debug("Moving campaign files")
-	for _, v := range files.campaignFiles {
-		err := a.moveFile(a.dirs.etw+campaignPath+v, a.dirs.etw+modPath+v)
-		if err != nil {
+	for _, file := range files.campaignFiles {
+		if err := a.moveFile(a.dirs.etw+campaignPath+file, a.dirs.etw+modPath+file); err != nil {
 			a.logger.Warnf("%v", err)
+			hasError = true
 		}
 	}
 
 	a.logger.Debug("Moving User Script")
-	err = a.moveFile(a.dirs.appData+userScript, a.dirs.etw+modPath+userScript)
-	if err != nil {
+	if err = a.moveFile(a.dirs.appData+userScript, a.dirs.etw+modPath+userScript); err != nil {
 		a.logger.Warnf("%v", err)
+		hasError = true
 	}
 
-	err = a.setStatus(false)
+	if err := a.setStatus(false); err != nil {
+		a.logger.Warnf("%v", err)
+		return errors.New("StatusUpdateError")
+	}
+
 	a.logger.Debug("ImpSplen deactivated")
-	return err
+	if hasError {
+		return errors.New("DeactivationError")
+	}
+	return nil
 }
 
 func (a *API) deleteAllFiles() error {
