@@ -140,93 +140,108 @@ func TestActivate(t *testing.T) {
 		testHelpers.After(*api)
 	})
 
-	/*
-	   ADDITIONAL TEST CASES ON SWITCH
-
-	   * error cases: cannot rename file (-> copy paste, then delete)
-	   * file doesn't exist (-> check for it in IS_Files, error maybe)
-	   * userscript wrong checksum (-> panic)
-	   * couldn't write to is info file (-> panic)
-	*/
-
-	t.Run("Cancel and rollback everything if a data file cannot be moved", func(t *testing.T) {
+	t.Run("Cancel and rollback without success if a data file cannot be moved", func(t *testing.T) {
 		api, _, _, _, sysHandler := inactiveBefore()
 		sysHandler.On("ReadFile", "./IS_Files/IS_FileList.txt").Return([]byte(fileList), nil)
-		sysHandler.On("WriteFile", testifyMock.Anything, testifyMock.Anything).Return(nil).Once()
-		sysHandler.On("MoveFile", "./IS_Files/dataFile.pack", testifyMock.Anything).Return(nil).Once()
 		sysHandler.On("MoveFile", "./IS_Files/dataFile2.pack", testifyMock.Anything).Return(errors.New("Couldn't move file")).Once()
-		sysHandler.On("MoveFile", testifyMock.Anything, testifyMock.Anything).Return(errors.New("Random Error"))
+		sysHandler.On("MoveFile", testifyMock.Anything, "./IS_Files/dataFile.pack").Return(errors.New("Random Error"))
+		sysHandler.On("MoveFile", testifyMock.Anything, testifyMock.Anything).Return(nil)
 
 		err := api.Switch()
 
-		assert.EqualError(t, err, "Couldn't move file")
+		assert.EqualError(t, err, "RollbackError")
 		sysHandler.AssertExpectations(t)
-		sysHandler.AssertNumberOfCalls(t, "MoveFile", 2+fileCount) // twice for activation move, fileCount times for undo
+		sysHandler.AssertNumberOfCalls(t, "MoveFile", 3) // twice for activation move, once for rollback
 		sysHandler.AssertCalled(t, "MoveFile", "./IS_Files/dataFile.pack", "./data/dataFile.pack")
 		sysHandler.AssertCalled(t, "MoveFile", "./IS_Files/dataFile2.pack", "./data/dataFile2.pack")
-		sysHandler.AssertCalled(t, "MoveFile", testifyMock.Anything, "./IS_Files/dataFile.pack")
-		sysHandler.AssertCalled(t, "MoveFile", testifyMock.Anything, "./IS_Files/dataFile2.pack")
-		sysHandler.AssertCalled(t, "MoveFile", testifyMock.Anything, "./IS_Files/campaignTGA.tga")
-		sysHandler.AssertCalled(t, "MoveFile", testifyMock.Anything, "./IS_Files/campaignESF.esf")
-		sysHandler.AssertCalled(t, "MoveFile", testifyMock.Anything, "./IS_Files/campaignLUA.lua")
-		sysHandler.AssertCalled(t, "MoveFile", testifyMock.Anything, "./IS_Files/user.empire_script.txt")
+		sysHandler.AssertCalled(t, "MoveFile", "./data/dataFile.pack", "./IS_Files/dataFile.pack")
 		assert.False(t, api.IsActive())
 
 		testHelpers.After(*api)
 	})
 
-	t.Run("Cancel and rollback everything if a campaign file cannot be moved", func(t *testing.T) {
+	t.Run("Cancel and rollback successfully if a data file cannot be moved", func(t *testing.T) {
 		api, _, _, _, sysHandler := inactiveBefore()
 		sysHandler.On("ReadFile", "./IS_Files/IS_FileList.txt").Return([]byte(fileList), nil)
-		sysHandler.On("WriteFile", testifyMock.Anything, testifyMock.Anything).Return(nil).Once()
+		sysHandler.On("MoveFile", "./IS_Files/dataFile2.pack", testifyMock.Anything).Return(errors.New("Couldn't move file")).Once()
+		sysHandler.On("MoveFile", testifyMock.Anything, testifyMock.Anything).Return(nil)
+
+		err := api.Switch()
+
+		assert.EqualError(t, err, "ActivationError")
+		sysHandler.AssertExpectations(t)
+		sysHandler.AssertNumberOfCalls(t, "MoveFile", 3) // twice for activation move, once for rollback
+		sysHandler.AssertCalled(t, "MoveFile", "./IS_Files/dataFile.pack", "./data/dataFile.pack")
+		sysHandler.AssertCalled(t, "MoveFile", "./IS_Files/dataFile2.pack", "./data/dataFile2.pack")
+		sysHandler.AssertCalled(t, "MoveFile", "./data/dataFile.pack", "./IS_Files/dataFile.pack")
+		assert.False(t, api.IsActive())
+
+		testHelpers.After(*api)
+	})
+
+	t.Run("Cancel and rollback successfully if a campaign file cannot be moved", func(t *testing.T) {
+		api, _, _, _, sysHandler := inactiveBefore()
+		sysHandler.On("ReadFile", "./IS_Files/IS_FileList.txt").Return([]byte(fileList), nil)
 		sysHandler.On("MoveFile", "./IS_Files/campaignTGA.tga", testifyMock.Anything).Return(errors.New("Couldn't move file")).Once()
 		sysHandler.On("MoveFile", testifyMock.Anything, testifyMock.Anything).Return(nil)
 
 		err := api.Switch()
 
-		assert.EqualError(t, err, "Couldn't move file")
+		assert.EqualError(t, err, "ActivationError")
 		sysHandler.AssertExpectations(t)
-		sysHandler.AssertNumberOfCalls(t, "MoveFile", 3+fileCount) // 3x for activation move, fileCount times for undo
+		sysHandler.AssertNumberOfCalls(t, "MoveFile", 5) // 3x for activation move, 2x for undo
 		sysHandler.AssertCalled(t, "MoveFile", "./IS_Files/dataFile.pack", "./data/dataFile.pack")
 		sysHandler.AssertCalled(t, "MoveFile", "./IS_Files/dataFile2.pack", "./data/dataFile2.pack")
 		sysHandler.AssertCalled(t, "MoveFile", "./IS_Files/campaignTGA.tga", "./data/campaigns/imperial_splendour/campaignTGA.tga")
 		sysHandler.AssertCalled(t, "MoveFile", testifyMock.Anything, "./IS_Files/dataFile.pack")
 		sysHandler.AssertCalled(t, "MoveFile", testifyMock.Anything, "./IS_Files/dataFile2.pack")
-		sysHandler.AssertCalled(t, "MoveFile", testifyMock.Anything, "./IS_Files/campaignTGA.tga")
-		sysHandler.AssertCalled(t, "MoveFile", testifyMock.Anything, "./IS_Files/campaignESF.esf")
-		sysHandler.AssertCalled(t, "MoveFile", testifyMock.Anything, "./IS_Files/campaignLUA.lua")
-		sysHandler.AssertCalled(t, "MoveFile", testifyMock.Anything, "./IS_Files/user.empire_script.txt")
 		assert.False(t, api.IsActive())
 
 		testHelpers.After(*api)
 	})
 
-	t.Run("Cancel and rollback everything if the user script cannot be moved", func(t *testing.T) {
+	t.Run("Cancel and rollback successfully if the user script cannot be moved", func(t *testing.T) {
 		api, _, _, _, sysHandler := inactiveBefore()
 		sysHandler.On("ReadFile", "./IS_Files/IS_FileList.txt").Return([]byte(fileList), nil)
-		sysHandler.On("WriteFile", testifyMock.Anything, testifyMock.Anything).Return(nil).Once()
 		sysHandler.On("MoveFile", "./IS_Files/user.empire_script.txt", testifyMock.Anything).Return(errors.New("Couldn't move file"))
 		sysHandler.On("MoveFile", testifyMock.Anything, testifyMock.Anything).Return(nil)
 
 		err := api.Switch()
 
-		assert.EqualError(t, err, "Couldn't move file")
+		assert.EqualError(t, err, "ActivationError")
 		sysHandler.AssertExpectations(t)
-		sysHandler.AssertNumberOfCalls(t, "MoveFile", 2*fileCount) // 1x activation move, 1x for undo
+		sysHandler.AssertNumberOfCalls(t, "MoveFile", fileCount+fileCount-1) // 1x activation move, fileCount-1 for undo
 		assert.False(t, api.IsActive())
 
 		testHelpers.After(*api)
 	})
 
-	t.Run("Cancel and rollback everything if status file cannot be updated", func(t *testing.T) {
+	t.Run("Cancel and rollback successfully if status file cannot be updated", func(t *testing.T) {
 		api, _, _, _, sysHandler := inactiveBefore()
 		sysHandler.On("ReadFile", "./IS_Files/IS_FileList.txt").Return([]byte(fileList), nil)
-		sysHandler.On("WriteFile", "./IS_Files/IS_info.json", testifyMock.Anything).Return(errors.New("StatusUpdateError")).Twice()
+		sysHandler.On("WriteFile", "./IS_Files/IS_info.json", testifyMock.Anything).Return(errors.New("StatusUpdateError")).Once()
 		sysHandler.On("MoveFile", testifyMock.Anything, testifyMock.Anything).Return(nil)
 
 		err := api.Switch()
 
 		assert.EqualError(t, err, "StatusUpdateError")
+		sysHandler.AssertExpectations(t)
+		sysHandler.AssertNumberOfCalls(t, "MoveFile", 2*fileCount) // twice for 1x activation and 1x undo
+		assert.False(t, api.IsActive())
+
+		testHelpers.After(*api)
+	})
+
+	t.Run("Cancel and error out on rollback if status file cannot be updated", func(t *testing.T) {
+		api, _, _, _, sysHandler := inactiveBefore()
+		sysHandler.On("ReadFile", "./IS_Files/IS_FileList.txt").Return([]byte(fileList), nil)
+		sysHandler.On("WriteFile", "./IS_Files/IS_info.json", testifyMock.Anything).Return(errors.New("StatusUpdateError")).Once()
+		sysHandler.On("MoveFile", testifyMock.Anything, "./IS_Files/user.empire_script.txt").Return(errors.New("Couldn't move file")).Once()
+		sysHandler.On("MoveFile", testifyMock.Anything, testifyMock.Anything).Return(nil)
+
+		err := api.Switch()
+
+		assert.EqualError(t, err, "RollbackError")
 		sysHandler.AssertExpectations(t)
 		sysHandler.AssertNumberOfCalls(t, "MoveFile", 2*fileCount) // twice for 1x activation and 1x undo
 		assert.False(t, api.IsActive())

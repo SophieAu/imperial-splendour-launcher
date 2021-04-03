@@ -46,6 +46,11 @@ type info struct {
 	UserScriptChecksum string `json:"usChecksum"`
 }
 
+type fileTuple struct {
+	file string
+	dir  string
+}
+
 func (a *API) setStatus(isActive bool) error {
 	newInfo := a.info
 	newInfo.IsActive = isActive
@@ -95,9 +100,24 @@ func (a *API) moveFile(source, destination string) error {
 	return a.Sh.MoveFile(source, destination)
 }
 
+func (a *API) rollbackActivation(fileList []fileTuple) error {
+	hasError := false
+	for _, tuple := range fileList {
+		if err := a.moveFile(tuple.dir+tuple.file, a.dirs.etw+modPath+tuple.file); err != nil {
+			a.logger.Warnf("%v", err)
+			hasError = true
+		}
+	}
+
+	if hasError {
+		return errors.New("RollbackError")
+	}
+	return nil
+}
+
 func (a *API) activateImpSplen() error {
 	a.logger.Debug("Activating ImpSplen")
-	var filesMoved [][]string
+	var filesMoved []fileTuple
 
 	files, err := a.readFileList()
 	if err != nil {
@@ -107,32 +127,44 @@ func (a *API) activateImpSplen() error {
 
 	a.logger.Debug("Moving data files")
 	for _, file := range (*files).dataFiles {
-		src := a.dirs.etw + modPath + file
-		dest := a.dirs.etw + dataPath + file
-		if err := a.moveFile(src, dest); err != nil {
-			_ = a.deactivateImpSplen()
+		if err := a.moveFile(a.dirs.etw+modPath+file, a.dirs.etw+dataPath+file); err != nil {
+			a.logger.Warnf("%v", err)
+			if err = a.rollbackActivation(filesMoved); err != nil {
 			return err
 		}
-		filesMoved = append(filesMoved, []string{src, dest})
+			return errors.New("ActivationError")
+		}
+		filesMoved = append(filesMoved, fileTuple{file, a.dirs.etw + dataPath})
 	}
 
 	a.logger.Debug("Moving campaign files")
 	for _, file := range (*files).campaignFiles {
 		if err := a.moveFile(a.dirs.etw+modPath+file, a.dirs.etw+campaignPath+file); err != nil {
-			_ = a.deactivateImpSplen()
+			a.logger.Warnf("%v", err)
+			if err = a.rollbackActivation(filesMoved); err != nil {
 			return err
 		}
+			return errors.New("ActivationError")
+		}
+		filesMoved = append(filesMoved, fileTuple{file, a.dirs.etw + campaignPath})
 	}
 
 	a.logger.Debug("Moving User Script")
 	if err = a.moveFile(a.dirs.etw+modPath+userScript, a.dirs.appData+userScript); err != nil {
-		_ = a.deactivateImpSplen()
+		a.logger.Warnf("%v", err)
+		if err = a.rollbackActivation(filesMoved); err != nil {
 		return err
 	}
+		return errors.New("ActivationError")
+	}
+	filesMoved = append(filesMoved, fileTuple{userScript, a.dirs.appData})
 
 	if err = a.setStatus(true); err != nil {
-		_ = a.deactivateImpSplen()
+		a.logger.Warnf("%v", err)
+		if err = a.rollbackActivation(filesMoved); err != nil {
 		return err
+	}
+		return errors.New("StatusUpdateError")
 	}
 	a.logger.Debug("ImpSplen activated")
 	return nil
