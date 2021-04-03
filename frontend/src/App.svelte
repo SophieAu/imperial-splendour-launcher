@@ -10,17 +10,17 @@
   import * as styles from './styles.app';
   import type { APIType } from './types';
 
-  let version = '';
-  let isISActive = true;
-  let errorMessage = '';
-
   export let API: APIType;
+
+  let version = '';
+  let isISActive: boolean | undefined = undefined;
+  let errorMessage = '';
 
   const callAPI = async (callback: () => Promise<void>, errorCode: keyof typeof apiErrors) => {
     try {
       await callback();
-    } catch (e) {
-      e.message();
+    } catch (e: unknown) {
+      // (e as Error).message;
       errorMessage = apiErrors[errorCode];
     }
   };
@@ -29,15 +29,15 @@
     await callAPI(async () => {
       version = await API.Version();
       isISActive = await API.IsActive();
+
+      try {
+        const newestVersion = await getNewestVersion();
+
+        if (version < newestVersion) {
+          errorMessage = newVersion(newestVersion);
+        }
+      } catch {}
     }, 'startup');
-
-    try {
-      const newestVersion = await getNewestVersion();
-
-      if (version < newestVersion) {
-        errorMessage = newVersion;
-      }
-    } catch {}
   });
 
   const switchError = () => (isISActive ? 'switchToETW' : 'switchToIS');

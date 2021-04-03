@@ -1,9 +1,6 @@
 import 'isomorphic-fetch';
 
 import { apiErrors } from './strings';
-import type { APIType } from './types';
-
-export let API: APIType;
 
 export const callAPI = async (
   callback: () => Promise<void>,
@@ -11,8 +8,8 @@ export const callAPI = async (
 ): Promise<string> => {
   try {
     await callback();
-  } catch (e) {
-    e.message();
+  } catch (e: unknown) {
+    (e as Error).message;
     return apiErrors[errorCode];
   }
   return '';
