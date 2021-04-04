@@ -6,3 +6,5 @@ declare module '*.woff';
 declare module '*.woff2';
 
 declare module '@emotion/css/dist/emotion-css.umd.min.js';
+
+declare let global: { fetch };
