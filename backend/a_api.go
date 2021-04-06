@@ -214,5 +214,8 @@ func (a *API) deactivateImpSplen() error {
 }
 
 func (a *API) deleteAllFiles() error {
-	return a.Sh.Remove(a.dirs.etw + modPath)
+	err := a.Sh.Remove(a.dirs.etw + modPath)
+	_ = a.Sh.Remove(a.Sh.Getenv("USERPROFILE") + "/Desktop/Imperial Splendour.lnk")
+
+	return err
 }

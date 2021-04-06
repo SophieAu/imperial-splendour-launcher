@@ -19,7 +19,5 @@ func (a *API) Uninstall() error {
 		return customErrors.Uninstall
 	}
 
-	// TODO: run script to delete self?
-	// TODO: delete shortcuts
 	return nil
 }
