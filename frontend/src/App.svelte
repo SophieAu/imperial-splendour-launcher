@@ -4,7 +4,13 @@
   import etwLogo from './assets/hero_logo_etw.png';
   import isLogo from './assets/hero_logo_is.png';
   import Button from './Button.svelte';
-  import { callAPI, EndpointKeys, getNewestVersion } from './helpers';
+  import {
+    callAPI,
+    EndpointKeys,
+    getNewestVersion,
+    mapSwitchError,
+    mapUninstallError,
+  } from './helpers';
   import Modal from './Modal.svelte';
   import { apiErrors, etwTitle, newVersion, pageTitle, versionPrefix } from './strings';
   import * as styles from './styles.app';
@@ -28,29 +34,18 @@
         if (!!newestVersion && version != newestVersion) modalText = newVersion(newestVersion);
       } catch {}
     } catch (e: unknown) {
-      modalText = apiErrors['startup'];
+      modalText = apiErrors.startup;
     }
   });
 
   const callSwitch = async () => {
-    const isTryingToDeactivate = isISActive;
+    const isDeactivating = isISActive;
     let newError = '';
 
     try {
       await API.Switch();
     } catch (e: unknown) {
-      const message = (e as Error).message;
-      if (message === 'FileListError') newError = apiErrors.fileListErrorInGeneral;
-      else if (isTryingToDeactivate) {
-        if (message === 'DeactivationError' || message === 'StatusUpdateError')
-          newError = apiErrors.deactivationErrorWhenDeactivating;
-        else newError = apiErrors.unexpectedOnSwitch;
-      } else {
-        if (message === 'RollbackError') newError = apiErrors.rollbackErrorError;
-        else if (message === 'ActivationError' || message === 'StatusUpdateError')
-          newError = apiErrors.rollbackSuccessfullError;
-        else newError = apiErrors.unexpectedOnSwitch;
-      }
+      newError = mapSwitchError(!!isDeactivating, e as Error);
     } finally {
       try {
         isISActive = await API.IsActive();
@@ -65,10 +60,7 @@
     try {
       await API.Uninstall();
     } catch (e: unknown) {
-      const error = (e as Error).message;
-      if (error === 'UninstallError') modalText = apiErrors.uninstallError;
-      else if (error === 'DeactivationError') modalText = apiErrors.deactivationErrorOnUninstall;
-      else modalText = apiErrors.unexpected;
+      modalText = mapUninstallError(e as Error);
     }
   };
 

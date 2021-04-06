@@ -301,7 +301,7 @@ describe('Clicking the buttons', () => {
     fireEvent.click(getByText('Uninstall'));
 
     expect(mockUninstall).toHaveBeenCalledTimes(1);
-    await waitFor(() => expect(queryByText(apiErrors.uninstallError)).toBeInTheDocument());
+    await waitFor(() => expect(queryByText(apiErrors.uninstall)).toBeInTheDocument());
 
     // Dismiss Error Modal
     fireEvent.click(getByText('OK'));
@@ -311,9 +311,7 @@ describe('Clicking the buttons', () => {
     fireEvent.click(getByText('Uninstall'));
 
     expect(mockUninstall).toHaveBeenCalledTimes(2);
-    await waitFor(() =>
-      expect(queryByText(apiErrors.deactivationErrorOnUninstall)).toBeInTheDocument()
-    );
+    await waitFor(() => expect(queryByText(apiErrors.deactivationOnUninstall)).toBeInTheDocument());
 
     // Dismiss Error Modal
     fireEvent.click(getByText('OK'));
@@ -363,7 +361,7 @@ describe('Clicking the buttons', () => {
     // --- DEACTIVATE --
     fireEvent.click(getByText('Switch'));
 
-    await waitFor(() => expect(queryByText(apiErrors.fileListErrorInGeneral)).toBeInTheDocument());
+    await waitFor(() => expect(queryByText(apiErrors.fileList)).toBeInTheDocument());
     expect(queryByAltText(pageTitle)).toBeInTheDocument();
     expect(mockSwitch).toHaveBeenCalledTimes(1);
 
@@ -374,7 +372,7 @@ describe('Clicking the buttons', () => {
     fireEvent.click(getByText('Switch'));
 
     await waitFor(() =>
-      expect(queryByText(apiErrors.deactivationErrorWhenDeactivating)).toBeInTheDocument()
+      expect(queryByText(apiErrors.deactivationOnDeactivation)).toBeInTheDocument()
     );
     expect(queryByAltText(pageTitle)).toBeInTheDocument();
     expect(mockSwitch).toHaveBeenCalledTimes(2);
@@ -386,7 +384,7 @@ describe('Clicking the buttons', () => {
     fireEvent.click(getByText('Switch'));
 
     await waitFor(() =>
-      expect(queryByText(apiErrors.deactivationErrorWhenDeactivating)).toBeInTheDocument()
+      expect(queryByText(apiErrors.deactivationOnDeactivation)).toBeInTheDocument()
     );
     expect(queryByAltText(pageTitle)).toBeInTheDocument();
     expect(mockSwitch).toHaveBeenCalledTimes(3);
@@ -454,7 +452,7 @@ describe('Clicking the buttons', () => {
     // press Switch
     fireEvent.click(getByText('Switch'));
 
-    await waitFor(() => expect(queryByText(apiErrors.fileListErrorInGeneral)).toBeInTheDocument());
+    await waitFor(() => expect(queryByText(apiErrors.fileList)).toBeInTheDocument());
     expect(queryByAltText(etwTitle)).toBeInTheDocument();
     expect(mockSwitch).toHaveBeenCalledTimes(1);
 
@@ -464,9 +462,7 @@ describe('Clicking the buttons', () => {
     // press Switch
     fireEvent.click(getByText('Switch'));
 
-    await waitFor(() =>
-      expect(queryByText(apiErrors.rollbackSuccessfullError)).toBeInTheDocument()
-    );
+    await waitFor(() => expect(queryByText(apiErrors.rollbackSuccessfull)).toBeInTheDocument());
     expect(queryByAltText(etwTitle)).toBeInTheDocument();
     expect(mockSwitch).toHaveBeenCalledTimes(2);
 
@@ -476,7 +472,7 @@ describe('Clicking the buttons', () => {
     // press Switch
     fireEvent.click(getByText('Switch'));
 
-    await waitFor(() => expect(queryByText(apiErrors.rollbackErrorError)).toBeInTheDocument());
+    await waitFor(() => expect(queryByText(apiErrors.rollbackError)).toBeInTheDocument());
     expect(queryByAltText(etwTitle)).toBeInTheDocument();
     expect(mockSwitch).toHaveBeenCalledTimes(3);
 
@@ -486,9 +482,7 @@ describe('Clicking the buttons', () => {
     // press Switch
     fireEvent.click(getByText('Switch'));
 
-    await waitFor(() =>
-      expect(queryByText(apiErrors.rollbackSuccessfullError)).toBeInTheDocument()
-    );
+    await waitFor(() => expect(queryByText(apiErrors.rollbackSuccessfull)).toBeInTheDocument());
     expect(queryByAltText(etwTitle)).toBeInTheDocument();
     expect(mockSwitch).toHaveBeenCalledTimes(4);
 
