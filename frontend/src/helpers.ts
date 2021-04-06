@@ -22,10 +22,12 @@ export const callAPI = (API: APIType) => async (key: EndpointKeys): Promise<void
   try {
     await callEndpoint();
   } catch (e: unknown) {
-    const actualErr = (e as Error).message;
-
-    throw new Error(
-      (actualErr == expectedErr && apiErrorCodes[expectedErr]) || apiErrorCodes['UnexpectedError']
-    );
+    throw new Error(mapError(e as Error, expectedErr));
   }
 };
+
+const mapError = ({ message }: Error, ...expectedErr: (ErrorCode | undefined)[]) =>
+  apiErrorCodes[expectedErr.find((code) => code === message) || 'UnexpectedError'];
+
+const mapErrorz = ({ message }: Error) =>
+  apiErrorCodes[message as ErrorCode] || apiErrorCodes.UnexpectedError;

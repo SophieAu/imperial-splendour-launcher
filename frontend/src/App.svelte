@@ -6,14 +6,7 @@
   import Button from './Button.svelte';
   import { callAPI, EndpointKeys, getNewestVersion } from './helpers';
   import Modal from './Modal.svelte';
-  import {
-    apiErrorCodes,
-    apiErrors,
-    etwTitle,
-    newVersion,
-    pageTitle,
-    versionPrefix,
-  } from './strings';
+  import { apiErrors, etwTitle, newVersion, pageTitle, versionPrefix } from './strings';
   import * as styles from './styles.app';
   import type { APIType } from './types';
 
@@ -21,7 +14,7 @@
 
   let version = '';
   let isISActive: boolean | undefined = undefined;
-  let errorMessage = '';
+  let modalText = '';
 
   const callEndpoint = callAPI(API);
 
@@ -32,30 +25,50 @@
 
       try {
         const newestVersion = await getNewestVersion();
-        if (newestVersion && version != newestVersion) errorMessage = newVersion(newestVersion);
+        if (!!newestVersion && version != newestVersion) modalText = newVersion(newestVersion);
       } catch {}
     } catch (e: unknown) {
-      errorMessage = apiErrors['startup'];
+      modalText = apiErrors['startup'];
     }
   });
 
   const callSwitch = async () => {
+    const isTryingToDeactivate = isISActive;
+    let newError = '';
+
     try {
       await API.Switch();
-      isISActive = await API.IsActive();
     } catch (e: unknown) {
-      // (e as Error).message;
-      errorMessage = apiErrors[isISActive ? 'switchToETW' : 'switchToIS'];
+      const message = (e as Error).message;
+      if (message === 'FileListError') newError = apiErrors.fileListErrorInGeneral;
+      else if (isTryingToDeactivate) {
+        if (message === 'DeactivationError' || message === 'StatusUpdateError')
+          newError = apiErrors.deactivationErrorWhenDeactivating;
+        else newError = apiErrors.unexpectedOnSwitch;
+      } else {
+        if (message === 'RollbackError') newError = apiErrors.rollbackErrorError;
+        else if (message === 'ActivationError' || message === 'StatusUpdateError')
+          newError = apiErrors.rollbackSuccessfullError;
+        else newError = apiErrors.unexpectedOnSwitch;
+      }
+    } finally {
+      try {
+        isISActive = await API.IsActive();
+      } catch {
+        newError = apiErrors.unexpectedOnSwitch;
+      }
     }
+    modalText = newError;
   };
 
   const callUninstall = async () => {
     try {
       await API.Uninstall();
-      // isISActive = await API.IsActive();
     } catch (e: unknown) {
-      // (e as Error).message;
-      errorMessage = apiErrors['uninstall'];
+      const error = (e as Error).message;
+      if (error === 'UninstallError') modalText = apiErrors.uninstallError;
+      else if (error === 'DeactivationError') modalText = apiErrors.deactivationErrorOnUninstall;
+      else modalText = apiErrors.unexpected;
     }
   };
 
@@ -63,12 +76,12 @@
     try {
       await callEndpoint(key);
     } catch (e) {
-      errorMessage = (e as Error).message;
+      modalText = (e as Error).message;
     }
   };
 
-  const dismissError = () => {
-    errorMessage = '';
+  const dismissModal = () => {
+    modalText = '';
   };
 </script>
 
@@ -91,7 +104,7 @@
       <span class="prefix">{versionPrefix}</span><span class="version">{version}</span>
     </footer>
   {/if}
-  {#if errorMessage}
-    <Modal bind:message={errorMessage} onClick={dismissError} />
+  {#if modalText}
+    <Modal bind:message={modalText} onClick={dismissModal} />
   {/if}
 </main>

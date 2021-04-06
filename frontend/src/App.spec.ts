@@ -37,7 +37,7 @@ afterEach(() => {
   mockExit.mockReset();
 });
 
-xdescribe('On Startup', () => {
+describe('On Startup', () => {
   test('show error and no content when loading the version fails', async () => {
     mockVersion.mockRejectedValue(new Error('VersionError'));
     versionPingResolver.mockRejectedValue(new Error('Oh Noes!'));
@@ -181,157 +181,346 @@ xdescribe('On Startup', () => {
   });
 });
 
-test('go through everything after successfull startup', async () => {
-  mockVersion.mockResolvedValue('something');
-  mockIsActive.mockResolvedValueOnce(false);
+describe('Clicking the buttons', () => {
+  test("handle the 'easy' stuff", async () => {
+    mockVersion.mockResolvedValue('something');
+    mockIsActive.mockResolvedValueOnce(false);
 
-  mockPlay.mockRejectedValueOnce(new Error('PlayError'));
-  mockPlay.mockResolvedValueOnce(undefined);
+    mockPlay.mockRejectedValueOnce(new Error('PlayError'));
+    mockPlay.mockRejectedValueOnce(new Error('Random something here'));
+    mockPlay.mockResolvedValueOnce(undefined);
 
-  mockGoToWebsite.mockRejectedValueOnce(new Error('WebsiteError'));
-  mockGoToWebsite.mockResolvedValueOnce(undefined);
+    mockGoToWebsite.mockRejectedValueOnce(new Error('WebsiteError'));
+    mockGoToWebsite.mockRejectedValueOnce(new Error("this shouldn't have happened"));
+    mockGoToWebsite.mockResolvedValueOnce(undefined);
 
-  mockUninstall.mockRejectedValueOnce(new Error('UninstallError'));
-  mockUninstall.mockResolvedValueOnce(undefined);
+    mockExit.mockRejectedValueOnce(new Error('ExitError'));
+    mockExit.mockResolvedValueOnce(undefined);
 
-  mockExit.mockRejectedValueOnce(new Error('ExitError'));
-  mockExit.mockResolvedValueOnce(undefined);
+    const { getByText, queryByAltText, queryByText } = render(App, { API: mockAPI });
+    // startup
+    await waitFor(() => expect(queryByAltText(etwTitle)).toBeInTheDocument());
+    expect(mockVersion).toHaveBeenCalled();
+    expect(mockIsActive).toHaveBeenCalled();
+    expect(mockVersionPing).toHaveBeenCalled();
 
-  mockSwitch.mockRejectedValueOnce(new Error('SwitchError'));
-  mockSwitch.mockResolvedValueOnce(undefined);
-  mockIsActive.mockResolvedValueOnce(true);
+    // --- PLAY ---
 
-  mockSwitch.mockRejectedValueOnce(new Error('SwitchError'));
-  mockSwitch.mockResolvedValueOnce(undefined);
-  mockIsActive.mockResolvedValueOnce(false);
+    // press Play button -> Error
+    fireEvent.click(getByText('Play'));
 
-  mockSwitch.mockResolvedValueOnce(undefined);
-  mockIsActive.mockResolvedValueOnce(false);
+    expect(mockPlay).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(queryByText(apiErrors.play)).toBeInTheDocument());
 
-  const { getByText, queryByAltText, queryByText } = render(App, { API: mockAPI });
-  // startup
-  await waitFor(() => expect(queryByAltText(etwTitle)).toBeInTheDocument());
-  expect(mockVersion).toHaveBeenCalled();
-  expect(mockIsActive).toHaveBeenCalled();
-  expect(mockVersionPing).toHaveBeenCalled();
+    // Dismiss Error Modal
+    fireEvent.click(getByText('OK'));
+    await waitFor(() => expect(queryByText('OK')).not.toBeInTheDocument());
 
-  // --- PLAY ---
+    // press Play button -> Unexpected Error
+    fireEvent.click(getByText('Play'));
 
-  // press Play button -> Error
-  fireEvent.click(getByText('Play'));
+    expect(mockPlay).toHaveBeenCalledTimes(2);
+    await waitFor(() => expect(queryByText(apiErrors.unexpected)).toBeInTheDocument());
 
-  expect(mockPlay).toHaveBeenCalledTimes(1);
-  await waitFor(() => expect(queryByText(apiErrors.play)).toBeInTheDocument());
+    // Dismiss Error Modal
+    fireEvent.click(getByText('OK'));
+    await waitFor(() => expect(queryByText('OK')).not.toBeInTheDocument());
 
-  // Dismiss Error Modal
-  fireEvent.click(getByText('OK'));
-  await waitFor(() => expect(queryByText('OK')).not.toBeInTheDocument());
+    // press Play button -> Success
+    fireEvent.click(getByText('Play'));
 
-  // press Play button -> Success
-  fireEvent.click(getByText('Play'));
+    expect(mockPlay).toHaveBeenCalledTimes(3);
+    expect(queryByText('OK')).not.toBeInTheDocument();
 
-  expect(mockPlay).toHaveBeenCalledTimes(2);
-  expect(queryByText('OK')).not.toBeInTheDocument();
+    // --- GO TO WEBSITE ---
 
-  // --- GO TO WEBSITE ---
+    // press Website button -> Error
+    fireEvent.click(getByText('Website'));
 
-  // press Website button -> Error
-  fireEvent.click(getByText('Website'));
+    expect(mockGoToWebsite).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(queryByText(apiErrors.website)).toBeInTheDocument());
 
-  expect(mockGoToWebsite).toHaveBeenCalledTimes(1);
-  await waitFor(() => expect(queryByText(apiErrors.website)).toBeInTheDocument());
+    // Dismiss Error Modal
+    fireEvent.click(getByText('OK'));
+    await waitFor(() => expect(queryByText('OK')).not.toBeInTheDocument());
 
-  // Dismiss Error Modal
-  fireEvent.click(getByText('OK'));
-  await waitFor(() => expect(queryByText('OK')).not.toBeInTheDocument());
+    // press Website button -> Unexpected Error
+    fireEvent.click(getByText('Website'));
 
-  // press GoToWebsite button -> Success
-  fireEvent.click(getByText('Website'));
+    expect(mockGoToWebsite).toHaveBeenCalledTimes(2);
+    await waitFor(() => expect(queryByText(apiErrors.unexpected)).toBeInTheDocument());
 
-  expect(mockGoToWebsite).toHaveBeenCalledTimes(2);
-  expect(queryByText('OK')).not.toBeInTheDocument();
+    // Dismiss Error Modal
+    fireEvent.click(getByText('OK'));
+    await waitFor(() => expect(queryByText('OK')).not.toBeInTheDocument());
 
-  // --- UNINSTALL ---
+    // press GoToWebsite button -> Success
+    fireEvent.click(getByText('Website'));
 
-  // press Uninstall button -> Error
-  fireEvent.click(getByText('Uninstall'));
+    expect(mockGoToWebsite).toHaveBeenCalledTimes(3);
+    expect(queryByText('OK')).not.toBeInTheDocument();
 
-  expect(mockUninstall).toHaveBeenCalledTimes(1);
-  await waitFor(() => expect(queryByText(apiErrors.uninstall)).toBeInTheDocument());
+    // --- EXIT ---
 
-  // Dismiss Error Modal
-  fireEvent.click(getByText('OK'));
-  await waitFor(() => expect(queryByText('OK')).not.toBeInTheDocument());
+    // press Exit button -> Error
+    fireEvent.click(getByText('Exit'));
 
-  // press GoToUninstall button -> Success
-  fireEvent.click(getByText('Uninstall'));
+    expect(mockExit).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(queryByText(apiErrors.unexpected)).toBeInTheDocument());
 
-  expect(mockUninstall).toHaveBeenCalledTimes(2);
-  expect(queryByText('OK')).not.toBeInTheDocument();
+    // Dismiss Error Modal
+    fireEvent.click(getByText('OK'));
+    await waitFor(() => expect(queryByText('OK')).not.toBeInTheDocument());
 
-  // --- EXIT ---
+    // press GoToExit button -> Success
+    fireEvent.click(getByText('Exit'));
 
-  // press Exit button -> Error
-  fireEvent.click(getByText('Exit'));
+    expect(mockExit).toHaveBeenCalledTimes(2);
+    expect(queryByText('OK')).not.toBeInTheDocument();
+  });
 
-  expect(mockExit).toHaveBeenCalledTimes(1);
-  await waitFor(() => expect(queryByText(apiErrors.unexpected)).toBeInTheDocument());
+  test('handle uninstalling', async () => {
+    mockVersion.mockResolvedValue('something');
+    mockIsActive.mockResolvedValueOnce(false);
 
-  // Dismiss Error Modal
-  fireEvent.click(getByText('OK'));
-  await waitFor(() => expect(queryByText('OK')).not.toBeInTheDocument());
+    mockUninstall.mockRejectedValueOnce(new Error('UninstallError'));
+    mockUninstall.mockRejectedValueOnce(new Error('DeactivationError'));
+    mockUninstall.mockRejectedValueOnce(new Error('Some random error'));
+    mockUninstall.mockResolvedValueOnce(undefined);
 
-  // press GoToExit button -> Success
-  fireEvent.click(getByText('Exit'));
+    const { getByText, queryByAltText, queryByText } = render(App, { API: mockAPI });
+    // startup
+    await waitFor(() => expect(queryByAltText(etwTitle)).toBeInTheDocument());
+    expect(mockVersion).toHaveBeenCalled();
+    expect(mockIsActive).toHaveBeenCalled();
+    expect(mockVersionPing).toHaveBeenCalled();
 
-  expect(mockExit).toHaveBeenCalledTimes(2);
-  expect(queryByText('OK')).not.toBeInTheDocument();
+    // --- UNINSTALL ---
 
-  // --- SWITCH ---
+    // press Uninstall button -> Error
+    fireEvent.click(getByText('Uninstall'));
 
-  // press Switch button (to IS) -> Error + Header stays
-  fireEvent.click(getByText('Switch'));
+    expect(mockUninstall).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(queryByText(apiErrors.uninstallError)).toBeInTheDocument());
 
-  expect(mockSwitch).toHaveBeenCalledTimes(1);
-  await waitFor(() => expect(queryByText(apiErrors.switchToIS)).toBeInTheDocument());
-  expect(queryByAltText(etwTitle)).toBeInTheDocument();
+    // Dismiss Error Modal
+    fireEvent.click(getByText('OK'));
+    await waitFor(() => expect(queryByText('OK')).not.toBeInTheDocument());
 
-  // Dismiss Error Modal
-  fireEvent.click(getByText('OK'));
-  await waitFor(() => expect(queryByText('OK')).not.toBeInTheDocument());
+    // press Uninstall button -> another Error
+    fireEvent.click(getByText('Uninstall'));
 
-  // press Switch button (to IS) -> Success, switch to IS
-  fireEvent.click(getByText('Switch'));
+    expect(mockUninstall).toHaveBeenCalledTimes(2);
+    await waitFor(() =>
+      expect(queryByText(apiErrors.deactivationErrorOnUninstall)).toBeInTheDocument()
+    );
 
-  await waitFor(() => expect(queryByAltText(pageTitle)).toBeInTheDocument());
-  expect(queryByText('OK')).not.toBeInTheDocument();
-  expect(mockSwitch).toHaveBeenCalledTimes(2);
-  expect(mockIsActive).toHaveBeenCalledTimes(2);
+    // Dismiss Error Modal
+    fireEvent.click(getByText('OK'));
+    await waitFor(() => expect(queryByText('OK')).not.toBeInTheDocument());
 
-  // press Switch button (to ETW) -> Error + Header stays
-  fireEvent.click(getByText('Switch'));
+    // press Uninstall button -> another but this time unexpected error
+    fireEvent.click(getByText('Uninstall'));
 
-  await waitFor(() => expect(queryByText(apiErrors.switchToETW)).toBeInTheDocument());
-  expect(queryByAltText(pageTitle)).toBeInTheDocument();
-  expect(mockSwitch).toHaveBeenCalledTimes(3);
+    expect(mockUninstall).toHaveBeenCalledTimes(3);
+    await waitFor(() => expect(queryByText(apiErrors.unexpected)).toBeInTheDocument());
 
-  // Dismiss Error Modal
-  fireEvent.click(getByText('OK'));
-  await waitFor(() => expect(queryByText('OK')).not.toBeInTheDocument());
+    // Dismiss Error Modal
+    fireEvent.click(getByText('OK'));
+    await waitFor(() => expect(queryByText('OK')).not.toBeInTheDocument());
 
-  // press Switch button (to ETW) -> Success, switch to ETW
-  fireEvent.click(getByText('Switch'));
+    // press GoToUninstall button -> Success
+    fireEvent.click(getByText('Uninstall'));
 
-  await waitFor(() => expect(queryByAltText(etwTitle)).toBeInTheDocument());
-  expect(queryByText('OK')).not.toBeInTheDocument();
-  expect(mockSwitch).toHaveBeenCalledTimes(4);
-  expect(mockIsActive).toHaveBeenCalledTimes(3);
+    expect(mockUninstall).toHaveBeenCalledTimes(4);
+    expect(queryByText('OK')).not.toBeInTheDocument();
+  });
 
-  // press Switch button (to IS) -> No Error but isActive doesn't change
-  fireEvent.click(getByText('Switch'));
+  test('handle deactivating', async () => {
+    mockVersion.mockResolvedValue('something');
+    mockIsActive.mockResolvedValueOnce(true);
 
-  expect(queryByAltText(etwTitle)).toBeInTheDocument();
-  expect(queryByText('OK')).not.toBeInTheDocument();
-  await waitFor(() => expect(mockSwitch).toHaveBeenCalledTimes(5));
-  await waitFor(() => expect(mockIsActive).toHaveBeenCalledTimes(4));
+    mockSwitch.mockRejectedValueOnce(new Error('FileListError'));
+    mockIsActive.mockResolvedValueOnce(true);
+    mockSwitch.mockRejectedValueOnce(new Error('DeactivationError'));
+    mockIsActive.mockResolvedValueOnce(true);
+    mockSwitch.mockRejectedValueOnce(new Error('StatusUpdateError'));
+    mockIsActive.mockResolvedValueOnce(true);
+    mockSwitch.mockRejectedValueOnce(new Error('SomeError'));
+    mockIsActive.mockResolvedValueOnce(true);
+    mockSwitch.mockResolvedValueOnce(undefined);
+    mockIsActive.mockRejectedValueOnce(new Error('No status for you'));
+    mockSwitch.mockResolvedValueOnce(undefined);
+    mockIsActive.mockResolvedValueOnce(false);
+
+    const { getByText, queryByAltText, queryByText } = render(App, { API: mockAPI });
+    // startup
+    await waitFor(() => expect(queryByAltText(pageTitle)).toBeInTheDocument());
+    expect(mockVersion).toHaveBeenCalled();
+    expect(mockIsActive).toHaveBeenCalled();
+    expect(mockVersionPing).toHaveBeenCalled();
+
+    // --- DEACTIVATE --
+    fireEvent.click(getByText('Switch'));
+
+    await waitFor(() => expect(queryByText(apiErrors.fileListErrorInGeneral)).toBeInTheDocument());
+    expect(queryByAltText(pageTitle)).toBeInTheDocument();
+    expect(mockSwitch).toHaveBeenCalledTimes(1);
+
+    fireEvent.click(getByText('OK'));
+    await waitFor(() => expect(queryByText('OK')).not.toBeInTheDocument());
+
+    // Press Switch
+    fireEvent.click(getByText('Switch'));
+
+    await waitFor(() =>
+      expect(queryByText(apiErrors.deactivationErrorWhenDeactivating)).toBeInTheDocument()
+    );
+    expect(queryByAltText(pageTitle)).toBeInTheDocument();
+    expect(mockSwitch).toHaveBeenCalledTimes(2);
+
+    fireEvent.click(getByText('OK'));
+    await waitFor(() => expect(queryByText('OK')).not.toBeInTheDocument());
+
+    // Press Switch
+    fireEvent.click(getByText('Switch'));
+
+    await waitFor(() =>
+      expect(queryByText(apiErrors.deactivationErrorWhenDeactivating)).toBeInTheDocument()
+    );
+    expect(queryByAltText(pageTitle)).toBeInTheDocument();
+    expect(mockSwitch).toHaveBeenCalledTimes(3);
+
+    fireEvent.click(getByText('OK'));
+    await waitFor(() => expect(queryByText('OK')).not.toBeInTheDocument());
+
+    // Press Switch
+    fireEvent.click(getByText('Switch'));
+
+    await waitFor(() => expect(queryByText(apiErrors.unexpectedOnSwitch)).toBeInTheDocument());
+    expect(queryByAltText(pageTitle)).toBeInTheDocument();
+    expect(mockSwitch).toHaveBeenCalledTimes(4);
+
+    fireEvent.click(getByText('OK'));
+    await waitFor(() => expect(queryByText('OK')).not.toBeInTheDocument());
+
+    // Press Switch
+    fireEvent.click(getByText('Switch'));
+
+    await waitFor(() => expect(queryByText(apiErrors.unexpectedOnSwitch)).toBeInTheDocument());
+    expect(queryByAltText(pageTitle)).toBeInTheDocument();
+    expect(mockSwitch).toHaveBeenCalledTimes(5);
+
+    fireEvent.click(getByText('OK'));
+    await waitFor(() => expect(queryByText('OK')).not.toBeInTheDocument());
+
+    // Press Switch
+    fireEvent.click(getByText('Switch'));
+
+    await waitFor(() => expect(queryByAltText(etwTitle)).toBeInTheDocument());
+    expect(queryByText('OK')).not.toBeInTheDocument();
+    expect(mockSwitch).toHaveBeenCalledTimes(6);
+    expect(mockIsActive).toHaveBeenCalledTimes(7); // switch times + 1x on startup
+  });
+
+  test('handle activating', async () => {
+    mockVersion.mockResolvedValue('something');
+    mockIsActive.mockResolvedValueOnce(false);
+
+    mockSwitch.mockRejectedValueOnce(new Error('FileListError'));
+    mockIsActive.mockResolvedValueOnce(false);
+    mockSwitch.mockRejectedValueOnce(new Error('ActivationError'));
+    mockIsActive.mockResolvedValueOnce(false);
+    mockSwitch.mockRejectedValueOnce(new Error('RollbackError'));
+    mockIsActive.mockResolvedValueOnce(false);
+    mockSwitch.mockRejectedValueOnce(new Error('StatusUpdateError'));
+    mockIsActive.mockResolvedValueOnce(false);
+    mockSwitch.mockRejectedValueOnce(new Error('SomeError'));
+    mockIsActive.mockResolvedValueOnce(false);
+    mockSwitch.mockResolvedValueOnce(undefined);
+    mockIsActive.mockRejectedValueOnce(new Error('No status for you'));
+    mockSwitch.mockResolvedValueOnce(undefined);
+    mockIsActive.mockResolvedValueOnce(true);
+
+    const { getByText, queryByAltText, queryByText } = render(App, { API: mockAPI });
+    // startup
+    await waitFor(() => expect(queryByAltText(etwTitle)).toBeInTheDocument());
+    expect(mockVersion).toHaveBeenCalled();
+    expect(mockIsActive).toHaveBeenCalled();
+    expect(mockVersionPing).toHaveBeenCalled();
+
+    // --- ACTIVATE --
+
+    // press Switch
+    fireEvent.click(getByText('Switch'));
+
+    await waitFor(() => expect(queryByText(apiErrors.fileListErrorInGeneral)).toBeInTheDocument());
+    expect(queryByAltText(etwTitle)).toBeInTheDocument();
+    expect(mockSwitch).toHaveBeenCalledTimes(1);
+
+    fireEvent.click(getByText('OK'));
+    await waitFor(() => expect(queryByText('OK')).not.toBeInTheDocument());
+
+    // press Switch
+    fireEvent.click(getByText('Switch'));
+
+    await waitFor(() =>
+      expect(queryByText(apiErrors.rollbackSuccessfullError)).toBeInTheDocument()
+    );
+    expect(queryByAltText(etwTitle)).toBeInTheDocument();
+    expect(mockSwitch).toHaveBeenCalledTimes(2);
+
+    fireEvent.click(getByText('OK'));
+    await waitFor(() => expect(queryByText('OK')).not.toBeInTheDocument());
+
+    // press Switch
+    fireEvent.click(getByText('Switch'));
+
+    await waitFor(() => expect(queryByText(apiErrors.rollbackErrorError)).toBeInTheDocument());
+    expect(queryByAltText(etwTitle)).toBeInTheDocument();
+    expect(mockSwitch).toHaveBeenCalledTimes(3);
+
+    fireEvent.click(getByText('OK'));
+    await waitFor(() => expect(queryByText('OK')).not.toBeInTheDocument());
+
+    // press Switch
+    fireEvent.click(getByText('Switch'));
+
+    await waitFor(() =>
+      expect(queryByText(apiErrors.rollbackSuccessfullError)).toBeInTheDocument()
+    );
+    expect(queryByAltText(etwTitle)).toBeInTheDocument();
+    expect(mockSwitch).toHaveBeenCalledTimes(4);
+
+    fireEvent.click(getByText('OK'));
+    await waitFor(() => expect(queryByText('OK')).not.toBeInTheDocument());
+
+    // press Switch
+    fireEvent.click(getByText('Switch'));
+
+    await waitFor(() => expect(queryByText(apiErrors.unexpectedOnSwitch)).toBeInTheDocument());
+    expect(queryByAltText(etwTitle)).toBeInTheDocument();
+    expect(mockSwitch).toHaveBeenCalledTimes(5);
+
+    fireEvent.click(getByText('OK'));
+    await waitFor(() => expect(queryByText('OK')).not.toBeInTheDocument());
+
+    // press Switch
+    fireEvent.click(getByText('Switch'));
+
+    await waitFor(() => expect(queryByText(apiErrors.unexpectedOnSwitch)).toBeInTheDocument());
+    expect(queryByAltText(etwTitle)).toBeInTheDocument();
+    expect(mockSwitch).toHaveBeenCalledTimes(6);
+
+    fireEvent.click(getByText('OK'));
+    await waitFor(() => expect(queryByText('OK')).not.toBeInTheDocument());
+
+    // press Switch
+    fireEvent.click(getByText('Switch'));
+
+    await waitFor(() => expect(queryByAltText(pageTitle)).toBeInTheDocument());
+    expect(queryByText('OK')).not.toBeInTheDocument();
+    expect(mockSwitch).toHaveBeenCalledTimes(7);
+    expect(mockIsActive).toHaveBeenCalledTimes(8); // switch times + 1x on startup
+  });
 });
