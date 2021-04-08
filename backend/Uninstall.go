@@ -15,7 +15,6 @@ func (a *API) Uninstall() error {
 	}
 
 	if err := a.deleteAllFiles(); err != nil {
-		a.logger.Warnf("%v", err)
 		return customErrors.Uninstall
 	}
 

@@ -214,9 +214,17 @@ func (a *API) deactivateImpSplen() error {
 }
 
 func (a *API) deleteAllFiles() error {
-	err := a.Sh.Remove(a.dirs.etw + modPath)
+	var deletionErr error
+	if err := a.Sh.Remove(a.dirs.etw + modPath); err != nil {
+		a.logger.Warnf("%v", err)
+		deletionErr = err
+	}
+	if err := a.Sh.Remove(a.dirs.etw + campaignPath); err != nil {
+		a.logger.Warnf("%v", err)
+		deletionErr = err
+	}
 	_ = a.Sh.Remove(a.Sh.Getenv("USERPROFILE") + "/Desktop/Imperial Splendour.lnk")
 	_ = a.Sh.Remove(a.Sh.Getenv("APPDATA") + "/Microsoft/Windows/Start Menu/Programs/Imperial Splendour")
 
-	return err
+	return deletionErr
 }
