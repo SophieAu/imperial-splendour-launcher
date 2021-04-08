@@ -34,8 +34,8 @@ func VariableBefore(version string, isActive bool, usChecksum string) (*backend.
 	mockL.On("Debugf", testifyMock.Anything, testifyMock.Anything).Return()
 	mockL.On("Debug", testifyMock.Anything).Return(nil)
 
-	mockS.On("Executable").Return(".", nil)
-	mockS.On("Getenv", "APPDATA").Return("APPDATA")
+	mockS.On("Executable").Return(".", nil).Once()
+	mockS.On("Getenv", "APPDATA").Return("APPDATA").Once()
 	mockS.On("ReadFile", "./IS_Files/IS_info.json").Return(FmtInfoFile(isActive, version, usChecksum), nil)
 
 	api := &backend.API{}

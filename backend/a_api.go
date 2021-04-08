@@ -216,6 +216,7 @@ func (a *API) deactivateImpSplen() error {
 func (a *API) deleteAllFiles() error {
 	err := a.Sh.Remove(a.dirs.etw + modPath)
 	_ = a.Sh.Remove(a.Sh.Getenv("USERPROFILE") + "/Desktop/Imperial Splendour.lnk")
+	_ = a.Sh.Remove(a.Sh.Getenv("APPDATA") + "/Microsoft/Windows/Start Menu/Programs/Imperial Splendour")
 
 	return err
 }

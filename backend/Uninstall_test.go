@@ -33,7 +33,9 @@ func TestUninstall(t *testing.T) {
 		sysHandler.On("WriteFile", "./IS_Files/IS_info.json", mock.Anything).Return(nil)
 		sysHandler.On("Remove", testifyMock.Anything).Return(errors.New("Could not delete files")).Once()
 		sysHandler.On("Remove", testifyMock.Anything).Return(nil).Once()
+		sysHandler.On("Remove", testifyMock.Anything).Return(nil).Once()
 		sysHandler.On("Getenv", "USERPROFILE").Return("").Once()
+		sysHandler.On("Getenv", "APPDATA").Return("").Once()
 
 		err := api.Uninstall()
 
@@ -41,18 +43,21 @@ func TestUninstall(t *testing.T) {
 		sysHandler.AssertCalled(t, "MoveFile", "./data/merp.pack", "./IS_Files/merp.pack")
 		sysHandler.AssertCalled(t, "Remove", "./IS_Files/")
 		sysHandler.AssertCalled(t, "Remove", "/Desktop/Imperial Splendour.lnk")
+		sysHandler.AssertCalled(t, "Remove", "/Microsoft/Windows/Start Menu/Programs/Imperial Splendour")
 
 		testHelpers.After(*api)
 	})
 
-	t.Run("Deactivates and uninstalls Imperial Splendour even if there's an error deleting the desktop shortcut", func(t *testing.T) {
+	t.Run("Deactivates and uninstalls Imperial Splendour even if there's an error deleting the desktop and startmenu shortcuts", func(t *testing.T) {
 		api, _, _, _, sysHandler := testHelpers.VariableBefore("2.0", true, "test")
 		sysHandler.On("ReadFile", "./IS_Files/IS_FileList.txt").Return([]byte("merp.pack"), nil)
 		sysHandler.On("MoveFile", testifyMock.Anything, testifyMock.Anything).Return(nil)
 		sysHandler.On("WriteFile", "./IS_Files/IS_info.json", mock.Anything).Return(nil)
-		sysHandler.On("Remove", testifyMock.Anything).Return(nil)
-		sysHandler.On("Remove", testifyMock.Anything).Return(errors.New("Could not delete desktop shortcut")).Once()
+		sysHandler.On("Remove", testifyMock.Anything).Return(nil).Once()
+		sysHandler.On("Remove", "/Desktop/Imperial Splendour.lnk").Return(errors.New("Could not delete desktop shortcut")).Once()
+		sysHandler.On("Remove", testifyMock.Anything).Return(errors.New("Could not delete startmenu shortcut")).Once()
 		sysHandler.On("Getenv", "USERPROFILE").Return("").Once()
+		sysHandler.On("Getenv", "APPDATA").Return("").Once()
 
 		err := api.Uninstall()
 
@@ -60,6 +65,7 @@ func TestUninstall(t *testing.T) {
 		sysHandler.AssertCalled(t, "MoveFile", "./data/merp.pack", "./IS_Files/merp.pack")
 		sysHandler.AssertCalled(t, "Remove", "./IS_Files/")
 		sysHandler.AssertCalled(t, "Remove", "/Desktop/Imperial Splendour.lnk")
+		sysHandler.AssertCalled(t, "Remove", "/Microsoft/Windows/Start Menu/Programs/Imperial Splendour")
 
 		testHelpers.After(*api)
 	})
@@ -68,6 +74,7 @@ func TestUninstall(t *testing.T) {
 		api, _, _, _, sysHandler := testHelpers.VariableBefore("2.0", false, "test")
 		sysHandler.On("Remove", testifyMock.Anything).Return(errors.New("Could not delete files"))
 		sysHandler.On("Getenv", "USERPROFILE").Return("").Once()
+		sysHandler.On("Getenv", "APPDATA").Return("").Once()
 
 		err := api.Uninstall()
 
@@ -82,12 +89,15 @@ func TestUninstall(t *testing.T) {
 		api, _, _, _, sysHandler := testHelpers.VariableBefore("2.0", false, "test")
 		sysHandler.On("Remove", testifyMock.Anything).Return(nil)
 		sysHandler.On("Getenv", "USERPROFILE").Return("").Once()
+		sysHandler.On("Getenv", "APPDATA").Return("").Once()
 
 		err := api.Uninstall()
 
 		assert.Nil(t, err)
 		sysHandler.AssertNotCalled(t, "MoveFile", testifyMock.Anything, testifyMock.Anything)
 		sysHandler.AssertCalled(t, "Remove", "./IS_Files/")
+		sysHandler.AssertCalled(t, "Remove", "/Desktop/Imperial Splendour.lnk")
+		sysHandler.AssertCalled(t, "Remove", "/Microsoft/Windows/Start Menu/Programs/Imperial Splendour")
 
 		testHelpers.After(*api)
 	})
