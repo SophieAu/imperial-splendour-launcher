@@ -17,7 +17,7 @@ jobs:
         go-version: 1.16
     
     - name: Install Wails
-      run: go get -u github.com/wailsapp/wails/cmd/wails@v1.12.3
+      run: go get -u github.com/wailsapp/wails/cmd/wails@v1.16.2
     
     - name: Build Launcher
       run: |
