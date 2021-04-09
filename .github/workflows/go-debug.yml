@@ -20,7 +20,10 @@ jobs:
       run: go get -u github.com/wailsapp/wails/cmd/wails
     
     - name: Build Launcher
-      run: wails build -d
+      run: |
+        wails build -d
+        mv build/imperial-splendour-launcher.exe build/imperial-splendour-launcher_debug.exe
+        wails build -p
 
     - name: Archive production artifacts
       uses: actions/upload-artifact@v2
