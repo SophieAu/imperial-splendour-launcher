@@ -1,4 +1,4 @@
-name: Go Debug
+name: Build
 
 on:
   push:
@@ -17,7 +17,7 @@ jobs:
         go-version: 1.16
     
     - name: Install Wails
-      run: go get -u github.com/wailsapp/wails/cmd/wails
+      run: go get -u github.com/wailsapp/wails/cmd/wails@v1.12.3
     
     - name: Build Launcher
       run: |
@@ -25,7 +25,7 @@ jobs:
         mv build/imperial-splendour-launcher.exe build/imperial-splendour-launcher_debug.exe
         wails build -p
 
-    - name: Archive production artifacts
+    - name: Extract Artifacts
       uses: actions/upload-artifact@v2
       with:
         name: executables
