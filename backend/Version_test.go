@@ -1,7 +1,7 @@
 package backend_test
 
 import (
-	"imperial-splendour-launcher/backend/testHelpers"
+	"imperial-splendour-launcher/backend/test"
 
 	"github.com/stretchr/testify/assert"
 
@@ -10,11 +10,11 @@ import (
 
 func TestVersion(t *testing.T) {
 	t.Run("Return version", func(t *testing.T) {
-		api, _, _, _, _ := testHelpers.VariableBefore("2.1", false, "test")
+		api, _, _, _, _ := test.VariableBefore("2.1", false, "test")
 
 		version := api.Version()
 		assert.Equal(t, "2.1", version)
 
-		testHelpers.After(*api)
+		test.After(*api)
 	})
 }

@@ -1,11 +1,10 @@
-package testHelpers
+package test
 
 import (
 	"imperial-splendour-launcher/backend"
-	"imperial-splendour-launcher/backend/mock"
 	"strconv"
 
-	testifyMock "github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/mock"
 )
 
 func ExpectFmt(message string, args ...interface{}) []interface{} {
@@ -16,23 +15,23 @@ func FmtInfoFile(isActive bool, version, usChecksum string) []byte {
 	return []byte("{\n\t\"isActive\": " + strconv.FormatBool(isActive) + ",\n\t\"version\": \"" + version + "\",\n\t\"usChecksum\": \"" + usChecksum + "\"\n}")
 }
 
-func Before() (*backend.API, *mock.Browser, *mock.Window, *mock.Logger, *mock.SystemHandler) {
+func Before() (*backend.API, *MockBrowser, *MockWindow, *MockLogger, *MockSystemHandler) {
 	return VariableBefore("2.0", true, "test")
 }
 
-func VariableBefore(version string, isActive bool, usChecksum string) (*backend.API, *mock.Browser, *mock.Window, *mock.Logger, *mock.SystemHandler) {
-	mockS := &mock.SystemHandler{}
-	mockB := &mock.Browser{}
-	mockW := &mock.Window{}
-	mockL := &mock.Logger{}
+func VariableBefore(version string, isActive bool, usChecksum string) (*backend.API, *MockBrowser, *MockWindow, *MockLogger, *MockSystemHandler) {
+	mockS := &MockSystemHandler{}
+	mockB := &MockBrowser{}
+	mockW := &MockWindow{}
+	mockL := &MockLogger{}
 
 	mockW.On("Close").Return()
 
-	mockL.On("Infof", testifyMock.Anything, testifyMock.Anything).Return()
-	mockL.On("Info", testifyMock.Anything).Return()
-	mockL.On("Warnf", testifyMock.Anything, testifyMock.Anything).Return()
-	mockL.On("Debugf", testifyMock.Anything, testifyMock.Anything).Return()
-	mockL.On("Debug", testifyMock.Anything).Return(nil)
+	mockL.On("Infof", mock.Anything, mock.Anything).Return()
+	mockL.On("Info", mock.Anything).Return()
+	mockL.On("Warnf", mock.Anything, mock.Anything).Return()
+	mockL.On("Debugf", mock.Anything, mock.Anything).Return()
+	mockL.On("Debug", mock.Anything).Return(nil)
 
 	mockS.On("Executable").Return(".", nil).Once()
 	mockS.On("Getenv", "APPDATA").Return("APPDATA").Once()

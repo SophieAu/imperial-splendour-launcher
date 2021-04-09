@@ -2,37 +2,37 @@ package backend_test
 
 import (
 	"errors"
-	"imperial-splendour-launcher/backend/testHelpers"
+	"imperial-splendour-launcher/backend/test"
 
 	"github.com/stretchr/testify/assert"
-	testifyMock "github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/mock"
 
 	"testing"
 )
 
 func TestGoToWebsite(t *testing.T) {
 	t.Run("Error opening website", func(t *testing.T) {
-		api, browser, _, _, _ := testHelpers.Before()
+		api, browser, _, _, _ := test.Before()
 
 		// error in opening URL
-		browser.On("OpenURL", testifyMock.Anything).Return(errors.New("error")).Once()
+		browser.On("OpenURL", mock.Anything).Return(errors.New("error")).Once()
 		err := api.GoToWebsite()
 
 		assert.NotNil(t, err)
 		browser.AssertCalled(t, "OpenURL", "https://imperialsplendour.com/")
 
-		testHelpers.After(*api)
+		test.After(*api)
 	})
 
 	t.Run("Successfully open website", func(t *testing.T) {
-		api, browser, _, _, _ := testHelpers.Before()
+		api, browser, _, _, _ := test.Before()
 
-		browser.On("OpenURL", testifyMock.Anything).Return(nil).Once()
+		browser.On("OpenURL", mock.Anything).Return(nil).Once()
 		err := api.GoToWebsite()
 
 		assert.Nil(t, err)
 		browser.AssertCalled(t, "OpenURL", "https://imperialsplendour.com/")
 
-		testHelpers.After(*api)
+		test.After(*api)
 	})
 }
