@@ -56,7 +56,7 @@
   },
   "dependencies": {
     "@emotion/css": "^11.1.3",
-    "@wailsapp/runtime": "^1.0.10",
+    "@wailsapp/runtime": "^1.1.1",
     "@webcomponents/webcomponentsjs": "^2.5.0",
     "isomorphic-fetch": "^3.0.0",
     "sirv-cli": "^1.0.0",
