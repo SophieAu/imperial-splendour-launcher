@@ -17,8 +17,8 @@ const (
 	campaignPath = dataPath + "campaigns/imperial_splendour/"
 
 	userScript   = "user.empire_script.txt"
-	fileListFile = "IS_FileList.txt"
-	infoFile     = "IS_info.json"
+	fileListFile = modPath + "IS_FileList.txt"
+	infoFile     = modPath + "IS_info.json"
 
 	websiteURL  = "https://imperialsplendour.com/"
 	etwSteamURI = "steam://rungameid/10500"
@@ -61,7 +61,7 @@ func (a *API) setStatus(isActive bool) error {
 		return err
 	}
 
-	if err = a.Sh.WriteFile(a.dirs.etw+modPath+infoFile, newInfoJSON); err != nil {
+	if err = a.Sh.WriteFile(a.dirs.etw+infoFile, newInfoJSON); err != nil {
 		return err
 	}
 
@@ -75,7 +75,7 @@ func (a *API) readFileList() (*modFiles, error) {
 		campaignFiles: []string{},
 	}
 
-	fileBlob, err := a.Sh.ReadFile(a.dirs.etw + modPath + fileListFile)
+	fileBlob, err := a.Sh.ReadFile(a.dirs.etw + fileListFile)
 	if err != nil {
 		return nil, err
 	}

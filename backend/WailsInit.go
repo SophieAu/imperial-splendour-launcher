@@ -15,7 +15,7 @@ func (a *API) getExecDirectory() (string, error) {
 }
 
 func (a *API) loadInfoFromFile() error {
-	byteValue, err := a.Sh.ReadFile(a.dirs.etw + modPath + infoFile)
+	byteValue, err := a.Sh.ReadFile(a.dirs.etw + infoFile)
 	if err != nil {
 		return err
 	}
