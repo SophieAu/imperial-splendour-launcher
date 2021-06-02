@@ -16,9 +16,10 @@ const (
 	dataPath     = "data/"
 	campaignPath = dataPath + "campaigns/imperial_splendour/"
 
-	userScript   = "user.empire_script.txt"
-	fileListFile = modPath + "IS_FileList.txt"
-	infoFile     = modPath + "IS_info.json"
+	userScript      = "user.empire_script.txt"
+	fileListFile    = modPath + "IS_FileList.txt"
+	infoFile        = modPath + "IS_info.json"
+	uninstallerFile = "IS_Uninstall/unins000.exe"
 
 	websiteURL  = "https://imperialsplendour.com/"
 	etwSteamURI = "steam://rungameid/10500"
@@ -211,20 +212,4 @@ func (a *API) deactivateImpSplen() error {
 		return customErrors.Deactivation
 	}
 	return nil
-}
-
-func (a *API) deleteAllFiles() error {
-	var deletionErr error
-	if err := a.Sh.Remove(a.dirs.etw + modPath); err != nil {
-		a.logger.Warnf("%v", err)
-		deletionErr = err
-	}
-	if err := a.Sh.Remove(a.dirs.etw + campaignPath); err != nil {
-		a.logger.Warnf("%v", err)
-		deletionErr = err
-	}
-	_ = a.Sh.Remove(a.Sh.Getenv("USERPROFILE") + "/Desktop/Imperial Splendour.lnk")
-	_ = a.Sh.Remove(a.Sh.Getenv("APPDATA") + "/Microsoft/Windows/Start Menu/Programs/Imperial Splendour")
-
-	return deletionErr
 }

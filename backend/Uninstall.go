@@ -7,16 +7,10 @@ import (
 func (a *API) Uninstall() error {
 	a.logger.Info("Uninstalling")
 
-	if a.info.IsActive {
-		if err := a.deactivateImpSplen(); err != nil {
-			a.logger.Warnf("%v", err)
-			return customErrors.Deactivation
-		}
-	}
-
-	if err := a.deleteAllFiles(); err != nil {
+	if err := a.Sh.StartCommand(a.dirs.etw + uninstallerFile); err != nil {
 		return customErrors.Uninstall
 	}
 
+	a.window.Close()
 	return nil
 }

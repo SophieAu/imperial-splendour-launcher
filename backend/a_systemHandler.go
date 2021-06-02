@@ -4,6 +4,7 @@ import (
 	"errors"
 	"io"
 	"os"
+	"os/exec"
 )
 
 // Handler is an abstraction of all direct system interaction
@@ -14,6 +15,7 @@ type Handler interface {
 	Remove(path string) error
 	Executable() (string, error)
 	Getenv(key string) string
+	StartCommand(name string) error
 }
 
 type SystemHandler struct {
@@ -67,6 +69,10 @@ func (w *SystemHandler) Executable() (string, error) {
 
 func (w *SystemHandler) Getenv(key string) string {
 	return os.Getenv(key)
+}
+
+func (w *SystemHandler) StartCommand(name string) error {
+	return exec.Command(name).Start()
 }
 
 func (w *SystemHandler) MoveFile(source, destination string) error {

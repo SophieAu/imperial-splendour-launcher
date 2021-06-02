@@ -44,6 +44,11 @@ func (sh *MockSystemHandler) Getenv(key string) string {
 	return args.Get(0).(string)
 }
 
+func (sh *MockSystemHandler) StartCommand(name string) error {
+	args := sh.Called(name)
+	return args.Error(0)
+}
+
 // Logger
 type MockLogger struct {
 	mock.Mock
