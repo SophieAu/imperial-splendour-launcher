@@ -82,7 +82,7 @@
       <img src={isISActive ? isLogo : etwLogo} alt={isISActive ? pageTitle : etwTitle} />
     </h1>
     <div class={styles.buttonContainer}>
-      <Button text={'Play'} onClick={async () => call('play')} />
+      <Button text={`Play ${isISActive ? 'is' : 'etw'}`} onClick={async () => call('play')} />
       <Button text={'Switch'} onClick={async () => callSwitch()} />
       <Button text={'Website'} onClick={async () => call('website')} />
       <Button text={'Uninstall'} onClick={async () => callUninstall()} />
