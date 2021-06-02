@@ -12,7 +12,7 @@
     mapUninstallError,
   } from './helpers';
   import Modal from './Modal.svelte';
-  import { apiErrors, etwTitle, newVersion, pageTitle, versionPrefix } from './strings';
+  import { apiErrors, etwTitle, newVersionAvailable, pageTitle, versionPrefix } from './strings';
   import * as styles from './styles.app';
   import type { APIType } from './types';
 
@@ -31,7 +31,7 @@
 
       try {
         const newestVersion = await getNewestVersion();
-        if (!!newestVersion && version != newestVersion) modalText = newVersion(newestVersion);
+        if (!!newestVersion && version != newestVersion) modalText = newVersionAvailable;
       } catch {}
     } catch (e: unknown) {
       modalText = apiErrors.startup;
@@ -75,6 +75,7 @@
   const dismissModal = () => {
     modalText = '';
   };
+
 </script>
 
 <svelte:head>

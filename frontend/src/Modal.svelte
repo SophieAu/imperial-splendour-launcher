@@ -5,12 +5,13 @@
 
   export let message: string;
   export let onClick: () => void;
+
 </script>
 
 <div class={styles.overlay}>
   <div class={styles.container}>
     <p class={styles.message}>
-      {message}
+      {@html message}
     </p>
     <div class={styles.button}>
       <Button text={modalButtonText} {onClick} />

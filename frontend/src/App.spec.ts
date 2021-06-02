@@ -3,7 +3,7 @@ import '@testing-library/jest-dom/extend-expect';
 import { fireEvent, render, waitFor } from '@testing-library/svelte';
 
 import App from './App.svelte';
-import { apiErrors, etwTitle, newVersion, pageTitle, versionPrefix } from './strings';
+import { apiErrors, etwTitle, newVersionAvailable, pageTitle, versionPrefix } from './strings';
 
 const versionPingResolver = jest.fn();
 const mockVersionPing = jest.fn(() => Promise.resolve({ json: () => versionPingResolver() }));
@@ -128,7 +128,7 @@ describe('On Startup', () => {
     expect(queryByText(versionPrefix)).not.toBeInTheDocument();
 
     await waitFor(() => expect(queryByText('OK')).toBeInTheDocument());
-    expect(queryByText(newVersion(vNrNew))).toBeInTheDocument();
+    expect(queryByText(newVersionAvailable)).toBeInTheDocument();
 
     // show version and status in the background
     expect(queryByText(vNr)).toBeInTheDocument();
@@ -138,7 +138,7 @@ describe('On Startup', () => {
     fireEvent.click(getByText('OK'));
 
     await waitFor(() => expect(queryByText('OK')).not.toBeInTheDocument());
-    expect(queryByText(newVersion(vNrNew))).not.toBeInTheDocument();
+    expect(queryByText(newVersionAvailable)).not.toBeInTheDocument();
   });
 
   test('do not show anything when current launcher version is the most recent one', async () => {
@@ -157,7 +157,7 @@ describe('On Startup', () => {
     expect(queryByAltText(pageTitle)).toBeInTheDocument();
 
     expect(mockVersionPing).toHaveBeenCalled();
-    expect(queryByText(newVersion(vNrNew))).not.toBeInTheDocument();
+    expect(queryByText(newVersionAvailable)).not.toBeInTheDocument();
   });
 
   test('show ImpSplen header when ImpSplen is active', async () => {

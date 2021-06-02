@@ -37,4 +37,12 @@ export const message = css`
 
   margin: 0;
   padding: 0.5rem 0.5rem 0.75rem;
+
+  a {
+    color: inherit;
+  }
+
+  a:hover {
+    opacity: 0.6;
+  }
 `;

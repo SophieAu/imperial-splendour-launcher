@@ -44,7 +44,6 @@ export const apiErrors = {
   unexpected: "We ran into an error that shouldn't happen..." + pleaseContact,
 };
 
-export const newVersion = (vNr: string): string =>
-  `We released a new Version (${vNr}) of Imperial Splendour. Go to our Website to download it.`;
+export const newVersionAvailable = `We released a newer version of Imperial Splendour. Go to <a href="https://imperialsplendour.com/download/">our Website</a> to download it.`;
 
 export const modalButtonText = 'OK';
