@@ -22,7 +22,7 @@ func VariableBefore(version string, isActive bool, usChecksum string) (*app.API,
 
 	mockS.On("Executable").Return(".", nil).Once()
 	mockS.On("Getenv", "APPDATA").Return("APPDATA").Once()
-	mockS.On("ReadFile", "./IS_Files/IS_info.json").Return(FmtInfoFile(isActive, version, usChecksum), nil)
+	mockS.On("ReadFile", "./IS_Files/IS_Info.json").Return(FmtInfoFile(isActive, version, usChecksum), nil)
 
 	api := &app.API{}
 

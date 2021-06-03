@@ -1,9 +1,9 @@
 package app_test
 
 import (
-	"errors"
 	"deactivator/app"
 	"deactivator/app/test"
+	"errors"
 
 	"testing"
 
@@ -46,7 +46,7 @@ func TestInit(t *testing.T) {
 		err := api.Init(sysHandler)
 
 		assert.EqualError(t, err, "FileNotFound")
-		sysHandler.AssertCalled(t, "ReadFile", "./IS_Files/IS_info.json")
+		sysHandler.AssertCalled(t, "ReadFile", "./IS_Files/IS_Info.json")
 	})
 
 	t.Run("Successfully initialize the Launcher", func(t *testing.T) {
@@ -59,6 +59,6 @@ func TestInit(t *testing.T) {
 		err := api.Init(sysHandler)
 
 		assert.Nil(t, err)
-		sysHandler.AssertCalled(t, "ReadFile", "./IS_Files/IS_info.json")
+		sysHandler.AssertCalled(t, "ReadFile", "./IS_Files/IS_Info.json")
 	})
 }

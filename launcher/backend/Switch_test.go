@@ -56,7 +56,7 @@ func TestDeactivate(t *testing.T) {
 	t.Run("Cannot deactivate because new status cannot be saved", func(t *testing.T) {
 		api, _, _, _, sysHandler := activeBefore()
 		sysHandler.On("ReadFile", "./IS_Files/IS_FileList.txt").Return([]byte(fileList), nil).Once()
-		sysHandler.On("WriteFile", "./IS_Files/IS_info.json", mock.Anything).Return(errors.New("StatusUpdateError")).Once()
+		sysHandler.On("WriteFile", "./IS_Files/IS_Info.json", mock.Anything).Return(errors.New("StatusUpdateError")).Once()
 		sysHandler.On("MoveFile", mock.Anything, mock.Anything).Return(nil)
 
 		err := api.Switch()
@@ -64,7 +64,7 @@ func TestDeactivate(t *testing.T) {
 		assert.EqualError(t, err, "StatusUpdateError")
 		sysHandler.AssertExpectations(t)
 		sysHandler.AssertNumberOfCalls(t, "MoveFile", fileCount)
-		sysHandler.AssertCalled(t, "WriteFile", "./IS_Files/IS_info.json", test.FmtInfoFile(false, "2.0", "test"))
+		sysHandler.AssertCalled(t, "WriteFile", "./IS_Files/IS_Info.json", test.FmtInfoFile(false, "2.0", "test"))
 		assert.True(t, api.IsActive())
 
 		test.After(*api)
@@ -73,7 +73,7 @@ func TestDeactivate(t *testing.T) {
 	t.Run("Successfully deactivates Imperial Splendour despite an issue with moving files", func(t *testing.T) {
 		api, _, _, logger, sysHandler := activeBefore()
 		sysHandler.On("ReadFile", "./IS_Files/IS_FileList.txt").Return([]byte(fileList), nil).Once()
-		sysHandler.On("WriteFile", "./IS_Files/IS_info.json", mock.Anything).Return(nil).Once()
+		sysHandler.On("WriteFile", "./IS_Files/IS_Info.json", mock.Anything).Return(nil).Once()
 		sysHandler.On("MoveFile", mock.Anything, mock.Anything).Return(errors.New("Cannot move file"))
 
 		err := api.Switch()
@@ -95,7 +95,7 @@ func TestDeactivate(t *testing.T) {
 	t.Run("Successfully deactivates Imperial Splendour", func(t *testing.T) {
 		api, _, _, _, sysHandler := activeBefore()
 		sysHandler.On("ReadFile", "./IS_Files/IS_FileList.txt").Return([]byte(fileList), nil).Once()
-		sysHandler.On("WriteFile", "./IS_Files/IS_info.json", mock.Anything).Return(nil).Once()
+		sysHandler.On("WriteFile", "./IS_Files/IS_Info.json", mock.Anything).Return(nil).Once()
 		sysHandler.On("MoveFile", mock.Anything, mock.Anything).Return(nil)
 
 		err := api.Switch()
@@ -103,7 +103,7 @@ func TestDeactivate(t *testing.T) {
 		assert.Nil(t, err)
 		sysHandler.AssertExpectations(t)
 		sysHandler.AssertNumberOfCalls(t, "MoveFile", fileCount)
-		sysHandler.AssertCalled(t, "WriteFile", "./IS_Files/IS_info.json", test.FmtInfoFile(false, "2.0", "test"))
+		sysHandler.AssertCalled(t, "WriteFile", "./IS_Files/IS_Info.json", test.FmtInfoFile(false, "2.0", "test"))
 		assert.False(t, api.IsActive())
 
 		test.After(*api)
@@ -218,7 +218,7 @@ func TestActivate(t *testing.T) {
 	t.Run("Cancel and rollback successfully if status file cannot be updated", func(t *testing.T) {
 		api, _, _, _, sysHandler := inactiveBefore()
 		sysHandler.On("ReadFile", "./IS_Files/IS_FileList.txt").Return([]byte(fileList), nil)
-		sysHandler.On("WriteFile", "./IS_Files/IS_info.json", mock.Anything).Return(errors.New("StatusUpdateError")).Once()
+		sysHandler.On("WriteFile", "./IS_Files/IS_Info.json", mock.Anything).Return(errors.New("StatusUpdateError")).Once()
 		sysHandler.On("MoveFile", mock.Anything, mock.Anything).Return(nil)
 
 		err := api.Switch()
@@ -234,7 +234,7 @@ func TestActivate(t *testing.T) {
 	t.Run("Cancel and error out on rollback if status file cannot be updated", func(t *testing.T) {
 		api, _, _, _, sysHandler := inactiveBefore()
 		sysHandler.On("ReadFile", "./IS_Files/IS_FileList.txt").Return([]byte(fileList), nil)
-		sysHandler.On("WriteFile", "./IS_Files/IS_info.json", mock.Anything).Return(errors.New("StatusUpdateError")).Once()
+		sysHandler.On("WriteFile", "./IS_Files/IS_Info.json", mock.Anything).Return(errors.New("StatusUpdateError")).Once()
 		sysHandler.On("MoveFile", mock.Anything, "./IS_Files/user.empire_script.txt").Return(errors.New("Couldn't move file")).Once()
 		sysHandler.On("MoveFile", mock.Anything, mock.Anything).Return(nil)
 
@@ -259,7 +259,7 @@ func TestActivate(t *testing.T) {
 		assert.Nil(t, err)
 		sysHandler.AssertExpectations(t)
 		sysHandler.AssertNumberOfCalls(t, "MoveFile", fileCount) // twice for activation move, fileCount times for undo
-		sysHandler.AssertCalled(t, "WriteFile", "./IS_Files/IS_info.json", test.FmtInfoFile(true, "2.0", "test"))
+		sysHandler.AssertCalled(t, "WriteFile", "./IS_Files/IS_Info.json", test.FmtInfoFile(true, "2.0", "test"))
 		assert.True(t, api.IsActive())
 
 		test.After(*api)

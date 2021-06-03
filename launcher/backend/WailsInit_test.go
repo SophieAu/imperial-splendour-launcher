@@ -49,7 +49,7 @@ func TestInit(t *testing.T) {
 
 		err := api.Init(&test.MockBrowser{}, &test.MockWindow{}, logger, sysHandler)
 
-		sysHandler.AssertCalled(t, "ReadFile", "./IS_Files/IS_info.json")
+		sysHandler.AssertCalled(t, "ReadFile", "./IS_Files/IS_Info.json")
 		assert.EqualError(t, err, "FileNotFound")
 	})
 
@@ -62,7 +62,7 @@ func TestInit(t *testing.T) {
 
 		err := api.Init(&test.MockBrowser{}, &test.MockWindow{}, logger, sysHandler)
 
-		sysHandler.AssertCalled(t, "ReadFile", "./IS_Files/IS_info.json")
+		sysHandler.AssertCalled(t, "ReadFile", "./IS_Files/IS_Info.json")
 		assert.EqualError(t, err, "unexpected end of JSON input")
 	})
 
@@ -75,7 +75,7 @@ func TestInit(t *testing.T) {
 
 		err := api.Init(&test.MockBrowser{}, &test.MockWindow{}, logger, sysHandler)
 
-		sysHandler.AssertCalled(t, "ReadFile", "./IS_Files/IS_info.json")
+		sysHandler.AssertCalled(t, "ReadFile", "./IS_Files/IS_Info.json")
 		assert.EqualError(t, err, "Corrupt Info File")
 	})
 
@@ -88,7 +88,7 @@ func TestInit(t *testing.T) {
 
 		err := api.Init(&test.MockBrowser{}, &test.MockWindow{}, logger, sysHandler)
 
-		sysHandler.AssertCalled(t, "ReadFile", "./IS_Files/IS_info.json")
+		sysHandler.AssertCalled(t, "ReadFile", "./IS_Files/IS_Info.json")
 		assert.EqualError(t, err, "Corrupt Info File")
 	})
 

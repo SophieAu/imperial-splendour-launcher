@@ -11,7 +11,7 @@ import (
 
 func (a *API) getExecDirectory() (string, error) {
 	ex, err := a.Sh.Executable()
-	return strings.TrimSuffix(filepath.Dir(ex), "/IS_Uninstall") + "/", err
+	return strings.TrimSuffix(filepath.Dir(ex), "/"+strings.TrimSuffix(uninstallPath, "/")) + "/", err
 }
 
 func (a *API) loadInfoFromFile() error {

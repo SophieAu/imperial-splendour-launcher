@@ -8,6 +8,9 @@
 #define MyAppExeName "ImperialSplendour.exe"
 #define TmpFolder "ImperialSplendour"
 #define UninstallDir "IS_Uninstall"
+#define UninstallHelperExe "deactivator.exe"
+#define SetupName "ImperialSplendourSetup"
+#define ETWDefaultPath "steam\steamapp\common\Empire Total War"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -25,7 +28,7 @@ DisableDirPage=yes
 DefaultDirName={commonpf}
 AlwaysShowDirOnReadyPage=yes
 DefaultGroupName={#MyAppName}
-OutputBaseFilename=ImperialSplendourSetup
+OutputBaseFilename={#SetupName}
 Compression=lzma
 SolidCompression=yes
 ; 10GB = 10,737,418,240
@@ -53,7 +56,7 @@ Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: 
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
 
 [UninstallRun]
-Filename: "{app}\{#UninstallDir}\deactiate.exe"; WorkingDir: "{app}"
+Filename: "{app}\{#UninstallDir}\{#UninstallHelperExe}"; WorkingDir: "{app}"
 
 [Code]
 
@@ -64,8 +67,7 @@ var
 
 procedure InitializeWizard;
 begin
-  // ExpectedPath := ExpandConstant('{commonpf}\steam\steamapp\common\Empire Total War');
-  ExpectedPath := ExpandConstant('{commonpf}\test');
+  ExpectedPath := ExpandConstant('{commonpf}\{#ETWDefaultPath}');
 
   StartupInfoPage:= CreateInputQueryPage(wpWelcome,
     'Welcome',

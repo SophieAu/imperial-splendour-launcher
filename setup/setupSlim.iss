@@ -8,6 +8,10 @@
 #define MyAppExeName "ImperialSplendour.exe"
 #define TmpFolder "ImperialSplendour"
 #define DownloadLink "https://www.moddb.com/downloads/mirror/175422/120/3fac5f37002048a03404b3345e0240af"
+#define UninstallDir "IS_Uninstall"
+#define UninstallHelperExe "deactivator.exe"
+#define SetupName "ImperialSplendourSetup"
+#define ETWDefaultPath "steam\steamapp\common\Empire Total War"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -25,7 +29,7 @@ DisableDirPage=yes
 DefaultDirName={commonpf}
 AlwaysShowDirOnReadyPage=yes
 DefaultGroupName={#MyAppName}
-OutputBaseFilename=ImperialSplendourSetup
+OutputBaseFilename={#SetupName}
 Compression=lzma
 SolidCompression=yes
 ; 10GB = 10,737,418,240
@@ -33,7 +37,7 @@ ExtraDiskSpaceRequired=10737418240
 DirExistsWarning=yes
 SetupIconFile=appicon.ico
 UninstallDisplayIcon={app}\{#MyAppExeName}
-UninstallFilesDir={app}\IS_Uninstall
+UninstallFilesDir={app}\{#UninstallDir}
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"                              
@@ -51,6 +55,9 @@ Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: 
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+
+[UninstallRun]
+Filename: "{app}\{#UninstallDir}\{#UninstallHelperExe}"; WorkingDir: "{app}"
 
 
 [Code]
@@ -101,7 +108,7 @@ end;
   
 procedure InitializeWizard;
 begin
-  ExpectedPath := ExpandConstant('{commonpf}\steam\steamapp\common\Empire Total War');
+  ExpectedPath := ExpandConstant('{commonpf}\{#ETWDefaultPath}');
 
   StartupInfoPage:= CreateInputQueryPage(wpWelcome,
     'Welcome',
