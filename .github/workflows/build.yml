@@ -17,12 +17,13 @@ jobs:
         go-version: 1.16
     
     - name: Install Wails
-      run: go get -u github.com/wailsapp/wails/cmd/wails@v1.16.2
+      run: go get -u github.com/wailsapp/wails/cmd/wails@v1.16.3
     
     - name: Build Launcher
       run: |
+        cd launcher
         wails build -d
-        mv build/imperial-splendour-launcher.exe build/imperial-splendour-launcher_debug.exe
+        mv build/imperial-splendour-launcher.exe ../build/imperial-splendour-launcher_debug.exe
         wails build -p
 
     - name: Extract Artifacts

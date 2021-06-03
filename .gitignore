@@ -1,6 +1,6 @@
-/frontend/node_modules/
-/frontend/public/build/
-/build/
-/test-fs/
+**/node_modules/
+launcher/frontend/public/build/
+launcher/build/
+launcher/test-fs/
 
 .DS_Store
