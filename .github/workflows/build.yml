@@ -55,4 +55,3 @@ jobs:
         add: 'setup/deactivator.exe'
         default_author: github_actions
         message: 'Build new Deactivator'
-        pull_strategy: '--rebase'
