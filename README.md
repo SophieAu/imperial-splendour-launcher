@@ -8,8 +8,8 @@ Note that the slim setup is currently theoretical only as hosting large files is
 
 * a Windows machine
 * at least 15GB of hard drive space (for the mod files)
-* a current install of [Inno Setup](https://jrsoftware.org/isinfo.php) 
-
+* a current install of [Inno Setup](https://jrsoftware.org/isinfo.php)
+* the `deactivator.exe` and `ImperialSplendour.exe` files you can find in the `artifacts/` folder of this repo
 
 ### 1. Update Imperial Splendour Version
 

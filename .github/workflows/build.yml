@@ -22,21 +22,15 @@ jobs:
       run: |
         cd launcher
         wails build -d
-        mv build/imperial-splendour-launcher.exe ../artifacts/imperial-splendour-launcher_debug.exe
+        mv build/imperial-splendour-launcher.exe ../artifacts/ImperialSplendour_debug.exe
         wails build -p
-        mv build/imperial-splendour-launcher.exe ../artifacts/imperial-splendour-launcher.exe
+        mv build/imperial-splendour-launcher.exe ../artifacts/ImperialSplendour.exe
         cd ..
-
-    - name: DEBUG
-      run: |
-        pwd
-        ls
-        git status
 
     - name: Commit updated Launcher
       uses: EndBug/add-and-commit@v7
       with:
-        add: 'artifacts/imperial-splendour-launcher*.exe'
+        add: 'artifacts/ImperialSplendour*.exe'
         default_author: github_actions
         message: 'Build new Launcher'
 
@@ -44,10 +38,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: launcher
-        path: artifacts/imperial-splendour-launcher*.exe
-
-
-
+        path: artifacts/ImperialSplendour*.exe
 
 
   build-deactivator:
