@@ -5,7 +5,7 @@ on:
     branches: [ master ]
 
 jobs:
-  setup:
+  build-launcher:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
@@ -14,12 +14,7 @@ jobs:
       uses: actions/setup-go@v2
       with:
         go-version: 1.16
-
-
-  build-launcher:
-    needs: setup
-    runs-on: windows-latest
-    steps:
+ 
     - name: Install Wails
       run: go get -u github.com/wailsapp/wails/cmd/wails@v1.16.3
     
@@ -39,9 +34,15 @@ jobs:
 
 
   build-deactivator:
-    needs: setup
     runs-on: windows-latest
     steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.16
+ 
     - name: Build Deactivator
       run: |
         cd setup/deactivator
