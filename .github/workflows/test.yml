@@ -18,7 +18,7 @@ jobs:
     - name: Test Launcher Backend
       run: |
         cd launcher
-        go test ./...
+        go test ./... -v
 
 
   test-launcher-frontend:
@@ -34,6 +34,7 @@ jobs:
     - name: Test Launcher Backend
       run: |
         cd launcher/frontend
+        npm i
         npm run test
 
 
@@ -50,5 +51,5 @@ jobs:
     - name: Test Deactivator
       run: |
         cd setup/deactivator
-        go test ./...
+        go test ./... -v
         cd ../..
