@@ -20,7 +20,7 @@ jobs:
     
     - name: Build Launcher
       run: |
-        mkdir -p artifacts
+        [ -d artifacts ] || mkdir -p artifacts
         cd launcher
         wails build -d
         mv build/imperial-splendour-launcher.exe ../artifacts/ImperialSplendour_debug.exe
