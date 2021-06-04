@@ -41,7 +41,7 @@ Add the `setupBundled.iss` file to the mod file folder and then either use the I
     * Google Drive
     * ModDB
     * MediaFire
-2. Optional: Upload zipped 'raw-mod-files-only' versions of the mod update
+2. Optional: Upload zipped 'raw-mod-files-only' (so, only the `IS_Files/` folder without the `IS_Info.json` file) versions of the mod update.
 3. Update the download links on the website
 4. Optional: Add a release blog post to the website
 
