@@ -12,7 +12,10 @@ func main() {
 		os.Exit(1)
 	}
 
+	// TODO: Add flag for hard failure
 	if err := a.Deactivate(); err != nil {
 		os.Exit(1)
 	}
+
+	os.Exit(0)
 }
