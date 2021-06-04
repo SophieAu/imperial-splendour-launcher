@@ -71,7 +71,7 @@ And finally:
 | Default ETW Installation Path | -/-          | -/-          | ETWDefaultPath | ETWDefaultPath | -/-     |
 | APPDATA Folder                | appDataPath  | appDataPath  | -/-            | -/-            | -/-     |
 | Data Folder                   | dataPath     | dataPath     | -/-            | -/-            | -/-     |
-| Campaign Folder               | campaignPath | campaignPath | -/-            | -/-            | -/-     |
+| Campaign Folder               | campaignPath | campaignPath | CampaignPath   | CampaignPath   | -/-     |
 | User Script???                | userScript   | userScript   | -/-            | -/-            | -/-     |
 | Steam URI                     | etwSteamURI  | -/-          | -/-            | -/-            | -/-     |
 

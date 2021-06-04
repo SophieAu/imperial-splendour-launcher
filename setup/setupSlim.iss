@@ -12,6 +12,7 @@
 #define UninstallHelperExe "deactivator.exe"
 #define SetupName "ImperialSplendourSetup"
 #define ETWDefaultPath "steam\steamapp\common\Empire Total War"
+#define CampaignPath "data/campaigns/imperial_splendour"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -47,6 +48,9 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 Source: "{tmp}\{#TmpFolder}\*.*"; DestDir: "{app}"; Flags: external recursesubdirs
+
+[Dirs]
+Name: "{app}\{#CampaignPath}"
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
