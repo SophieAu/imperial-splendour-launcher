@@ -1,0 +1,54 @@
+name: Build
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  test-launcher-backend:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.16
+ 
+    - name: Test Launcher Backend
+      run: |
+        cd launcher
+        go test ./...
+
+
+  test-launcher-frontend:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.16
+ 
+    - name: Test Launcher Backend
+      run: |
+        cd launcher/frontend
+        npm run test
+
+
+  test-deactivator:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.16
+ 
+    - name: Test Deactivator
+      run: |
+        cd setup/deactivator
+        go test ./...
+        cd ../..
