@@ -5,8 +5,58 @@ on:
     branches: [ master ]
 
 jobs:
+  check:
+    name: Check for Deactivator or Launcher changes
+    outputs:
+      - run_launcher: ${{ steps.check_files.outputs.run_launcher }}
+      - run_deactivator: ${{ steps.check_files.outputs.run_deactivator }}
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
 
-  build:
+      - name: check modified files
+        id: check_files
+        run: |
+          echo "=============== list modified files ==============="
+          git diff --name-only HEAD^ HEAD
+          git diff --name-only HEAD^ HEAD > files.txt
+          
+          echo "========== check paths of modified files =========="
+          hasDeactivatorChanged=false
+          hasLauncherChanged=false
+
+          while IFS= read -r file
+          do
+            echo $file
+            if [[ $file == setup/deactivator/* ]]; then
+              echo "Deactivator was changed. Will re-build."
+              hasDeactivatorChanged=true
+            fi
+            if [[ $file == launcher/* ]]; then
+              echo "Launcher was changed. Will re-build."
+              hasLauncherChanged=true
+            fi
+          done < files.txt
+
+          if [[ hasDeactivatorChanged ]]; then
+            echo "::set-output name=run_deactivator::true"
+          else
+            echo "::set-output name=run_deactivator::false"
+          fi
+
+           if [[ hasLauncherChanged ]]; then
+            echo "::set-output name=run_launcher::true"
+          else
+            echo "::set-output name=run_launcher::false"
+          fi
+
+
+  setup:
+    needs: check
+    if: needs.check.outputs.run_job == 'true' 
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
@@ -15,7 +65,13 @@ jobs:
       uses: actions/setup-go@v2
       with:
         go-version: 1.16
-    
+
+
+  build-launcher:
+    needs: [check, setup]
+    if: needs.check.outputs.run_launcher == 'true'
+    runs-on: windows-latest
+    steps:
     - name: Install Wails
       run: go get -u github.com/wailsapp/wails/cmd/wails@v1.16.3
     
@@ -27,14 +83,28 @@ jobs:
         wails build -p
         cd ..
 
-    - name: Build Deactivator
-      run: |
-        cd setup/deactivator
-        go build -o ../deactivator.exe
-
     - name: Extract Artifacts
       uses: actions/upload-artifact@v2
       with:
         name: executables
         path: launcher/build/
-          
+
+
+  build-deactivator:
+    needs: [check, setup]
+    if: needs.check.outputs.run_deactivator == 'true'
+    runs-on: windows-latest
+    steps:
+    - name: Build Deactivator
+      run: |
+        cd setup/deactivator
+        go build -o ../deactivator.exe
+        cd ../..
+
+    - name: Commit updated Deactivator
+      uses: EndBug/add-and-commit@v7
+      with:
+        add: 'setup/deactivator.exe'
+        default_author: github_actions
+        message: 'Build new Deactivator'
+        pull_strategy: '--rebase'
