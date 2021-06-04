@@ -128,7 +128,7 @@ describe('On Startup', () => {
     expect(queryByText(versionPrefix)).not.toBeInTheDocument();
 
     await waitFor(() => expect(queryByText('OK')).toBeInTheDocument());
-    expect(queryByText(newVersionAvailable)).toBeInTheDocument();
+    expect(queryByText('our Website')).toBeInTheDocument();
 
     // show version and status in the background
     expect(queryByText(vNr)).toBeInTheDocument();
@@ -138,7 +138,7 @@ describe('On Startup', () => {
     fireEvent.click(getByText('OK'));
 
     await waitFor(() => expect(queryByText('OK')).not.toBeInTheDocument());
-    expect(queryByText(newVersionAvailable)).not.toBeInTheDocument();
+    expect(queryByText('our Website')).not.toBeInTheDocument();
   });
 
   test('do not show anything when current launcher version is the most recent one', async () => {
@@ -165,9 +165,10 @@ describe('On Startup', () => {
     mockIsActive.mockResolvedValue(true);
     versionPingResolver.mockResolvedValue("doesn't matter");
 
-    const { queryByAltText } = render(App, { API: mockAPI });
+    const { queryByAltText, queryByText } = render(App, { API: mockAPI });
 
     await waitFor(() => expect(queryByAltText(pageTitle)).toBeInTheDocument());
+    expect(queryByText('Play is')).toBeInTheDocument();
   });
 
   test('show ETW header when ImpSplen is NOT active', async () => {
@@ -175,9 +176,10 @@ describe('On Startup', () => {
     mockIsActive.mockResolvedValue(false);
     versionPingResolver.mockResolvedValue("doesn't matter");
 
-    const { queryByAltText } = render(App, { API: mockAPI });
+    const { queryByAltText, queryByText } = render(App, { API: mockAPI });
 
     await waitFor(() => expect(queryByAltText(etwTitle)).toBeInTheDocument());
+    expect(queryByText('Play etw')).toBeInTheDocument();
   });
 });
 
@@ -207,7 +209,7 @@ describe('Clicking the buttons', () => {
     // --- PLAY ---
 
     // press Play button -> Error
-    fireEvent.click(getByText('Play'));
+    fireEvent.click(getByText('Play etw'));
 
     expect(mockPlay).toHaveBeenCalledTimes(1);
     await waitFor(() => expect(queryByText(apiErrors.play)).toBeInTheDocument());
@@ -217,7 +219,7 @@ describe('Clicking the buttons', () => {
     await waitFor(() => expect(queryByText('OK')).not.toBeInTheDocument());
 
     // press Play button -> Unexpected Error
-    fireEvent.click(getByText('Play'));
+    fireEvent.click(getByText('Play etw'));
 
     expect(mockPlay).toHaveBeenCalledTimes(2);
     await waitFor(() => expect(queryByText(apiErrors.unexpected)).toBeInTheDocument());
@@ -227,7 +229,7 @@ describe('Clicking the buttons', () => {
     await waitFor(() => expect(queryByText('OK')).not.toBeInTheDocument());
 
     // press Play button -> Success
-    fireEvent.click(getByText('Play'));
+    fireEvent.click(getByText('Play etw'));
 
     expect(mockPlay).toHaveBeenCalledTimes(3);
     expect(queryByText('OK')).not.toBeInTheDocument();
@@ -354,6 +356,7 @@ describe('Clicking the buttons', () => {
     const { getByText, queryByAltText, queryByText } = render(App, { API: mockAPI });
     // startup
     await waitFor(() => expect(queryByAltText(pageTitle)).toBeInTheDocument());
+    expect(queryByText('Play is')).toBeInTheDocument();
     expect(mockVersion).toHaveBeenCalled();
     expect(mockIsActive).toHaveBeenCalled();
     expect(mockVersionPing).toHaveBeenCalled();
@@ -363,6 +366,7 @@ describe('Clicking the buttons', () => {
 
     await waitFor(() => expect(queryByText(apiErrors.fileList)).toBeInTheDocument());
     expect(queryByAltText(pageTitle)).toBeInTheDocument();
+    expect(queryByText('Play is')).toBeInTheDocument();
     expect(mockSwitch).toHaveBeenCalledTimes(1);
 
     fireEvent.click(getByText('OK'));
@@ -375,6 +379,7 @@ describe('Clicking the buttons', () => {
       expect(queryByText(apiErrors.deactivationOnDeactivation)).toBeInTheDocument()
     );
     expect(queryByAltText(pageTitle)).toBeInTheDocument();
+    expect(queryByText('Play is')).toBeInTheDocument();
     expect(mockSwitch).toHaveBeenCalledTimes(2);
 
     fireEvent.click(getByText('OK'));
@@ -387,6 +392,7 @@ describe('Clicking the buttons', () => {
       expect(queryByText(apiErrors.deactivationOnDeactivation)).toBeInTheDocument()
     );
     expect(queryByAltText(pageTitle)).toBeInTheDocument();
+    expect(queryByText('Play is')).toBeInTheDocument();
     expect(mockSwitch).toHaveBeenCalledTimes(3);
 
     fireEvent.click(getByText('OK'));
@@ -397,6 +403,7 @@ describe('Clicking the buttons', () => {
 
     await waitFor(() => expect(queryByText(apiErrors.unexpectedOnSwitch)).toBeInTheDocument());
     expect(queryByAltText(pageTitle)).toBeInTheDocument();
+    expect(queryByText('Play is')).toBeInTheDocument();
     expect(mockSwitch).toHaveBeenCalledTimes(4);
 
     fireEvent.click(getByText('OK'));
@@ -407,6 +414,7 @@ describe('Clicking the buttons', () => {
 
     await waitFor(() => expect(queryByText(apiErrors.unexpectedOnSwitch)).toBeInTheDocument());
     expect(queryByAltText(pageTitle)).toBeInTheDocument();
+    expect(queryByText('Play is')).toBeInTheDocument();
     expect(mockSwitch).toHaveBeenCalledTimes(5);
 
     fireEvent.click(getByText('OK'));
@@ -416,6 +424,7 @@ describe('Clicking the buttons', () => {
     fireEvent.click(getByText('Switch'));
 
     await waitFor(() => expect(queryByAltText(etwTitle)).toBeInTheDocument());
+    expect(queryByText('Play etw')).toBeInTheDocument();
     expect(queryByText('OK')).not.toBeInTheDocument();
     expect(mockSwitch).toHaveBeenCalledTimes(6);
     expect(mockIsActive).toHaveBeenCalledTimes(7); // switch times + 1x on startup
@@ -454,6 +463,7 @@ describe('Clicking the buttons', () => {
 
     await waitFor(() => expect(queryByText(apiErrors.fileList)).toBeInTheDocument());
     expect(queryByAltText(etwTitle)).toBeInTheDocument();
+    expect(queryByText('Play etw')).toBeInTheDocument();
     expect(mockSwitch).toHaveBeenCalledTimes(1);
 
     fireEvent.click(getByText('OK'));
@@ -464,6 +474,7 @@ describe('Clicking the buttons', () => {
 
     await waitFor(() => expect(queryByText(apiErrors.rollbackSuccessfull)).toBeInTheDocument());
     expect(queryByAltText(etwTitle)).toBeInTheDocument();
+    expect(queryByText('Play etw')).toBeInTheDocument();
     expect(mockSwitch).toHaveBeenCalledTimes(2);
 
     fireEvent.click(getByText('OK'));
@@ -474,6 +485,7 @@ describe('Clicking the buttons', () => {
 
     await waitFor(() => expect(queryByText(apiErrors.rollbackError)).toBeInTheDocument());
     expect(queryByAltText(etwTitle)).toBeInTheDocument();
+    expect(queryByText('Play etw')).toBeInTheDocument();
     expect(mockSwitch).toHaveBeenCalledTimes(3);
 
     fireEvent.click(getByText('OK'));
@@ -484,6 +496,7 @@ describe('Clicking the buttons', () => {
 
     await waitFor(() => expect(queryByText(apiErrors.rollbackSuccessfull)).toBeInTheDocument());
     expect(queryByAltText(etwTitle)).toBeInTheDocument();
+    expect(queryByText('Play etw')).toBeInTheDocument();
     expect(mockSwitch).toHaveBeenCalledTimes(4);
 
     fireEvent.click(getByText('OK'));
@@ -494,6 +507,7 @@ describe('Clicking the buttons', () => {
 
     await waitFor(() => expect(queryByText(apiErrors.unexpectedOnSwitch)).toBeInTheDocument());
     expect(queryByAltText(etwTitle)).toBeInTheDocument();
+    expect(queryByText('Play etw')).toBeInTheDocument();
     expect(mockSwitch).toHaveBeenCalledTimes(5);
 
     fireEvent.click(getByText('OK'));
@@ -504,6 +518,7 @@ describe('Clicking the buttons', () => {
 
     await waitFor(() => expect(queryByText(apiErrors.unexpectedOnSwitch)).toBeInTheDocument());
     expect(queryByAltText(etwTitle)).toBeInTheDocument();
+    expect(queryByText('Play etw')).toBeInTheDocument();
     expect(mockSwitch).toHaveBeenCalledTimes(6);
 
     fireEvent.click(getByText('OK'));
@@ -513,6 +528,7 @@ describe('Clicking the buttons', () => {
     fireEvent.click(getByText('Switch'));
 
     await waitFor(() => expect(queryByAltText(pageTitle)).toBeInTheDocument());
+    expect(queryByText('Play is')).toBeInTheDocument();
     expect(queryByText('OK')).not.toBeInTheDocument();
     expect(mockSwitch).toHaveBeenCalledTimes(7);
     expect(mockIsActive).toHaveBeenCalledTimes(8); // switch times + 1x on startup
