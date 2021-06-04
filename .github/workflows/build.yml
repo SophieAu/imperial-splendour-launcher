@@ -10,7 +10,7 @@ jobs:
     outputs:
       run_launcher: ${{ steps.check_files.outputs.run_launcher }}
       run_deactivator: ${{ steps.check_files.outputs.run_deactivator }}
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -31,23 +31,23 @@ jobs:
           while IFS= read -r file
           do
             echo $file
-            if [[ $file == setup/deactivator/* ]]; then
+            if [[ "$file" == setup/deactivator/* ]]; then
               echo "Deactivator was changed. Will re-build."
               hasDeactivatorChanged=true
             fi
-            if [[ $file == launcher/* ]]; then
+            if [[ "$file" == launcher/* ]]; then
               echo "Launcher was changed. Will re-build."
               hasLauncherChanged=true
             fi
           done < files.txt
 
-          if [[ hasDeactivatorChanged ]]; then
+          if [[ $hasDeactivatorChanged ]]; then
             echo "::set-output name=run_deactivator::true"
           else
             echo "::set-output name=run_deactivator::false"
           fi
 
-           if [[ hasLauncherChanged ]]; then
+           if [[ $hasLauncherChanged ]]; then
             echo "::set-output name=run_launcher::true"
           else
             echo "::set-output name=run_launcher::false"
