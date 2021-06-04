@@ -23,8 +23,14 @@ jobs:
       run: |
         cd launcher
         wails build -d
-        mv build/imperial-splendour-launcher.exe ../build/imperial-splendour-launcher_debug.exe
+        mv build/imperial-splendour-launcher.exe build/imperial-splendour-launcher_debug.exe
         wails build -p
+        cd ..
+
+    - name: Build Deactivator
+      run: |
+        cd setup/deactivator
+        go build -o ../deactivator.exe
 
     - name: Extract Artifacts
       uses: actions/upload-artifact@v2
