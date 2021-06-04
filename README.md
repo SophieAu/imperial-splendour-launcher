@@ -9,7 +9,8 @@ Note that the slim setup is currently theoretical only as hosting large files is
 * a Windows machine
 * at least 15GB of hard drive space (for the mod files)
 * a current install of [Inno Setup](https://jrsoftware.org/isinfo.php)
-* the `deactivator.exe` and `ImperialSplendour.exe` files you can find in the `artifacts/` folder of this repo
+* the `deactivator.exe` and `ImperialSplendour.exe` files which you can find in the `artifacts/` folder of this repo
+* the `setupBundled.iss` and `appicon.ico` files which you can find in the `setup/` folder of this repo
 
 ### 1. Update Imperial Splendour Version
 
@@ -30,6 +31,7 @@ Collect all mod files in one otherwise empty folder. The folder structure will n
 * `IS_Uninstaller/` ('_Uninstall Folder_' in the [Imperial Splendour-specific Constants Table](#imperial-splendour-specific-constants))
   * `deactivator.exe` ('_Deactivator Name_' in the [Setup-specific Constants Table](#setup-specific-constants))
 * `setupBundled.iss`
+* `appicon.ico`
 
 ### 3. Build the Setup
 
