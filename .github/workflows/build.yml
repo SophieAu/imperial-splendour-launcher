@@ -8,8 +8,8 @@ jobs:
   check:
     name: Check for Deactivator or Launcher changes
     outputs:
-      - run_launcher: ${{ steps.check_files.outputs.run_launcher }}
-      - run_deactivator: ${{ steps.check_files.outputs.run_deactivator }}
+      run_launcher: ${{ steps.check_files.outputs.run_launcher }}
+      run_deactivator: ${{ steps.check_files.outputs.run_deactivator }}
     runs-on: windows-latest
     steps:
       - name: Checkout code
