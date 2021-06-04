@@ -178,6 +178,7 @@ begin
   
   if CurPageID = InputDirPage.ID then
     WizardForm.DirEdit.Text := InputDirPage.Values[0];
+    Result := true;
     Exit;
   
   if CurPageID = wpReady then begin

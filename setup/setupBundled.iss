@@ -65,9 +65,34 @@ Filename: "{app}\{#UninstallDir}\{#UninstallHelperExe}"; WorkingDir: "{app}"
 [Code]
 
 var ExpectedPath: String;
+var HasInstallation: Boolean;
 var
   StartupInfoPage: TInputQueryWizardPage;
   InputDirPage:    TInputDirWizardPage;
+
+
+function InitializeSetup: Boolean;
+var Version: String;
+var Location: String;
+begin
+  HasInstallation := RegValueExists(HKEY_LOCAL_MACHINE,'Software\Microsoft\Windows\CurrentVersion\Uninstall\{#AppId}_is1', 'DisplayVersion')
+  if not HasInstallation then
+    Result := True;
+    Exit;
+  end;
+
+  
+  RegQueryStringValue(HKEY_LOCAL_MACHINE,'Software\Microsoft\Windows\CurrentVersion\Uninstall\{#AppId}_is1', 'DisplayVersion', Version);
+  if Version > '{#AppVersion}' then
+    MsgBox(ExpandConstant('{cm:NewerVersionExists} '+Version), mbInformation, MB_OK);
+    Result := False;
+    Exit;
+
+  RegQueryStringValue(HKEY_LOCAL_MACHINE,'Software\Microsoft\Windows\CurrentVersion\Uninstall\{#AppId}_is1', 'InstallLocation', Location);
+  WizardForm.DirEdit.Text := Location
+  Result := True;
+end;
+
 
 procedure InitializeWizard;
 begin
@@ -111,4 +136,23 @@ begin
     WizardForm.DirEdit.Text := InputDirPage.Values[0];
   
   Result := true;
+end;
+
+
+function ShouldSkipPage(PageID: Integer): Boolean       
+begin
+  if PageID = InputDirPage.ID and HasInstallation then
+    Result := True
+  else
+    Result := False;
+end;
+
+
+function PrepareToInstall(var NeedsRestart: Boolean): String;
+var ResultCode: Integer;
+begin
+  if not Exec(ExpandConstant('{#UninstallDir}\{#UninstallHelperExe}'), '-strict', '', SW_SHOW, ewWaitUntilTerminated, ResultCode) then
+    Result := "There was an error preparing the upgrade. Please delete any remaining Imperial Splendour files manually and try again."
+  else
+    Result := ""
 end;
