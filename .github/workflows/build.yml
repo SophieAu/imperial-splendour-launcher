@@ -29,7 +29,7 @@ jobs:
     - name: Commit updated Launcher
       uses: EndBug/add-and-commit@v7
       with:
-        add: 'launcher/build/imperial-splendour-launcher'
+        add: 'launcher/build/imperial-splendour-launcher*.exe'
         default_author: github_actions
         message: 'Build new Launcher'
 
@@ -38,6 +38,9 @@ jobs:
       with:
         name: executables
         path: launcher/build/
+
+
+
 
 
   build-deactivator:
