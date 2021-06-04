@@ -26,7 +26,7 @@ AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DisableDirPage=yes
-DefaultDirName={commonpf}
+DefaultDirName={reg:HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{#AppId}_is1,InstallLocation}
 AlwaysShowDirOnReadyPage=yes
 DefaultGroupName={#MyAppName}
 OutputBaseFilename={#SetupName}
@@ -60,9 +60,13 @@ Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChang
 Filename: "{app}\{#UninstallDir}\{#UninstallHelperExe}"; WorkingDir: "{app}"
 
 
+[CustomMessages]
+english.NewerVersionExists=A newer version of {#AppName} is already installed.%n%nInstaller version: {#AppVersion}%nCurrent version: 
+
 [Code]
 
 var ExpectedPath: String;
+var HasInstallation: Boolean;
 var
   StartupInfoPage: TInputQueryWizardPage;
   InputDirPage:    TInputDirWizardPage;
@@ -105,7 +109,30 @@ end;
 
 
 // --- HOOKS ---
+
+function InitializeSetup: Boolean;
+var Version: String;
+var Location: String;
+begin
+  HasInstallation := RegValueExists(HKEY_LOCAL_MACHINE,'Software\Microsoft\Windows\CurrentVersion\Uninstall\{#AppId}_is1', 'DisplayVersion')
+  if not HasInstallation then
+    Result := True;
+    Exit;
+  end;
+
   
+  RegQueryStringValue(HKEY_LOCAL_MACHINE,'Software\Microsoft\Windows\CurrentVersion\Uninstall\{#AppId}_is1', 'DisplayVersion', Version);
+  if Version > '{#AppVersion}' then
+    MsgBox(ExpandConstant('{cm:NewerVersionExists} '+Version), mbInformation, MB_OK);
+    Result := False;
+    Exit;
+
+  RegQueryStringValue(HKEY_LOCAL_MACHINE,'Software\Microsoft\Windows\CurrentVersion\Uninstall\{#AppId}_is1', 'InstallLocation', Location);
+  WizardForm.DirEdit.Text := Location
+  Result := True;
+end;
+
+
 procedure InitializeWizard;
 begin
   ExpectedPath := ExpandConstant('{commonpf}\{#ETWDefaultPath}');
@@ -118,7 +145,6 @@ begin
     '- at least 10GB of hard drive space'#13#10 +
     ''#13#10 +
     'NOTE: Having a different mod installed alongside Imperial Splendour can lead to issues when using the launcher. In this case, you can still use the installer but we recommend to switch between mods manually.');
-    
 
   InputDirPage := CreateInputDirPage(StartupInfoPage.ID,
     'Select existing Empire: Total War Installation Location',
@@ -134,7 +160,6 @@ begin
     InputDirPage.Values[0] := '';
   
   DownloadPage := CreateDownloadPage(SetupMessage(msgWizardPreparing), SetupMessage(msgPreparingDesc), @OnDownloadProgress);
-
 end;
 
 
@@ -145,9 +170,11 @@ begin
       MsgBox('Couldn''t find your Empire Total War installation. Please make sure you have it installed correctly and manually select the install folder.', mbError, MB_OK);
     
     Result := true;
+    Exit;
   
   if CurPageID = InputDirPage.ID then
     WizardForm.DirEdit.Text := InputDirPage.Values[0];
+    Exit;
   
   if CurPageID = wpReady then begin
     if MsgBox('Downloading and installing all mod files may take a while. Continue?', mbConfirmation, MB_OKCANCEL) = IDCANCEL then
@@ -179,4 +206,23 @@ begin
     // you need this otherwise it'll try to install files it hasn't downloaded
     Result := True;    
   
+end;
+
+
+function ShouldSkipPage(PageID: Integer): Boolean       
+begin
+  if PageID = InputDirPage.ID and HasInstallation then
+    Result := True
+  else
+    Result := False;
+end;
+
+
+function PrepareToInstall(var NeedsRestart: Boolean): String;
+var ResultCode: Integer;
+begin
+  if not Exec(ExpandConstant('{#UninstallDir}\{#UninstallHelperExe}'), '-strict', '', SW_SHOW, ewWaitUntilTerminated, ResultCode) then
+    Result := "There was an error preparing the upgrade. Please delete any remaining Imperial Splendour files manually and try again."
+  else
+    Result := ""
 end;
