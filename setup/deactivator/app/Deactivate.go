@@ -1,9 +1,9 @@
 package app
 
-func (a *API) Deactivate() error {
+func (a *API) Deactivate(isStrict bool) error {
 	if !a.info.IsActive {
 		return nil
 	}
 
-	return a.deactivateImpSplen()
+	return a.deactivateImpSplen(isStrict)
 }

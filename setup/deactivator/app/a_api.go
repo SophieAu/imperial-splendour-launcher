@@ -1,6 +1,7 @@
 package app
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -25,6 +26,23 @@ type info struct {
 	IsActive           bool   `json:"isActive"`
 	Version            string `json:"version"`
 	UserScriptChecksum string `json:"usChecksum"`
+}
+
+func (a *API) setStatus(isActive bool) error {
+	newInfo := a.info
+	newInfo.IsActive = isActive
+
+	newInfoJSON, err := json.MarshalIndent(newInfo, "", "\t")
+	if err != nil {
+		return err
+	}
+
+	if err = a.Sh.WriteFile(a.dirs.etw+infoFile, newInfoJSON); err != nil {
+		return err
+	}
+
+	a.info.IsActive = isActive
+	return nil
 }
 
 func (a *API) readFileList() (*modFiles, error) {
@@ -59,7 +77,7 @@ func (a *API) moveFile(source, destination string) error {
 	return a.Sh.MoveFile(source, destination)
 }
 
-func (a *API) deactivateImpSplen() error {
+func (a *API) deactivateImpSplen(isStrict bool) error {
 	log.Print("Deactivating ImpSplen")
 
 	files, err := a.readFileList()
@@ -68,10 +86,12 @@ func (a *API) deactivateImpSplen() error {
 		return errors.New("FileListError")
 	}
 
+	hasError := false
 	log.Print("Moving data files")
 	for _, file := range files.dataFiles {
 		if err := a.moveFile(a.dirs.etw+dataPath+file, a.dirs.etw+modPath+file); err != nil {
 			log.Printf("%v", err)
+			hasError = true
 		}
 	}
 
@@ -79,14 +99,24 @@ func (a *API) deactivateImpSplen() error {
 	for _, file := range files.campaignFiles {
 		if err := a.moveFile(a.dirs.etw+campaignPath+file, a.dirs.etw+modPath+file); err != nil {
 			log.Printf("%v", err)
+			hasError = true
 		}
 	}
 
 	log.Print("Moving User Script")
 	if err = a.moveFile(a.dirs.appData+userScript, a.dirs.etw+modPath+userScript); err != nil {
 		log.Printf("%v", err)
+		hasError = true
+	}
+
+	if err := a.setStatus(false); err != nil && isStrict {
+		log.Printf("%v", err)
+		return errors.New("StatusUpdateError")
 	}
 
 	log.Print("ImpSplen deactivated")
+	if hasError && isStrict {
+		return errors.New("DeactivationError")
+	}
 	return nil
 }
