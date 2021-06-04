@@ -63,9 +63,12 @@ Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChang
 [UninstallRun]
 Filename: "{app}\{#UninstallDir}\{#UninstallHelperExe}"; WorkingDir: "{app}"
 
-
 [CustomMessages]
-english.NewerVersionExists=A newer version of {#AppName} is already installed.%n%nInstaller version: {#AppVersion}%nCurrent version: 
+NewerVersionExists=A newer version of {#AppName} is already installed.%n%nInstaller version: {#AppVersion}%nCurrent version: 
+ETWNotFound=Couldn''t find your Empire Total War installation. Please make sure you have it installed correctly and manually select the install folder.
+DownloadWarning=Downloading and installing all mod files may take a while. Continue?
+DeactivationError=There was an error preparing the upgrade. Please delete any remaining Imperial Splendour files manually and try again.
+
 
 [Code]
 
@@ -171,7 +174,7 @@ function NextButtonClick(CurPageID: Integer): Boolean;
 begin
   if CurPageID = StartupInfoPage.ID then
     if InputDirPage.Values[0] = '' then
-      MsgBox('Couldn''t find your Empire Total War installation. Please make sure you have it installed correctly and manually select the install folder.', mbError, MB_OK);
+      MsgBox(ExpandConstant('{cm:ETWNotFound}'), mbError, MB_OK);
     
     Result := true;
     Exit;
@@ -182,7 +185,7 @@ begin
     Exit;
   
   if CurPageID = wpReady then begin
-    if MsgBox('Downloading and installing all mod files may take a while. Continue?', mbConfirmation, MB_OKCANCEL) = IDCANCEL then
+    if MsgBox(ExpandConstant('{cm:DownloadWarning}'), mbConfirmation, MB_OKCANCEL) = IDCANCEL then
       Result := false;
       
  
@@ -214,7 +217,7 @@ begin
 end;
 
 
-function ShouldSkipPage(PageID: Integer): Boolean       
+function ShouldSkipPage(PageID: Integer): Boolean
 begin
   if PageID = InputDirPage.ID and HasInstallation then
     Result := True
@@ -227,7 +230,7 @@ function PrepareToInstall(var NeedsRestart: Boolean): String;
 var ResultCode: Integer;
 begin
   if not Exec(ExpandConstant('{#UninstallDir}\{#UninstallHelperExe}'), '-strict', '', SW_SHOW, ewWaitUntilTerminated, ResultCode) then
-    Result := "There was an error preparing the upgrade. Please delete any remaining Imperial Splendour files manually and try again."
+    Result := ExpandConstant('{cm:DeactivationError}')
   else
     Result := ""
 end;
