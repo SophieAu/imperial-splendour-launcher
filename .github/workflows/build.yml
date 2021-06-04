@@ -22,8 +22,9 @@ jobs:
       run: |
         cd launcher
         wails build -d
-        mv build/imperial-splendour-launcher.exe build/imperial-splendour-launcher_debug.exe
+        mv build/imperial-splendour-launcher.exe ../artifacts/imperial-splendour-launcher_debug.exe
         wails build -p
+        mv build/imperial-splendour-launcher.exe ../artifacts/imperial-splendour-launcher.exe
         cd ..
 
     - name: DEBUG
@@ -35,15 +36,15 @@ jobs:
     - name: Commit updated Launcher
       uses: EndBug/add-and-commit@v7
       with:
-        add: 'launcher/build/imperial-splendour-launcher*.exe'
+        add: 'artifacts/imperial-splendour-launcher*.exe'
         default_author: github_actions
         message: 'Build new Launcher'
 
-    - name: Extract Artifacts
+    - name: Upload Artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: executables
-        path: launcher/build/
+        name: launcher
+        path: artifacts/imperial-splendour-launcher*.exe
 
 
 
@@ -62,18 +63,18 @@ jobs:
     - name: Build Deactivator
       run: |
         cd setup/deactivator
-        go build -o ../deactivator.exe
+        go build -o ../../artifacts/deactivator.exe
         cd ../..
 
     - name: Commit updated Deactivator
       uses: EndBug/add-and-commit@v7
       with:
-        add: 'setup/deactivator.exe'
+        add: 'artifacts/deactivator.exe'
         default_author: github_actions
         message: 'Build new Deactivator'
 
-    - name: Extract Artifacts
+    - name: Upload Artifacts
       uses: actions/upload-artifact@v2
       with:
         name: deactivator
-        path: setup/deactivator.exe
+        path: artifacts/deactivator.exe
