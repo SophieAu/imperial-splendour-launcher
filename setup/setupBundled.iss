@@ -77,6 +77,7 @@ DeactivationError=There was an error preparing the upgrade. Please delete any re
 
 var ExpectedPath: String;
 var HasInstallation: Boolean;
+var OldInstallLocation: string;
 var
   StartupInfoPage: TInputQueryWizardPage;
   InputDirPage:    TInputDirWizardPage;
@@ -84,26 +85,38 @@ var
 
 function InitializeSetup: Boolean;
 var Version: String;
-var Location: String;
 var RegistryPath: string;
+var RegistryPathX32: string;
+var RegistryPathX64: string;
+var IsX64: string;
 begin
-  RegistryPath := ExpandConstant('Software\Microsoft\Windows\CurrentVersion\Uninstall\{#MyAppId}_is1')
+  RegistryPathX32 := ExpandConstant('Software\Microsoft\Windows\CurrentVersion\Uninstall\{#MyAppId}_is1');
+  RegistryPathX64 := ExpandConstant('Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\{#MyAppId}_is1');
 
-  HasInstallation := RegValueExists(HKEY_LOCAL_MACHINE, RegistryPath, 'DisplayVersion')
+  HasInstallation := RegValueExists(HKEY_LOCAL_MACHINE, RegistryPathX32, 'DisplayVersion');
+  if HasInstallation then
+    RegistryPath := RegistryPathX32
+  else begin
+    HasInstallation := RegValueExists(HKEY_LOCAL_MACHINE, RegistryPathX64, 'DisplayVersion')
+    if HasInstallation then
+      RegistryPath := RegistryPathX64
+  end;
+
   if not HasInstallation then
+  begin
     Result := True;
     Exit;
-
+  end;
   
   RegQueryStringValue(HKEY_LOCAL_MACHINE, RegistryPath, 'DisplayVersion', Version);
-  if Version > '{#MyAppVersion}' then
+  if Version < '{#MyAppVersion}' then begin
     MsgBox(ExpandConstant('{cm:NewerVersionExists} '+Version), mbInformation, MB_OK);
     Result := False;
-    Exit;
 
-  RegQueryStringValue(HKEY_LOCAL_MACHINE,RegistryPath, 'InstallLocation', Location);
-  WizardForm.DirEdit.Text := Location
-  Result := True;
+  end else begin
+    RegQueryStringValue(HKEY_LOCAL_MACHINE, RegistryPath, 'InstallLocation', OldInstallLocation);
+    Result := True;
+  end;
 end;
 
 
@@ -129,7 +142,9 @@ begin
     'To continue, click Next. If you would like to select a different folder, click Browse.',
     False, '');
   InputDirPage.Add('');
-  if DirExists(ExpectedPath) then
+  if HasInstallation then
+     InputDirPage.Values[0] := OldInstallLocation
+  else if DirExists(ExpectedPath) then
     InputDirPage.Values[0] := ExpectedPath
   else
     InputDirPage.Values[0] := '';
@@ -142,7 +157,7 @@ begin
   if CurPageID = StartupInfoPage.ID then
     if InputDirPage.Values[0] = '' then
       MsgBox(ExpandConstant('{cm:ETWNotFound}'), mbError, MB_OK);
-    
+
   if CurPageID = InputDirPage.ID then
     WizardForm.DirEdit.Text := InputDirPage.Values[0];
   
@@ -152,26 +167,26 @@ end;
 
 function ShouldSkipPage(PageID: Integer): Boolean;
 begin
- if not PageID = InputDirPage.ID then
-    Result := False;
-    Exit;    
+  if PageID = InputDirPage.ID then begin
+    if HasInstallation then
+      Result := True;
+      Exit;
+  end;
 
-  if HasInstallation then
-    Result := True
-  else
-    Result := False;
+  Result := False;
 end;
 
 
 function PrepareToInstall(var NeedsRestart: Boolean): String;
 var ResultCode: Integer;
 begin
-  if HasInstallation then
+  if not HasInstallation then begin
     Result := '';
     Exit;
-  
+  end;
+
   if not Exec(ExpandConstant('{#UninstallDir}\{#UninstallHelperExe}'), '-strict', '', SW_SHOW, ewWaitUntilTerminated, ResultCode) then
     Result := ExpandConstant('{cm:DeactivationError}')
   else
-    Result := ''
+    Result := '';
 end;
