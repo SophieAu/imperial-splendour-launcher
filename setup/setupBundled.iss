@@ -84,7 +84,7 @@ var
 
 
 function InitializeSetup: Boolean;
-var Version: String;
+var InstalledVersion: String;
 var RegistryPath: string;
 var RegistryPathX32: string;
 var RegistryPathX64: string;
@@ -108,9 +108,9 @@ begin
     Exit;
   end;
   
-  RegQueryStringValue(HKEY_LOCAL_MACHINE, RegistryPath, 'DisplayVersion', Version);
-  if Version < '{#MyAppVersion}' then begin
-    MsgBox(ExpandConstant('{cm:NewerVersionExists} '+Version), mbInformation, MB_OK);
+  RegQueryStringValue(HKEY_LOCAL_MACHINE, RegistryPath, 'DisplayVersion', InstalledVersion);
+  if InstalledVersion > '{#MyAppVersion}' then begin
+    MsgBox(ExpandConstant('{cm:NewerVersionExists} '+InstalledVersion), mbInformation, MB_OK);
     Result := False;
 
   end else begin
