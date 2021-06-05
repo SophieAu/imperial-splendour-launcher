@@ -12,7 +12,7 @@ func main() {
 
 	a := &app.API{}
 	if err := a.Init(&app.SystemHandler{}); err != nil {
-		os.Exit(12)
+		os.Exit(1)
 	}
 
 	// TODO: Add flag for hard failure
