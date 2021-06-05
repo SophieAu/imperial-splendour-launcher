@@ -11,13 +11,15 @@
 #define UninstallHelperExe "deactivator.exe"
 #define SetupName "ImperialSplendourSetup"
 #define ETWDefaultPath "steam\steamapp\common\Empire Total War"
-#define CampaignPath "data/campaigns/imperial_splendour"
+#define CampaignPath "data\campaigns\imperial_splendour"
+
+#define MyAppId "{{DC820B8B-AE7B-4555-AB8A-C1399266A06F}"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{DC820B8B-AE7B-4555-AB8A-C1399266A06F}
+AppId={#MyAppId}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 ;AppVerName={#MyAppName} {#MyAppVersion}
@@ -62,8 +64,11 @@ Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChang
 [UninstallRun]
 Filename: "{app}\{#UninstallDir}\{#UninstallHelperExe}"; WorkingDir: "{app}"
 
+[UninstallDelete]
+Type: filesandordirs; Name: "{app}\{#UninstallDir}";
+
 [CustomMessages]
-NewerVersionExists=A newer version of {#AppName} is already installed.%n%nInstaller version: {#AppVersion}%nCurrent version: 
+NewerVersionExists=A newer version of {#MyAppName} is already installed.%n%nInstaller version: {#MyAppVersion}%nCurrent version: 
 ETWNotFound=Couldn''t find your Empire Total War installation. Please make sure you have it installed correctly and manually select the install folder.
 DeactivationError=There was an error preparing the upgrade. Please delete any remaining Imperial Splendour files manually and try again.
 
@@ -80,21 +85,23 @@ var
 function InitializeSetup: Boolean;
 var Version: String;
 var Location: String;
+var RegistryPath: string;
 begin
-  HasInstallation := RegValueExists(HKEY_LOCAL_MACHINE,'Software\Microsoft\Windows\CurrentVersion\Uninstall\{#AppId}_is1', 'DisplayVersion')
+  RegistryPath := ExpandConstant('Software\Microsoft\Windows\CurrentVersion\Uninstall\{#MyAppId}_is1')
+
+  HasInstallation := RegValueExists(HKEY_LOCAL_MACHINE, RegistryPath, 'DisplayVersion')
   if not HasInstallation then
     Result := True;
     Exit;
-  end;
 
   
-  RegQueryStringValue(HKEY_LOCAL_MACHINE,'Software\Microsoft\Windows\CurrentVersion\Uninstall\{#AppId}_is1', 'DisplayVersion', Version);
-  if Version > '{#AppVersion}' then
+  RegQueryStringValue(HKEY_LOCAL_MACHINE, RegistryPath, 'DisplayVersion', Version);
+  if Version > '{#MyAppVersion}' then
     MsgBox(ExpandConstant('{cm:NewerVersionExists} '+Version), mbInformation, MB_OK);
     Result := False;
     Exit;
 
-  RegQueryStringValue(HKEY_LOCAL_MACHINE,'Software\Microsoft\Windows\CurrentVersion\Uninstall\{#AppId}_is1', 'InstallLocation', Location);
+  RegQueryStringValue(HKEY_LOCAL_MACHINE,RegistryPath, 'InstallLocation', Location);
   WizardForm.DirEdit.Text := Location
   Result := True;
 end;
@@ -143,9 +150,13 @@ begin
 end;
 
 
-function ShouldSkipPage(PageID: Integer): Boolean
+function ShouldSkipPage(PageID: Integer): Boolean;
 begin
-  if PageID = InputDirPage.ID and HasInstallation then
+ if not PageID = InputDirPage.ID then
+    Result := False;
+    Exit;    
+
+  if HasInstallation then
     Result := True
   else
     Result := False;
@@ -155,8 +166,12 @@ end;
 function PrepareToInstall(var NeedsRestart: Boolean): String;
 var ResultCode: Integer;
 begin
+  if HasInstallation then
+    Result := '';
+    Exit;
+  
   if not Exec(ExpandConstant('{#UninstallDir}\{#UninstallHelperExe}'), '-strict', '', SW_SHOW, ewWaitUntilTerminated, ResultCode) then
     Result := ExpandConstant('{cm:DeactivationError}')
   else
-    Result := ""
+    Result := ''
 end;
