@@ -185,7 +185,7 @@ begin
     Exit;
   end;
 
-  if not Exec(ExpandConstant('{#UninstallDir}\{#UninstallHelperExe}'), '-strict', '', SW_SHOW, ewWaitUntilTerminated, ResultCode) then
+  if not Exec(ExpandConstant(WizardForm.DirEdit.Text + '\{#UninstallDir}\{#UninstallHelperExe}'), '-strict', '', SW_SHOW, ewWaitUntilTerminated, ResultCode) then
     Result := ExpandConstant('{cm:DeactivationError}')
   else
     Result := '';
