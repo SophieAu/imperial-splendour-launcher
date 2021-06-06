@@ -69,7 +69,9 @@ Type: filesandordirs; Name: "{app}\{#UninstallDir}";
 
 [CustomMessages]
 NewerVersionExists=A newer version of {#MyAppName} is already installed.%n%nInstaller version: {#MyAppVersion}%nCurrent version: 
+ConfirmReinstall=It looks like you already have this version of {#MyAppName} installed. Do you want to re-install it?
 ETWNotFound=Couldn''t find your Empire Total War installation. Please make sure you have it installed correctly and manually select the install folder.
+InvalidPath=The install path you picked is invalid. Please check it and try again.
 DeactivationError=There was an error preparing the upgrade. Please delete any remaining Imperial Splendour files manually and try again.
 
 
@@ -107,16 +109,20 @@ begin
     Result := True;
     Exit;
   end;
-  
+
   RegQueryStringValue(HKEY_LOCAL_MACHINE, RegistryPath, 'DisplayVersion', InstalledVersion);
   if InstalledVersion > '{#MyAppVersion}' then begin
     MsgBox(ExpandConstant('{cm:NewerVersionExists} '+InstalledVersion), mbInformation, MB_OK);
     Result := False;
-
-  end else begin
-    RegQueryStringValue(HKEY_LOCAL_MACHINE, RegistryPath, 'InstallLocation', OldInstallLocation);
-    Result := True;
+    Exit;
+  end else if InstalledVersion = '{#MyAppVersion}' then begin
+    if MsgBox(ExpandConstant('{cm:ConfirmReinstall}'), mbConfirmation, MB_OKCANCEL) = IDCANCEL then
+      Result := false;
+      Exit;
   end;
+
+  RegQueryStringValue(HKEY_LOCAL_MACHINE, RegistryPath, 'InstallLocation', OldInstallLocation);
+  Result := True;
 end;
 
 
@@ -132,7 +138,7 @@ begin
     '- at least 10GB of hard drive space'#13#10 +
     ''#13#10 +
     'NOTE: Having a different mod installed alongside Imperial Splendour can lead to issues when using the launcher. In this case, you can still use the installer but we recommend to switch between mods manually.');
-    
+
 
   InputDirPage := CreateInputDirPage(StartupInfoPage.ID,
     'Select existing Empire: Total War Installation Location',
@@ -141,6 +147,7 @@ begin
     ''#13#10 +
     'To continue, click Next. If you would like to select a different folder, click Browse.',
     False, '');
+
   InputDirPage.Add('');
   if HasInstallation then
      InputDirPage.Values[0] := OldInstallLocation
@@ -148,7 +155,7 @@ begin
     InputDirPage.Values[0] := ExpectedPath
   else
     InputDirPage.Values[0] := '';
-  
+
 end;
 
 
@@ -158,9 +165,16 @@ begin
     if InputDirPage.Values[0] = '' then
       MsgBox(ExpandConstant('{cm:ETWNotFound}'), mbError, MB_OK);
 
-  if CurPageID = InputDirPage.ID then
+  if CurPageID = InputDirPage.ID then begin
+    if not DirExists(InputDirPage.Values[0]) then begin
+      MsgBox(ExpandConstant('{cm:InvalidPath}'), mbError, MB_OK);
+      Result := false;
+      Exit;
+    end;
+
     WizardForm.DirEdit.Text := InputDirPage.Values[0];
-  
+  end;
+
   Result := true;
 end;
 
