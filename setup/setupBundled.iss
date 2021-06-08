@@ -40,6 +40,7 @@ DirExistsWarning=yes
 SetupIconFile=appicon.ico
 UninstallDisplayIcon={app}\{#MyAppExeName}
 UninstallFilesDir={app}\{#UninstallDir}
+DiskSpanning=yes
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"                              
