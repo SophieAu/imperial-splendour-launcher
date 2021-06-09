@@ -146,7 +146,7 @@ begin
     '',
     'Imperial Splendour will be installed inside the following Empire: Total War folder.'#13#10 +
     ''#13#10 +
-    'To continue, click Next. If you would like to select a different folder, click Browse.',
+    'To continue, click Next. If you would like to select a different folder, click Browse. The folder should usually look something like this: C:\Program Files\steam\steamapp\common\Empire Total War',
     False, '');
 
   InputDirPage.Add('');
