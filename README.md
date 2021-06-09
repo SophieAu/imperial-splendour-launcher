@@ -28,7 +28,7 @@ Collect all mod files in one otherwise empty folder. The folder structure will n
   * `IS_Info.json` ('_Info File Location_' in the [Imperial Splendour-specific Constants Table](#imperial-splendour-specific-constants))
   * `user.empire_script.txt` ('_User Script_' in the [ETW Constants Table](#etw-constants))
   * all the other mod files (`.pack`, `.tga`, `.esf` files only, *need* to be listed in the `IS_FileList.txt`)
-* `IS_Uninstaller/` ('_Uninstall Folder_' in the [Imperial Splendour-specific Constants Table](#imperial-splendour-specific-constants))
+* `IS_Uninstall/` ('_Uninstall Folder_' in the [Imperial Splendour-specific Constants Table](#imperial-splendour-specific-constants))
   * `deactivator.exe` ('_Deactivator Name_' in the [Setup-specific Constants Table](#setup-specific-constants))
 * `setupBundled.iss`
 * `appicon.ico`
