@@ -2,6 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Imperial Splendour: Rise of the Republic"
+#define MyAppNameNoColon "Imperial Splendour - Rise of the Republic"
 #define MyAppVersion "1.2"
 #define MyAppPublisher "Imperial Splendour"
 #define MyAppURL "https://imperialsplendour.com/"
@@ -55,9 +56,9 @@ Source: "{#TmpFolder}\*.*"; DestDir: "{app}"; Flags: recursesubdirs
 Name: "{app}\{#CampaignPath}"
 
 [Icons]
-Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
-Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
-Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
+Name: "{group}\{#MyAppNameNoColon}"; Filename: "{app}\{#MyAppExeName}"
+Name: "{group}\{cm:UninstallProgram,{#MyAppNameNoColon}}"; Filename: "{uninstallexe}"
+Name: "{commondesktop}\{#MyAppNameNoColon}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
