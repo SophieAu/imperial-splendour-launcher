@@ -19,7 +19,7 @@ jobs:
       run: |
         cd launcher
         mkdir -p frontend/public/build
-        touch bundle.js
+        touch frontend/public/build/bundle.js
         touch alibiCSS.css
         go test ./... -v
 
