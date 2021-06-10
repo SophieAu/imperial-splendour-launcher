@@ -5,7 +5,6 @@ go 1.16
 require (
 	github.com/Masterminds/semver v1.5.0 // indirect
 	github.com/fatih/color v1.10.0 // indirect
-	github.com/leaanthony/mewn v0.10.7
 	github.com/leaanthony/slicer v1.5.0 // indirect
 	github.com/pkg/browser v0.0.0-20210115035449-ce105d075bb4 // indirect
 	github.com/pkg/errors v0.9.1 // indirect

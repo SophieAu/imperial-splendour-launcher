@@ -1,16 +1,19 @@
 package main
 
 import (
+	_ "embed"
 	"imperial-splendour-launcher/backend"
 
-	"github.com/leaanthony/mewn"
 	"github.com/wailsapp/wails"
 )
 
-func main() {
-	js := mewn.String("./frontend/public/build/bundle.js")
-	css := "" // no css since all is bundled into the .js using emotion
+//go:embed frontend/public/build/bundle.js
+var js string
 
+//go:embed frontend/public/build/bundle.css
+var css string
+
+func main() {
 	app := wails.CreateApp(&wails.AppConfig{
 		Width:            1280,
 		Height:           800,
