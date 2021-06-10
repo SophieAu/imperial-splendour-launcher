@@ -49,6 +49,7 @@ func (a *API) Init(sytemHandler Handler) error {
 	log.Printf("AppData directory: %s", a.dirs.appData)
 
 	if err = a.loadInfoFromFile(); err != nil {
+		log.Printf("%v", err)
 		return err
 	}
 	log.Printf("Info loaded %v", fmt.Sprintf("%v", a.info))
