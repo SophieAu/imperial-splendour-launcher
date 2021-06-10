@@ -10,7 +10,7 @@ import (
 //go:embed frontend/public/build/bundle.js
 var js string
 
-//go:embed frontend/public/build/bundle.css
+//go:embed alibiCSS.css
 var css string
 
 func main() {
