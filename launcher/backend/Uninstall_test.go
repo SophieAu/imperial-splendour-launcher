@@ -12,8 +12,36 @@ import (
 )
 
 func TestUninstall(t *testing.T) {
+	t.Run("Cannot find uninstaller", func(t *testing.T) {
+		api, _, window, _, sysHandler := test.Before()
+		sysHandler.On("DoesFileExist", mock.Anything).Return(false, nil)
+
+		err := api.Uninstall()
+
+		assert.Equal(t, err, customErrors.NoUninstaller)
+		sysHandler.AssertNotCalled(t, "StartCommand", mock.Anything)
+		window.AssertNotCalled(t, "Close")
+
+		test.After(*api)
+	})
+
 	t.Run("Cannot launch uninstaller", func(t *testing.T) {
 		api, _, window, _, sysHandler := test.Before()
+		sysHandler.On("DoesFileExist", mock.Anything).Return(false, errors.New("Woops"))
+		sysHandler.On("StartCommand", mock.Anything).Return(nil)
+
+		err := api.Uninstall()
+
+		assert.Equal(t, err, customErrors.Uninstall)
+		sysHandler.AssertNotCalled(t, "StartCommand")
+		window.AssertNotCalled(t, "Close")
+
+		test.After(*api)
+	})
+
+	t.Run("Cannot launch uninstaller but found it at least", func(t *testing.T) {
+		api, _, window, _, sysHandler := test.Before()
+		sysHandler.On("DoesFileExist", mock.Anything).Return(true, nil)
 		sysHandler.On("StartCommand", mock.Anything).Return(errors.New("Random Error launching the uninstaller"))
 
 		err := api.Uninstall()
@@ -27,6 +55,7 @@ func TestUninstall(t *testing.T) {
 
 	t.Run("Launches uninstaller", func(t *testing.T) {
 		api, _, window, _, sysHandler := test.Before()
+		sysHandler.On("DoesFileExist", mock.Anything).Return(true, nil)
 		sysHandler.On("StartCommand", mock.Anything).Return(nil)
 
 		err := api.Uninstall()

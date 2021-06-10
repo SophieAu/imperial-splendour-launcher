@@ -10,8 +10,6 @@ var Deactivation = errors.New("DeactivationError")
 var StatusUpdate = errors.New("StatusUpdateError")
 
 var Uninstall = errors.New("UninstallError")
+var NoUninstaller = errors.New("NoUninstallerError")
 var Website = errors.New("WebsiteError")
 var Play = errors.New("PlayError")
-
-
-

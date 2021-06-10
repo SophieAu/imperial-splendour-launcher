@@ -49,6 +49,11 @@ func (sh *MockSystemHandler) StartCommand(name string) error {
 	return args.Error(0)
 }
 
+func (sh *MockSystemHandler) DoesFileExist(path string) (bool, error) {
+	args := sh.Called(path)
+	return args.Get(0).(bool), args.Error(1)
+}
+
 // Logger
 type MockLogger struct {
 	mock.Mock

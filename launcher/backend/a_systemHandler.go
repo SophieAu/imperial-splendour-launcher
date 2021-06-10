@@ -16,6 +16,7 @@ type Handler interface {
 	Executable() (string, error)
 	Getenv(key string) string
 	StartCommand(name string) error
+	DoesFileExist(path string) (bool, error)
 }
 
 type SystemHandler struct {
@@ -80,4 +81,16 @@ func (w *SystemHandler) MoveFile(source, destination string) error {
 		return copyPasteDeleteFile(source, destination)
 	}
 	return nil
+}
+
+func (w *SystemHandler) DoesFileExist(path string) (bool, error) {
+	if _, err := os.Stat(path); err == nil {
+		return true, nil
+
+	} else if os.IsNotExist(err) {
+		return false, nil
+
+	} else {
+		return false, err
+	}
 }

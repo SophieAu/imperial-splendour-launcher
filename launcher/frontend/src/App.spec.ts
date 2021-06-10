@@ -168,7 +168,7 @@ describe('On Startup', () => {
     const { queryByAltText, queryByText } = render(App, { API: mockAPI });
 
     await waitFor(() => expect(queryByAltText(pageTitle)).toBeInTheDocument());
-    expect(queryByText('Play is')).toBeInTheDocument();
+    expect(queryByText('Play Rotr')).toBeInTheDocument();
   });
 
   test('show ETW header when ImpSplen is NOT active', async () => {
@@ -287,6 +287,7 @@ describe('Clicking the buttons', () => {
 
     mockUninstall.mockRejectedValueOnce(new Error('UninstallError'));
     mockUninstall.mockRejectedValueOnce(new Error('DeactivationError'));
+    mockUninstall.mockRejectedValueOnce(new Error('NoUninstallerError'));
     mockUninstall.mockRejectedValueOnce(new Error('Some random error'));
     mockUninstall.mockResolvedValueOnce(undefined);
 
@@ -319,10 +320,20 @@ describe('Clicking the buttons', () => {
     fireEvent.click(getByText('OK'));
     await waitFor(() => expect(queryByText('OK')).not.toBeInTheDocument());
 
-    // press Uninstall button -> another but this time unexpected error
+    // press Uninstall button -> another Error
     fireEvent.click(getByText('Uninstall'));
 
     expect(mockUninstall).toHaveBeenCalledTimes(3);
+    await waitFor(() => expect(queryByText(apiErrors.noUninstaller)).toBeInTheDocument());
+
+    // Dismiss Error Modal
+    fireEvent.click(getByText('OK'));
+    await waitFor(() => expect(queryByText('OK')).not.toBeInTheDocument());
+
+    // press Uninstall button -> another but this time unexpected error
+    fireEvent.click(getByText('Uninstall'));
+
+    expect(mockUninstall).toHaveBeenCalledTimes(4);
     await waitFor(() => expect(queryByText(apiErrors.unexpected)).toBeInTheDocument());
 
     // Dismiss Error Modal
@@ -332,7 +343,7 @@ describe('Clicking the buttons', () => {
     // press GoToUninstall button -> Success
     fireEvent.click(getByText('Uninstall'));
 
-    expect(mockUninstall).toHaveBeenCalledTimes(4);
+    expect(mockUninstall).toHaveBeenCalledTimes(5);
     expect(queryByText('OK')).not.toBeInTheDocument();
   });
 
@@ -356,7 +367,7 @@ describe('Clicking the buttons', () => {
     const { getByText, queryByAltText, queryByText } = render(App, { API: mockAPI });
     // startup
     await waitFor(() => expect(queryByAltText(pageTitle)).toBeInTheDocument());
-    expect(queryByText('Play is')).toBeInTheDocument();
+    expect(queryByText('Play Rotr')).toBeInTheDocument();
     expect(mockVersion).toHaveBeenCalled();
     expect(mockIsActive).toHaveBeenCalled();
     expect(mockVersionPing).toHaveBeenCalled();
@@ -366,7 +377,7 @@ describe('Clicking the buttons', () => {
 
     await waitFor(() => expect(queryByText(apiErrors.fileList)).toBeInTheDocument());
     expect(queryByAltText(pageTitle)).toBeInTheDocument();
-    expect(queryByText('Play is')).toBeInTheDocument();
+    expect(queryByText('Play Rotr')).toBeInTheDocument();
     expect(mockSwitch).toHaveBeenCalledTimes(1);
 
     fireEvent.click(getByText('OK'));
@@ -379,7 +390,7 @@ describe('Clicking the buttons', () => {
       expect(queryByText(apiErrors.deactivationOnDeactivation)).toBeInTheDocument()
     );
     expect(queryByAltText(pageTitle)).toBeInTheDocument();
-    expect(queryByText('Play is')).toBeInTheDocument();
+    expect(queryByText('Play Rotr')).toBeInTheDocument();
     expect(mockSwitch).toHaveBeenCalledTimes(2);
 
     fireEvent.click(getByText('OK'));
@@ -392,7 +403,7 @@ describe('Clicking the buttons', () => {
       expect(queryByText(apiErrors.deactivationOnDeactivation)).toBeInTheDocument()
     );
     expect(queryByAltText(pageTitle)).toBeInTheDocument();
-    expect(queryByText('Play is')).toBeInTheDocument();
+    expect(queryByText('Play Rotr')).toBeInTheDocument();
     expect(mockSwitch).toHaveBeenCalledTimes(3);
 
     fireEvent.click(getByText('OK'));
@@ -403,7 +414,7 @@ describe('Clicking the buttons', () => {
 
     await waitFor(() => expect(queryByText(apiErrors.unexpectedOnSwitch)).toBeInTheDocument());
     expect(queryByAltText(pageTitle)).toBeInTheDocument();
-    expect(queryByText('Play is')).toBeInTheDocument();
+    expect(queryByText('Play Rotr')).toBeInTheDocument();
     expect(mockSwitch).toHaveBeenCalledTimes(4);
 
     fireEvent.click(getByText('OK'));
@@ -414,7 +425,7 @@ describe('Clicking the buttons', () => {
 
     await waitFor(() => expect(queryByText(apiErrors.unexpectedOnSwitch)).toBeInTheDocument());
     expect(queryByAltText(pageTitle)).toBeInTheDocument();
-    expect(queryByText('Play is')).toBeInTheDocument();
+    expect(queryByText('Play Rotr')).toBeInTheDocument();
     expect(mockSwitch).toHaveBeenCalledTimes(5);
 
     fireEvent.click(getByText('OK'));
@@ -528,7 +539,7 @@ describe('Clicking the buttons', () => {
     fireEvent.click(getByText('Switch'));
 
     await waitFor(() => expect(queryByAltText(pageTitle)).toBeInTheDocument());
-    expect(queryByText('Play is')).toBeInTheDocument();
+    expect(queryByText('Play Rotr')).toBeInTheDocument();
     expect(queryByText('OK')).not.toBeInTheDocument();
     expect(mockSwitch).toHaveBeenCalledTimes(7);
     expect(mockIsActive).toHaveBeenCalledTimes(8); // switch times + 1x on startup

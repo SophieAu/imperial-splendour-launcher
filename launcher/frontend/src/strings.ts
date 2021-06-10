@@ -10,6 +10,7 @@ export enum Errors {
   DEACTIVATION = 'DeactivationError',
   STATUS = 'StatusUpdateError',
 
+  NO_UNINSTALLER = 'NoUninstallerError',
   UNINSTALL = 'UninstallError',
   WEBSITE = 'WebsiteError',
   PLAY = 'PlayError',
@@ -25,7 +26,10 @@ export const apiErrors = {
     "Couldn't open the website. Do you have a browser installed? If yes, please let us know about the error and we'll look into it.",
   deactivationOnUninstall:
     "We couldn't deactivate Imperial Splendour to prepare for uninstalling." + pleaseContact,
-  uninstall: "We couldn't delete all the files. Please go in and delete them manually.", // TODO: Adjust for additional uninstall capabilities
+  noUninstaller:
+    "We couldn't find the uninstaller. If you installed Imperial Splendour manually you need to uninstall it manually too. If you installed it using the setup.exe this shouldn't have happened." +
+    pleaseContact,
+  uninstall: "We couldn't delete all the files. Please go in and delete them manually.",
   deactivationOnDeactivation:
     'We ran into issues switching to the base game. Your files and status might be out of sync.' +
     pleaseContact,

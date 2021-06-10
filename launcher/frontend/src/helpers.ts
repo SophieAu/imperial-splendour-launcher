@@ -57,6 +57,7 @@ export const mapSwitchError = (isDeactivating: boolean, { message }: Error): str
 export const mapUninstallError = ({ message }: Error): string => {
   if (message === Errors.UNINSTALL) return apiErrors.uninstall;
   else if (message === Errors.DEACTIVATION) return apiErrors.deactivationOnUninstall;
+  else if (message == Errors.NO_UNINSTALLER) return apiErrors.noUninstaller;
 
   return apiErrors.unexpected;
 };
