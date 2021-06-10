@@ -18,7 +18,8 @@ jobs:
     - name: Test Launcher Backend
       run: |
         cd launcher
-        touch frontend/public/build/bundle.js
+        mkdir -p frontend/public/build
+        touch bundle.js
         touch alibiCSS.css
         go test ./... -v
 
