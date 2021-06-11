@@ -1,4 +1,4 @@
-module imperial-splendour-launcher
+module imperial-splendour-bundler
 
 go 1.16
 

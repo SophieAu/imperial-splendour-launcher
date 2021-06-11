@@ -2,7 +2,7 @@ package main
 
 import (
 	_ "embed"
-	"imperial-splendour-launcher/backend"
+	"imperial-splendour-bundler/backend"
 
 	"github.com/wailsapp/wails"
 )
