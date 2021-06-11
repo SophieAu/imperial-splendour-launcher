@@ -3,6 +3,7 @@ package backend_test
 import (
 	"errors"
 	"imperial-splendour-bundler/backend"
+	"imperial-splendour-bundler/backend/customErrors"
 	"imperial-splendour-bundler/backend/test"
 	"testing"
 
@@ -20,10 +21,11 @@ func TestInit(t *testing.T) {
 		api := &backend.API{}
 
 		mockS.On("RunCommand", mock.Anything, mock.Anything).Return(errors.New("No Innosetup installed"))
+		mockL.On("Warn", mock.Anything).Return()
 
 		err := api.Init(mockB, mockW, mockL, mockS)
 
-		assert.EqualError(t, err, "No Innosetup installed")
+		assert.Equal(t, err, customErrors.InnoSetup)
 
 		test.After(*api)
 	})
@@ -36,6 +38,7 @@ func TestInit(t *testing.T) {
 		api := &backend.API{}
 
 		mockS.On("RunCommand", mock.Anything, mock.Anything).Return(nil)
+		mockL.On("Warn", mock.Anything).Return()
 
 		err := api.Init(mockB, mockW, mockL, mockS)
 

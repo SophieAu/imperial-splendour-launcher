@@ -3,14 +3,15 @@ package backend
 import "github.com/wailsapp/wails/lib/logger"
 
 type Logger interface {
-	Infof(message string, args ...interface{})
-	Debug(message string)
 	Info(message string)
-	InfoFields(message string, fields logger.Fields)
-	Debugf(message string, args ...interface{})
-	DebugFields(message string, fields logger.Fields)
+	Infof(message string, args ...interface{})
 	Warn(message string)
 	Warnf(message string, args ...interface{})
+	Debug(message string)
+	Debugf(message string, args ...interface{})
+
+	InfoFields(message string, fields logger.Fields)
+	DebugFields(message string, fields logger.Fields)
 	WarnFields(message string, fields logger.Fields)
 	Error(message string)
 	Errorf(message string, args ...interface{})

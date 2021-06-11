@@ -21,3 +21,12 @@ type Info struct {
 	Version            string `json:"version"`
 	UserScriptChecksum string `json:"usChecksum"`
 }
+
+func (a *API) error(warning string, err error) error {
+	a.logger.Warn(warning)
+
+	if err == nil {
+		err = errors.New(warning)
+	}
+	return err
+}
