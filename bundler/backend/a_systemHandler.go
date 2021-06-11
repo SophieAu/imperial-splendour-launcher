@@ -4,6 +4,7 @@ import (
 	"errors"
 	"io"
 	"os"
+	"os/exec"
 )
 
 // Handler is an abstraction of all direct system interaction
@@ -12,7 +13,7 @@ type Handler interface {
 	WriteFile(filePath string, data []byte) error
 	ReadFile(filePath string) ([]byte, error)
 	MoveFile(source, destination string) error
-	// StartCommand(name string) error
+	RunCommand(name string, arg ...string) error
 	DoesFileExist(path string) (bool, error)
 }
 
@@ -61,9 +62,9 @@ func (w *SystemHandler) ReadFile(filePath string) ([]byte, error) {
 	return os.ReadFile(filePath)
 }
 
-// func (w *SystemHandler) StartCommand(name string) error {
-// 	return exec.Command(name).Start()
-// }
+func (w *SystemHandler) RunCommand(name string, arg ...string) error {
+	return exec.Command(name, arg...).Start()
+}
 
 func (w *SystemHandler) MoveFile(source, destination string) error {
 	if err := rename(source, destination); err != nil {
