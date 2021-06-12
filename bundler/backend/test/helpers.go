@@ -7,11 +7,12 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func Before() (*backend.API, *mocks.MockBrowser, *mocks.MockWindow, *mocks.MockLogger, *mocks.MockSystemHandler) {
-	mockS := &mocks.MockSystemHandler{}
+func Before() (*backend.API, *mocks.MockBrowser, *mocks.MockWindow, *mocks.MockLogger, *mocks.MockStore, *mocks.MockSystemHandler) {
+	mockSh := &mocks.MockSystemHandler{}
 	mockB := &mocks.MockBrowser{}
 	mockW := &mocks.MockWindow{}
 	mockL := &mocks.MockLogger{}
+	mockSt := &mocks.MockStore{}
 
 	mockW.On("Close").Return()
 
@@ -24,11 +25,11 @@ func Before() (*backend.API, *mocks.MockBrowser, *mocks.MockWindow, *mocks.MockL
 
 	api := &backend.API{}
 
-	mockS.On("RunCommand", "/bin/sh", []string{"-c", "command -v iscc"}).Return(nil)
-	if err := api.Init(mockB, mockW, mockL, mockS); err != nil {
+	mockSh.On("RunCommand", "/bin/sh", []string{"-c", "command -v iscc"}).Return(nil)
+	if err := api.Init(mockB, mockW, mockL, mockSt, mockSh); err != nil {
 		panic(err)
 	}
-	return api, mockB, mockW, mockL, mockS
+	return api, mockB, mockW, mockL, mockSt, mockSh
 }
 
 func After(api backend.API) {

@@ -123,3 +123,26 @@ type MockWindow struct {
 func (w *MockWindow) Close() {
 	_ = w.Called()
 }
+
+// Store
+type MockStore struct {
+	mock.Mock
+}
+
+func (s *MockStore) OnError(callback func(error)) {
+	_ = s.Called(callback)
+}
+func (s *MockStore) Set(data interface{}) error {
+	args := s.Called(data)
+	return args.Error(0)
+}
+func (s *MockStore) Update(updater interface{}) {
+	_ = s.Called(updater)
+}
+func (s *MockStore) Subscribe(callback interface{}) {
+	_ = s.Called(callback)
+}
+func (s *MockStore) Get() interface{} {
+	args := s.Called()
+	return args.Error(0)
+}

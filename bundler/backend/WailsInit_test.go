@@ -15,16 +15,17 @@ import (
 func TestInit(t *testing.T) {
 
 	t.Run("InnoSetup is not present", func(t *testing.T) {
-		mockS := &mocks.MockSystemHandler{}
+		mockSh := &mocks.MockSystemHandler{}
 		mockB := &mocks.MockBrowser{}
 		mockW := &mocks.MockWindow{}
 		mockL := &mocks.MockLogger{}
+		mockSt := &mocks.MockStore{}
 		api := &backend.API{}
 
-		mockS.On("RunCommand", mock.Anything, mock.Anything).Return(errors.New("No Innosetup installed"))
+		mockSh.On("RunCommand", mock.Anything, mock.Anything).Return(errors.New("No Innosetup installed"))
 		mockL.On("Warn", mock.Anything).Return()
 
-		err := api.Init(mockB, mockW, mockL, mockS)
+		err := api.Init(mockB, mockW, mockL, mockSt, mockSh)
 
 		assert.Equal(t, err, customErrors.InnoSetup)
 
@@ -32,16 +33,17 @@ func TestInit(t *testing.T) {
 	})
 
 	t.Run("InnoSetup is present", func(t *testing.T) {
-		mockS := &mocks.MockSystemHandler{}
+		mockSh := &mocks.MockSystemHandler{}
 		mockB := &mocks.MockBrowser{}
 		mockW := &mocks.MockWindow{}
 		mockL := &mocks.MockLogger{}
+		mockSt := &mocks.MockStore{}
 		api := &backend.API{}
 
-		mockS.On("RunCommand", mock.Anything, mock.Anything).Return(nil)
+		mockSh.On("RunCommand", mock.Anything, mock.Anything).Return(nil)
 		mockL.On("Warn", mock.Anything).Return()
 
-		err := api.Init(mockB, mockW, mockL, mockS)
+		err := api.Init(mockB, mockW, mockL, mockSt, mockSh)
 
 		assert.Nil(t, err)
 

@@ -14,15 +14,16 @@ func (a *API) ensureInnoSetup() error {
 	return nil
 }
 
-func (a *API) Init(browser Browser, window Window, logger Logger, systemHandler Handler) error {
+func (a *API) Init(browser Browser, window Window, logger Logger, store Store, systemHandler Handler) error {
 	a.browser = browser
 	a.window = window
 	a.logger = logger
 	a.Sh = systemHandler
+	a.logStore = store
 
 	return a.ensureInnoSetup()
 }
 
 func (a *API) WailsInit(runtime *wails.Runtime) error {
-	return a.Init(runtime.Browser, runtime.Window, runtime.Log.New("API"), &SystemHandler{})
+	return a.Init(runtime.Browser, runtime.Window, runtime.Log.New("API"), runtime.Store.New("Log", []string{}), &SystemHandler{})
 }

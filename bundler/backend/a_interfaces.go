@@ -31,3 +31,13 @@ type Browser interface {
 type Window interface {
 	Close()
 }
+
+type Store interface {
+	OnError(callback func(error))
+	Set(data interface{}) error
+	Update(updater interface{})
+	Subscribe(callback interface{})
+	Get() interface{}
+}
+
+type Runtime interface{}

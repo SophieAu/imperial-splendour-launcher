@@ -7,8 +7,8 @@ type API struct {
 	browser         Browser
 	window          Window
 	Sh              Handler
+	logStore        Store
 	userSettings    UserSettings
-	logString       []string
 	setupBaseFolder string
 }
 
@@ -27,7 +27,10 @@ type Info struct {
 
 func (a *API) logToFrontend(s string) {
 	a.logger.Info(s)
-	a.logString = append(a.logString, s)
+
+	a.logStore.Update(func(currentValue []string) []string {
+		return append(currentValue, s)
+	})
 }
 
 func (a *API) error(warning string, err error) error {
