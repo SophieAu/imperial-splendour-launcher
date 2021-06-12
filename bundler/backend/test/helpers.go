@@ -2,15 +2,16 @@ package test
 
 import (
 	"imperial-splendour-bundler/backend"
+	"imperial-splendour-bundler/backend/mocks"
 
 	"github.com/stretchr/testify/mock"
 )
 
-func Before() (*backend.API, *MockBrowser, *MockWindow, *MockLogger, *MockSystemHandler) {
-	mockS := &MockSystemHandler{}
-	mockB := &MockBrowser{}
-	mockW := &MockWindow{}
-	mockL := &MockLogger{}
+func Before() (*backend.API, *mocks.MockBrowser, *mocks.MockWindow, *mocks.MockLogger, *mocks.MockSystemHandler) {
+	mockS := &mocks.MockSystemHandler{}
+	mockB := &mocks.MockBrowser{}
+	mockW := &mocks.MockWindow{}
+	mockL := &mocks.MockLogger{}
 
 	mockW.On("Close").Return()
 
@@ -23,6 +24,7 @@ func Before() (*backend.API, *MockBrowser, *MockWindow, *MockLogger, *MockSystem
 
 	api := &backend.API{}
 
+	mockS.On("RunCommand", "/bin/sh", []string{"-c", "command -v iscc"}).Return(nil)
 	if err := api.Init(mockB, mockW, mockL, mockS); err != nil {
 		panic(err)
 	}
