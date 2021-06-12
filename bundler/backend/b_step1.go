@@ -2,12 +2,11 @@ package backend
 
 import (
 	"errors"
-	"io/ioutil"
 	"strings"
 )
 
 func (a *API) createFileList() ([]string, error) {
-	files, err := ioutil.ReadDir(".")
+	files, err := a.Sh.ReadDir(".")
 	if err != nil {
 		return nil, err
 	}

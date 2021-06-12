@@ -3,6 +3,8 @@ package backend
 import (
 	"errors"
 	"io"
+	"io/fs"
+	"io/ioutil"
 	"os"
 	"os/exec"
 )
@@ -15,6 +17,7 @@ type Handler interface {
 	MoveFile(source, destination string) error
 	RunCommand(name string, arg ...string) error
 	DoesFileExist(path string) (bool, error)
+	ReadDir(dirname string) ([]fs.FileInfo, error)
 }
 
 type SystemHandler struct {
@@ -83,4 +86,8 @@ func (w *SystemHandler) DoesFileExist(path string) (bool, error) {
 	} else {
 		return false, err
 	}
+}
+
+func (w *SystemHandler) ReadDir(dirname string) ([]fs.FileInfo, error) {
+	return ioutil.ReadDir(".")
 }
