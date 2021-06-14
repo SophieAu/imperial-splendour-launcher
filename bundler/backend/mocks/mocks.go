@@ -49,6 +49,11 @@ func (sh *MockSystemHandler) GetDirContentByName(dirname string) ([]string, erro
 	return args.Get(0).([]string), args.Error(1)
 }
 
+func (sh *MockSystemHandler) DownloadFile(url string, targetFilePath string) error {
+	args := sh.Called(url, targetFilePath)
+	return args.Error(0)
+}
+
 // Logger
 type MockLogger struct {
 	mock.Mock

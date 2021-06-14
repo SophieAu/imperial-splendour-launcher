@@ -1,10 +1,6 @@
 package backend
 
-import (
-	"io"
-	"net/http"
-	"os"
-)
+import "imperial-splendour-bundler/backend/customErrors"
 
 const (
 	deactivatorUrl = "https://github.com/SophieAu/imperial-splendour-launcher/raw/master/artifacts/deactivator.exe"
@@ -19,39 +15,18 @@ func (a *API) downloadFiles() error {
 	launcherTarget := a.setupBaseFolder + "/" + tempPath + launcherFile
 	deactivatorTarget := a.setupBaseFolder + "/" + tempPath + uninstallPath + deactivatorFile
 
-	if err := DownloadFile(appiconTarget, appiconUrl); err != nil {
-		return err
+	if err := a.Sh.DownloadFile(appiconUrl, appiconTarget); err != nil {
+		return a.error("Cannot download Appicon", customErrors.Download)
 	}
-	if err := DownloadFile(setupTarget, setupUrl); err != nil {
-		return err
+	if err := a.Sh.DownloadFile(setupUrl, setupTarget); err != nil {
+		return a.error("Cannot download setup script", customErrors.Download)
 	}
-	if err := DownloadFile(launcherTarget, launcherUrl); err != nil {
-		return err
+	if err := a.Sh.DownloadFile(launcherUrl, launcherTarget); err != nil {
+		return a.error("Cannot download launcher", customErrors.Download)
 	}
-	if err := DownloadFile(deactivatorTarget, deactivatorUrl); err != nil {
-		return err
+	if err := a.Sh.DownloadFile(deactivatorUrl, deactivatorTarget); err != nil {
+		return a.error("Cannot download deactivator", customErrors.Download)
 	}
 
 	return nil
-}
-
-func DownloadFile(url string, targetFilePath string) error {
-
-	// Get the data
-	resp, err := http.Get(url)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	// Create the file
-	out, err := os.Create(targetFilePath)
-	if err != nil {
-		return err
-	}
-	defer out.Close()
-
-	// Write the body to file
-	_, err = io.Copy(out, resp.Body)
-	return err
 }

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"io"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"os/exec"
 )
@@ -17,6 +18,7 @@ type Handler interface {
 	RunCommand(name string, arg ...string) error
 	DoesFileExist(path string) (bool, error)
 	GetDirContentByName(dirname string) ([]string, error)
+	DownloadFile(url string, targetFilePath string) error
 }
 
 type SystemHandler struct {
@@ -98,4 +100,25 @@ func (w *SystemHandler) GetDirContentByName(dirname string) ([]string, error) {
 		fileList = append(fileList, file.Name())
 	}
 	return fileList, nil
+}
+
+func (w *SystemHandler) DownloadFile(url string, targetFilePath string) error {
+
+	// Get the data
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	// Create the file
+	out, err := os.Create(targetFilePath)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+
+	// Write the body to file
+	_, err = io.Copy(out, resp.Body)
+	return err
 }
