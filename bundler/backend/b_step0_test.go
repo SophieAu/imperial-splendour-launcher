@@ -53,13 +53,16 @@ func TestSetupBaseFolder(t *testing.T) {
 
 func TestCreateTempFolder(t *testing.T) {
 	mockL := &mocks.MockLogger{}
+	mockSt := &mocks.MockStore{}
 	mockL.On("Warn", mock.Anything).Return()
 	mockL.On("Info", mock.Anything).Return()
+	mockSt.On("Update", mock.Anything).Return()
 
 	t.Run("Cannot create mod folder", func(t *testing.T) {
 		mockS := &mocks.MockSystemHandler{}
 		mockS.On("MkdirAll", "folder/"+tempPath+modPath).Return(errors.New("nope")).Once()
-		api := &API{logger: mockL, Sh: mockS}
+
+		api := &API{logger: mockL, Sh: mockS, logStore: mockSt}
 		api.setupBaseFolder = "folder"
 
 		err := api.createTempFolder()
@@ -71,9 +74,9 @@ func TestCreateTempFolder(t *testing.T) {
 		mockS := &mocks.MockSystemHandler{}
 		mockS.On("MkdirAll", "folder/"+tempPath+modPath).Return(nil).Once()
 		mockS.On("MkdirAll", "folder/"+tempPath+uninstallPath).Return(errors.New("nope")).Once()
-		api := &API{logger: mockL, Sh: mockS}
-		api.setupBaseFolder = "folder"
 
+		api := &API{logger: mockL, Sh: mockS, logStore: mockSt}
+		api.setupBaseFolder = "folder"
 		err := api.createTempFolder()
 
 		assert.Equal(t, err, customErrors.TempFolderCreation)
@@ -83,9 +86,9 @@ func TestCreateTempFolder(t *testing.T) {
 		mockS := &mocks.MockSystemHandler{}
 		mockS.On("MkdirAll", "folder/"+tempPath+modPath).Return(nil).Once()
 		mockS.On("MkdirAll", "folder/"+tempPath+uninstallPath).Return(nil).Once()
-		api := &API{logger: mockL, Sh: mockS}
-		api.setupBaseFolder = "folder"
 
+		api := &API{logger: mockL, Sh: mockS, logStore: mockSt}
+		api.setupBaseFolder = "folder"
 		err := api.createTempFolder()
 
 		assert.Nil(t, err)

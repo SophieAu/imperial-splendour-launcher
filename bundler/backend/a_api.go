@@ -1,7 +1,5 @@
 package backend
 
-import "errors"
-
 type API struct {
 	logger          Logger
 	browser         Browser
@@ -34,11 +32,6 @@ func (a *API) logToFrontend(s string) {
 }
 
 func (a *API) error(warning string, err error) error {
-	a.logger.Warn(warning)
-
-	if err == nil {
-		err = errors.New(warning)
-	}
 	a.logger.Warn(warning)
 	return err
 }
