@@ -28,17 +28,17 @@ func (a *API) getSetupBaseFolder(sourcePath string) string {
 }
 
 func (a *API) createTempFolder() error {
-	basePath := a.setupBaseFolder + "/"
-
-	if err := a.Sh.MkdirAll(basePath + tempPath + modPath); err != nil {
-		return a.error("Couldn't create "+basePath+tempPath+modPath+": "+err.Error(), customErrors.TempFolderCreation)
+	targetModPath := a.setupBaseFolder + tempPath + modPath
+	if err := a.Sh.MkdirAll(targetModPath); err != nil {
+		return a.error("Couldn't create "+targetModPath+": "+err.Error(), customErrors.TempFolderCreation)
 	}
-	a.logToFrontend("Created folder " + basePath + tempPath + modPath)
+	a.logToFrontend("Created folder " + targetModPath)
 
-	if err := a.Sh.MkdirAll(basePath + tempPath + uninstallPath); err != nil {
-		return a.error("Couldn't create "+basePath+tempPath+uninstallPath+": "+err.Error(), customErrors.TempFolderCreation)
+	targetUninstallPath := a.setupBaseFolder + tempPath + uninstallPath
+	if err := a.Sh.MkdirAll(targetUninstallPath); err != nil {
+		return a.error("Couldn't create "+targetUninstallPath+": "+err.Error(), customErrors.TempFolderCreation)
 	}
-	a.logToFrontend("Created folder " + basePath + tempPath + uninstallPath)
+	a.logToFrontend("Created folder " + targetUninstallPath)
 
 	return nil
 }

@@ -17,7 +17,7 @@ func (a *API) createInfoJSON(versionNumber string) error {
 		return a.error("Cannot serialize Info file: "+err.Error(), customErrors.InfoFile)
 	}
 
-	targetFilePath := a.setupBaseFolder + "/" + tempPath + modPath + infoFile
+	targetFilePath := a.setupBaseFolder + tempPath + modPath + infoFile
 	err = a.Sh.WriteFile(targetFilePath, newInfoJSON)
 	if err != nil {
 		return a.error("Cannot save Info file: "+err.Error(), customErrors.InfoFile)

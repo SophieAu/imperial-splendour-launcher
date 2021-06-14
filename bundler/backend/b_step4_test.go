@@ -21,7 +21,7 @@ func TestCreateInfoJSON(t *testing.T) {
 
 	baseFolder := "testfolder"
 
-	t.Run("Errors on the 2nd download", func(t *testing.T) {
+	t.Run("Cannot write file", func(t *testing.T) {
 		mockS := &mocks.MockSystemHandler{}
 		mockS.On("WriteFile", mock.Anything, mock.Anything).Return(errors.New("no write to json")).Once()
 
@@ -33,7 +33,7 @@ func TestCreateInfoJSON(t *testing.T) {
 		mockS.AssertCalled(t, "WriteFile", baseFolder+"/"+tempPath+modPath+infoFile, []byte("{\n\t\"isActive\": false,\n\t\"version\": \"2.0\",\n\t\"usChecksum\": \"test\"\n}"))
 	})
 
-	t.Run("Downloads Everything", func(t *testing.T) {
+	t.Run("All good", func(t *testing.T) {
 		mockS := &mocks.MockSystemHandler{}
 		mockS.On("WriteFile", mock.Anything, mock.Anything).Return(nil)
 

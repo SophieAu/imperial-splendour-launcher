@@ -10,10 +10,10 @@ const (
 )
 
 func (a *API) downloadFiles() error {
-	appiconTarget := a.setupBaseFolder + "/" + appicon
-	setupTarget := a.setupBaseFolder + "/" + setupFile
-	launcherTarget := a.setupBaseFolder + "/" + tempPath + launcherFile
-	deactivatorTarget := a.setupBaseFolder + "/" + tempPath + uninstallPath + deactivatorFile
+	appiconTarget := a.setupBaseFolder + appicon
+	setupTarget := a.setupBaseFolder + setupFile
+	launcherTarget := a.setupBaseFolder + tempPath + launcherFile
+	deactivatorTarget := a.setupBaseFolder + tempPath + uninstallPath + deactivatorFile
 
 	if err := a.Sh.DownloadFile(appiconUrl, appiconTarget); err != nil {
 		return a.error("Cannot download Appicon", customErrors.Download)

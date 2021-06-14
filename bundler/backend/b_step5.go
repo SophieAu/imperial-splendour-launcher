@@ -7,7 +7,7 @@ import (
 
 func (a *API) updateSetupVersion(versionNumber string) error {
 
-	setupFileBlob, err := a.Sh.ReadFile(a.setupBaseFolder + "/" + setupFile)
+	setupFileBlob, err := a.Sh.ReadFile(a.setupBaseFolder + setupFile)
 	if err != nil {
 		return a.error("Cannot read setup file: "+err.Error(), customErrors.VersionUpdate)
 	}
@@ -20,7 +20,7 @@ func (a *API) updateSetupVersion(versionNumber string) error {
 
 	newSetupFileContent := strings.ReplaceAll(setupFileContent, VersionPlaceholder, versionNumber)
 
-	err = a.Sh.WriteFile(a.setupBaseFolder+"/"+setupFile, []byte(newSetupFileContent))
+	err = a.Sh.WriteFile(a.setupBaseFolder+setupFile, []byte(newSetupFileContent))
 	if err != nil {
 		return a.error("Cannot update setup file: "+err.Error(), customErrors.VersionUpdate)
 	}

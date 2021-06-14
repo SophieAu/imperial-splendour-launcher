@@ -23,6 +23,8 @@ func Before() (*backend.API, *mocks.MockBrowser, *mocks.MockWindow, *mocks.MockL
 	mockL.On("Debug", mock.Anything).Return(nil)
 	mockL.On("Debugf", mock.Anything, mock.Anything).Return()
 
+	mockSt.On("Update", mock.Anything).Return()
+
 	api := &backend.API{}
 
 	mockSh.On("RunCommand", "/bin/sh", []string{"-c", "command -v iscc"}).Return(nil)
