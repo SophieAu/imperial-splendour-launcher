@@ -7,7 +7,7 @@ import (
 )
 
 func (a *API) ensureInnoSetup() error {
-	err := a.Sh.RunCommand("/bin/sh", "-c", "command -v iscc")
+	err := a.Sh.StartCommand("/bin/sh", "-c", "command -v iscc")
 	if err != nil {
 		return a.error("InnoSetup not installed", customErrors.InnoSetup)
 	}

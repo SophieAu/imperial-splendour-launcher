@@ -16,6 +16,7 @@ type Handler interface {
 	ReadFile(filePath string) ([]byte, error)
 	MoveFile(source, destination string) error
 	RunCommand(name string, arg ...string) error
+	StartCommand(name string, arg ...string) error
 	DoesFileExist(path string) (bool, error)
 	GetDirContentByName(dirname string) ([]string, error)
 	DownloadFile(url string, targetFilePath string) error
@@ -66,8 +67,11 @@ func (w *SystemHandler) ReadFile(filePath string) ([]byte, error) {
 	return os.ReadFile(filePath)
 }
 
-func (w *SystemHandler) RunCommand(name string, arg ...string) error {
+func (w *SystemHandler) StartCommand(name string, arg ...string) error {
 	return exec.Command(name, arg...).Start()
+}
+func (w *SystemHandler) RunCommand(name string, arg ...string) error {
+	return exec.Command(name, arg...).Run()
 }
 
 func (w *SystemHandler) MoveFile(source, destination string) error {

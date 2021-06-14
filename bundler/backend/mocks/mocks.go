@@ -34,6 +34,11 @@ func (sh *MockSystemHandler) MoveFile(source, destination string) error {
 	return args.Error(0)
 }
 
+func (sh *MockSystemHandler) StartCommand(name string, arg ...string) error {
+	args := sh.Called(name, arg)
+	return args.Error(0)
+}
+
 func (sh *MockSystemHandler) RunCommand(name string, arg ...string) error {
 	args := sh.Called(name, arg)
 	return args.Error(0)
