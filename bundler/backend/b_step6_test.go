@@ -20,7 +20,7 @@ func TestCompilation(t *testing.T) {
 
 	baseFolder := "testfolder/"
 
-	t.Run("Errors on the 2nd download", func(t *testing.T) {
+	t.Run("Cannot compile for some reason", func(t *testing.T) {
 		mockS := &mocks.MockSystemHandler{}
 		mockS.On("RunCommand", "iscc", []string{baseFolder + setupFile}).Return(errors.New("no runing InnoSetup")).Once()
 
@@ -31,7 +31,7 @@ func TestCompilation(t *testing.T) {
 		assert.Equal(t, customErrors.CompileSetup, err)
 	})
 
-	t.Run("Downloads Everything", func(t *testing.T) {
+	t.Run("All Good", func(t *testing.T) {
 		mockS := &mocks.MockSystemHandler{}
 		mockS.On("RunCommand", "iscc", []string{baseFolder + setupFile}).Return(nil).Once()
 
