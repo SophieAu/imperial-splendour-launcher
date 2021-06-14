@@ -11,7 +11,7 @@ import (
 	"testing"
 )
 
-func TestDerp(t *testing.T) {
+func TestCompilation(t *testing.T) {
 	mockL := &mocks.MockLogger{}
 	mockSt := &mocks.MockStore{}
 	mockL.On("Warn", mock.Anything).Return()
