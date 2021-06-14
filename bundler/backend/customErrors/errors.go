@@ -13,4 +13,7 @@ var FileMissing = errors.New("FileMissingError")
 var MoveFile = errors.New("MoveFileError")
 var SaveFileList = errors.New("SaveFileListError")
 
+var UserScriptMissing = errors.New("UserScriptMissingError")
+var MoveUserScript = errors.New("MoveUserScriptError")
+
 var NoFileList = errors.New("NoFileListError")

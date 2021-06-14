@@ -1,16 +1,19 @@
 package backend
 
-func (a *API) ensureUserScript() bool {
-	doesUserScriptExist, _ := a.Sh.DoesFileExist(a.userSettings.sourcePath + "/" + userScript)
+import "imperial-splendour-bundler/backend/customErrors"
 
-	return doesUserScriptExist
-}
+func (a *API) prepareUserScript(sourcePath string) error {
+	if doesUserScriptExist, _ := a.Sh.DoesFileExist(sourcePath + "/" + userScript); !doesUserScriptExist {
+		return a.error("Userscript not found.", customErrors.UserScriptMissing)
+	}
 
-func (a *API) moveUserScriptIntoModFolder() error {
-	source := a.userSettings.sourcePath + "/" + userScript
+	source := sourcePath + "/" + userScript
 	destination := a.setupBaseFolder + tempPath + modPath + userScript
 
-	a.logger.Debugf("Moving from %s to %s", source, destination)
+	a.logger.Info("Moving from " + source + " to " + destination)
 	err := a.Sh.MoveFile(source, destination)
-	return err
+	if err != nil {
+		return a.error("Cannot Move userScript: "+err.Error(), customErrors.MoveUserScript)
+	}
+	return nil
 }
