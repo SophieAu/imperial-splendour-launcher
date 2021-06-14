@@ -1,20 +1,26 @@
 package backend
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"imperial-splendour-bundler/backend/customErrors"
+)
 
-func (a *API) createInfoJSON() error {
+func (a *API) createInfoJSON(versionNumber string) error {
 	newInfo := Info{
 		IsActive:           false,
-		Version:            a.userSettings.versionNumber,
+		Version:            versionNumber,
 		UserScriptChecksum: "test",
 	}
 
 	newInfoJSON, err := json.MarshalIndent(newInfo, "", "\t")
 	if err != nil {
-		return err
+		return a.error("Cannot serialize Info file: "+err.Error(), customErrors.InfoFile)
 	}
 
 	targetFilePath := a.setupBaseFolder + "/" + tempPath + modPath + infoFile
 	err = a.Sh.WriteFile(targetFilePath, newInfoJSON)
-	return err
+	if err != nil {
+		return a.error("Cannot save Info file: "+err.Error(), customErrors.InfoFile)
+	}
+	return nil
 }
