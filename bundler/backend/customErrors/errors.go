@@ -18,5 +18,6 @@ var MoveUserScript = errors.New("MoveUserScriptError")
 
 var Download = errors.New("DownloadError")
 var InfoFile = errors.New("InfoFileError")
+var VersionUpdate = errors.New("VersionUpdateError")
 
 var NoFileList = errors.New("NoFileListError")
