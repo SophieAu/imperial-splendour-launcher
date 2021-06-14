@@ -59,6 +59,11 @@ func (sh *MockSystemHandler) DownloadFile(url string, targetFilePath string) err
 	return args.Error(0)
 }
 
+func (sh *MockSystemHandler) ZipFiles(filename string, files []string) error {
+	args := sh.Called(filename, files)
+	return args.Error(0)
+}
+
 // Logger
 type MockLogger struct {
 	mock.Mock
