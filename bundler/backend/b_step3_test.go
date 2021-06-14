@@ -27,7 +27,7 @@ func TestDownloadFiles(t *testing.T) {
 		mockS.On("DownloadFile", mock.Anything, mock.Anything).Return(nil)
 
 		api := &API{logger: mockL, Sh: mockS, logStore: mockSt}
-		api.setupBaseFolder = baseFolder
+		api.setupBaseFolder = baseFolder + "/"
 		err := api.downloadFiles()
 
 		assert.Equal(t, customErrors.Download, err)
@@ -39,7 +39,7 @@ func TestDownloadFiles(t *testing.T) {
 		mockS.On("DownloadFile", mock.Anything, mock.Anything).Return(nil)
 
 		api := &API{logger: mockL, Sh: mockS, logStore: mockSt}
-		api.setupBaseFolder = baseFolder
+		api.setupBaseFolder = baseFolder + "/"
 		err := api.downloadFiles()
 
 		assert.Nil(t, err)

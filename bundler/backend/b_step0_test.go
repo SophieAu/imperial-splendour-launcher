@@ -63,7 +63,7 @@ func TestCreateTempFolder(t *testing.T) {
 		mockS.On("MkdirAll", "folder/"+tempPath+modPath).Return(errors.New("nope")).Once()
 
 		api := &API{logger: mockL, Sh: mockS, logStore: mockSt}
-		api.setupBaseFolder = "folder"
+		api.setupBaseFolder = "folder/"
 
 		err := api.createTempFolder()
 
@@ -76,7 +76,7 @@ func TestCreateTempFolder(t *testing.T) {
 		mockS.On("MkdirAll", "folder/"+tempPath+uninstallPath).Return(errors.New("nope")).Once()
 
 		api := &API{logger: mockL, Sh: mockS, logStore: mockSt}
-		api.setupBaseFolder = "folder"
+		api.setupBaseFolder = "folder/"
 		err := api.createTempFolder()
 
 		assert.Equal(t, err, customErrors.TempFolderCreation)
@@ -88,7 +88,7 @@ func TestCreateTempFolder(t *testing.T) {
 		mockS.On("MkdirAll", "folder/"+tempPath+uninstallPath).Return(nil).Once()
 
 		api := &API{logger: mockL, Sh: mockS, logStore: mockSt}
-		api.setupBaseFolder = "folder"
+		api.setupBaseFolder = "folder/"
 		err := api.createTempFolder()
 
 		assert.Nil(t, err)

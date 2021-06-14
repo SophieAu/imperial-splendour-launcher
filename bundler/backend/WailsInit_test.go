@@ -22,7 +22,7 @@ func TestInit(t *testing.T) {
 		mockSt := &mocks.MockStore{}
 		api := &backend.API{}
 
-		mockSh.On("RunCommand", mock.Anything, mock.Anything).Return(errors.New("No Innosetup installed"))
+		mockSh.On("StartCommand", mock.Anything, mock.Anything).Return(errors.New("No Innosetup installed"))
 		mockL.On("Warn", mock.Anything).Return()
 
 		err := api.Init(mockB, mockW, mockL, mockSt, mockSh)
@@ -40,7 +40,7 @@ func TestInit(t *testing.T) {
 		mockSt := &mocks.MockStore{}
 		api := &backend.API{}
 
-		mockSh.On("RunCommand", mock.Anything, mock.Anything).Return(nil)
+		mockSh.On("StartCommand", mock.Anything, mock.Anything).Return(nil)
 		mockL.On("Warn", mock.Anything).Return()
 
 		err := api.Init(mockB, mockW, mockL, mockSt, mockSh)

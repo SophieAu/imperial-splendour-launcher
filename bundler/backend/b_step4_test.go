@@ -26,7 +26,7 @@ func TestCreateInfoJSON(t *testing.T) {
 		mockS.On("WriteFile", mock.Anything, mock.Anything).Return(errors.New("no write to json")).Once()
 
 		api := &API{logger: mockL, Sh: mockS, logStore: mockSt}
-		api.setupBaseFolder = baseFolder
+		api.setupBaseFolder = baseFolder + "/"
 		err := api.createInfoJSON("2.0")
 
 		assert.Equal(t, customErrors.InfoFile, err)
@@ -38,7 +38,7 @@ func TestCreateInfoJSON(t *testing.T) {
 		mockS.On("WriteFile", mock.Anything, mock.Anything).Return(nil)
 
 		api := &API{logger: mockL, Sh: mockS, logStore: mockSt}
-		api.setupBaseFolder = baseFolder
+		api.setupBaseFolder = baseFolder + "/"
 		err := api.createInfoJSON("3.7")
 
 		assert.Nil(t, err)

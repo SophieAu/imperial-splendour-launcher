@@ -26,7 +26,7 @@ func TestUpdatingVersionInSetupFile(t *testing.T) {
 		mockS.On("ReadFile", baseFolder+"/"+setupFile).Return([]byte("stringy string !!!VERSION HERE!!!"), errors.New("Cannot read")).Once()
 
 		api := &API{logger: mockL, Sh: mockS, logStore: mockSt}
-		api.setupBaseFolder = baseFolder
+		api.setupBaseFolder = baseFolder + "/"
 		err := api.updateSetupVersion("2.0")
 
 		assert.Equal(t, customErrors.VersionUpdate, err)
@@ -38,7 +38,7 @@ func TestUpdatingVersionInSetupFile(t *testing.T) {
 		mockS.On("ReadFile", baseFolder+"/"+setupFile).Return([]byte("stringy string derpderp"), nil).Once()
 
 		api := &API{logger: mockL, Sh: mockS, logStore: mockSt}
-		api.setupBaseFolder = baseFolder
+		api.setupBaseFolder = baseFolder + "/"
 		err := api.updateSetupVersion("2.0")
 
 		assert.Equal(t, customErrors.VersionUpdate, err)
@@ -51,7 +51,7 @@ func TestUpdatingVersionInSetupFile(t *testing.T) {
 		mockS.On("WriteFile", mock.Anything, mock.Anything).Return(errors.New("cannot write"))
 
 		api := &API{logger: mockL, Sh: mockS, logStore: mockSt}
-		api.setupBaseFolder = baseFolder
+		api.setupBaseFolder = baseFolder + "/"
 		err := api.updateSetupVersion("2.0")
 
 		assert.Equal(t, customErrors.VersionUpdate, err)
@@ -65,7 +65,7 @@ func TestUpdatingVersionInSetupFile(t *testing.T) {
 		mockS.On("WriteFile", mock.Anything, mock.Anything).Return(nil)
 
 		api := &API{logger: mockL, Sh: mockS, logStore: mockSt}
-		api.setupBaseFolder = baseFolder
+		api.setupBaseFolder = baseFolder + "/"
 		err := api.updateSetupVersion("3.7")
 
 		assert.Nil(t, err)
