@@ -2,27 +2,42 @@ package backend
 
 import (
 	"errors"
+	"imperial-splendour-bundler/backend/customErrors"
 	"strings"
 )
 
-func (a *API) createFileList() ([]string, error) {
-	files, err := a.Sh.ReadDir(".")
+func (a *API) prepareModFiles(sourcePath, fileListPath string) error {
+	actualFileList, err := a.Sh.GetDirContentByName(sourcePath)
 	if err != nil {
-		return nil, err
+		return a.error("Cannot read dir under"+sourcePath+": "+err.Error(), customErrors.ReadSourceDir)
+	}
+	expectedFileList, err := a.readFileList(fileListPath)
+	if err != nil {
+		return err
 	}
 
-	fileList := []string{}
-	for _, file := range files {
-		fileName := file.Name()
-		if strings.HasSuffix(fileName, ".pack") || strings.HasSuffix(fileName, ".tga") || strings.HasSuffix(fileName, ".esf") || strings.HasSuffix(fileName, ".lua") {
-			fileList = append(fileList, fileName)
-		}
+	if err := a.compareFileLists(expectedFileList, actualFileList); err != nil {
+		return err
 	}
-
-	return fileList, nil
+	if err := a.moveFilesIntoModFolder(sourcePath, expectedFileList); err != nil {
+		return err
+	}
+	if err := a.saveFileListIntoModFolder(expectedFileList); err != nil {
+		return err
+	}
+	return nil
 }
 
-func GetSetDifference(a, b []string) (diff []string) {
+func (a *API) readFileList(fileListPath string) ([]string, error) {
+	expectedListBlob, err := a.Sh.ReadFile(fileListPath)
+	if err != nil {
+		return nil, a.error("Cannot read file list: "+err.Error(), customErrors.ReadFileList)
+	}
+	expectedList := strings.Split(string(expectedListBlob), "\n")
+	return expectedList, nil
+}
+
+func GetDifference(a, b []string) (diff []string) {
 	m := make(map[string]bool)
 
 	// set values in b as keys in the map
@@ -39,40 +54,24 @@ func GetSetDifference(a, b []string) (diff []string) {
 	return diff
 }
 
-func (a *API) readComparisonFileList() ([]string, error) {
-	expectedListBlob, err := a.Sh.ReadFile(a.userSettings.comparisonFileListPath)
-	if err != nil {
-		return nil, err
-	}
-	expectedList := strings.Split(string(expectedListBlob), "\n")
-	return expectedList, err
-}
-
 func (a *API) compareFileLists(expected, actual []string) error {
-	valuesInActualButNotInExpected := GetSetDifference(actual, expected)
-	valuesInExpectedButNotInActual := GetSetDifference(expected, actual)
-
-	// TODO: PROPER ERROR HERE
-	if len(valuesInActualButNotInExpected) != 0 {
-		return errors.New("Woops")
-	}
-
+	valuesInExpectedButNotInActual := GetDifference(expected, actual)
 	if len(valuesInExpectedButNotInActual) != 0 {
-		return errors.New("Happens")
+		missingFiles := strings.Join(valuesInExpectedButNotInActual, ", ")
+		return a.error("Couldn't find the following files: "+missingFiles, errors.New(customErrors.FileMissing.Error()+" "+missingFiles))
 	}
-
 	return nil
 }
 
-func (a *API) moveFilesIntoModFolder(fileList []string) error {
+func (a *API) moveFilesIntoModFolder(sourcePath string, fileList []string) error {
 	for _, file := range fileList {
-		source := "./" + file
+		source := sourcePath + "/" + file
 		destination := a.setupBaseFolder + tempPath + modPath + file
 
-		a.logger.Debugf("Moving from %s to %s", source, destination)
+		a.logToFrontend("Moving from " + source + " to " + destination)
 		err := a.Sh.MoveFile(source, destination)
 		if err != nil {
-			return err
+			return a.error("Couldn't move "+file, errors.New(customErrors.MoveFile.Error()+" "+file))
 		}
 	}
 
@@ -85,5 +84,8 @@ func (a *API) saveFileListIntoModFolder(fileList []string) error {
 	fileListByteSlice := []byte(strings.Join(fileList, "\n"))
 
 	err := a.Sh.WriteFile(destination, fileListByteSlice)
-	return err
+	if err != nil {
+		return a.error("Couldn't save file list: "+err.Error(), customErrors.SaveFileList)
+	}
+	return nil
 }

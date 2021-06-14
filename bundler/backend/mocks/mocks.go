@@ -44,6 +44,11 @@ func (sh *MockSystemHandler) DoesFileExist(path string) (bool, error) {
 	return args.Get(0).(bool), args.Error(1)
 }
 
+func (sh *MockSystemHandler) GetDirContentByName(dirname string) ([]string, error) {
+	args := sh.Called(dirname)
+	return args.Get(0).([]string), args.Error(1)
+}
+
 // Logger
 type MockLogger struct {
 	mock.Mock
