@@ -21,3 +21,6 @@ var InfoFile = errors.New("InfoFileError")
 var VersionUpdate = errors.New("VersionUpdateError")
 
 var NoFileList = errors.New("NoFileListError")
+
+var CompileSetup = errors.New("CompileSetupError")
+var ZipFiles = errors.New("ZipFilesError")
