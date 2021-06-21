@@ -64,6 +64,10 @@ func (sh *MockSystemHandler) ZipFiles(filename string, files []string) error {
 	return args.Error(0)
 }
 
+func (sh *MockSystemHandler) Exit(exitCode int) {
+	_ = sh.Called(exitCode)
+}
+
 // Logger
 type MockLogger struct {
 	mock.Mock
@@ -165,4 +169,22 @@ func (s *MockStore) Subscribe(callback interface{}) {
 func (s *MockStore) Get() interface{} {
 	args := s.Called()
 	return args.Error(0)
+}
+
+// Dialog
+type MockDialog struct {
+	mock.Mock
+}
+
+func (d *MockDialog) SelectFile(params ...string) string {
+	args := d.Called(params)
+	return args.Get(0).(string)
+}
+func (d *MockDialog) SelectDirectory() string {
+	args := d.Called()
+	return args.Get(0).(string)
+}
+func (d *MockDialog) SelectSaveFile(params ...string) string {
+	args := d.Called(params)
+	return args.Get(0).(string)
 }

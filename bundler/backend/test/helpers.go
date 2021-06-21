@@ -12,6 +12,7 @@ func Before() (*backend.API, *mocks.MockBrowser, *mocks.MockWindow, *mocks.MockL
 	mockB := &mocks.MockBrowser{}
 	mockW := &mocks.MockWindow{}
 	mockL := &mocks.MockLogger{}
+	mockD := &mocks.MockDialog{}
 	mockSt := &mocks.MockStore{}
 
 	mockW.On("Close").Return()
@@ -28,7 +29,7 @@ func Before() (*backend.API, *mocks.MockBrowser, *mocks.MockWindow, *mocks.MockL
 	api := &backend.API{}
 
 	mockSh.On("StartCommand", "/bin/sh", []string{"-c", "command -v iscc"}).Return(nil)
-	if err := api.Init(mockB, mockW, mockL, mockSt, mockSh); err != nil {
+	if err := api.Init(mockB, mockW, mockL, mockSt, mockD, mockSh); err != nil {
 		panic(err)
 	}
 	return api, mockB, mockW, mockL, mockSt, mockSh

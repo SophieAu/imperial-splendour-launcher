@@ -32,6 +32,12 @@ type Window interface {
 	Close()
 }
 
+type Dialog interface {
+	SelectFile(params ...string) string
+	SelectDirectory() string
+	SelectSaveFile(params ...string) string
+}
+
 type Store interface {
 	OnError(callback func(error))
 	Set(data interface{}) error

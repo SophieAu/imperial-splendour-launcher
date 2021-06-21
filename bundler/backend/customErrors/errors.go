@@ -24,3 +24,6 @@ var NoFileList = errors.New("NoFileListError")
 
 var CompileSetup = errors.New("CompileSetupError")
 var ZipFiles = errors.New("ZipFilesError")
+
+var InvalidDir = errors.New("InvalidDirError")
+var InvalidFile = errors.New("InvalidFileError")

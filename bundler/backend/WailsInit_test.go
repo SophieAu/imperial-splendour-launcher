@@ -19,13 +19,14 @@ func TestInit(t *testing.T) {
 		mockB := &mocks.MockBrowser{}
 		mockW := &mocks.MockWindow{}
 		mockL := &mocks.MockLogger{}
+		mockD := &mocks.MockDialog{}
 		mockSt := &mocks.MockStore{}
 		api := &backend.API{}
 
 		mockSh.On("StartCommand", mock.Anything, mock.Anything).Return(errors.New("No Innosetup installed"))
 		mockL.On("Warn", mock.Anything).Return()
 
-		err := api.Init(mockB, mockW, mockL, mockSt, mockSh)
+		err := api.Init(mockB, mockW, mockL, mockSt, mockD, mockSh)
 
 		assert.Equal(t, err, customErrors.InnoSetup)
 
@@ -37,13 +38,14 @@ func TestInit(t *testing.T) {
 		mockB := &mocks.MockBrowser{}
 		mockW := &mocks.MockWindow{}
 		mockL := &mocks.MockLogger{}
+		mockD := &mocks.MockDialog{}
 		mockSt := &mocks.MockStore{}
 		api := &backend.API{}
 
 		mockSh.On("StartCommand", mock.Anything, mock.Anything).Return(nil)
 		mockL.On("Warn", mock.Anything).Return()
 
-		err := api.Init(mockB, mockW, mockL, mockSt, mockSh)
+		err := api.Init(mockB, mockW, mockL, mockSt, mockD, mockSh)
 
 		assert.Nil(t, err)
 

@@ -6,6 +6,7 @@ type API struct {
 	window          Window
 	Sh              Handler
 	logStore        Store
+	dialog          Dialog
 	userSettings    UserSettings
 	setupBaseFolder string
 }

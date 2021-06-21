@@ -22,6 +22,7 @@ type Handler interface {
 	GetDirContentByName(dirname string) ([]string, error)
 	DownloadFile(url string, targetFilePath string) error
 	ZipFiles(filename string, files []string) error
+	Exit(exitCode int)
 }
 
 type SystemHandler struct {
@@ -185,4 +186,8 @@ func (w *SystemHandler) DownloadFile(url string, targetFilePath string) error {
 	// Write the body to file
 	_, err = io.Copy(out, resp.Body)
 	return err
+}
+
+func (w *SystemHandler) Exit(exitCode int) {
+	os.Exit(exitCode)
 }
