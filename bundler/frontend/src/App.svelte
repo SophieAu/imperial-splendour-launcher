@@ -1,5 +1,6 @@
 <script lang="ts">
   import { mapError } from './helpers';
+  import InputForm from './InputForm.svelte';
 
   import Modal from './Modal.svelte';
   import { pageTitle } from './strings';
@@ -57,24 +58,14 @@
 </svelte:head>
 <main class="root">
   <h1 class="heading">Imperial Splendour Bundler</h1>
-  <div class="inputGrid">
-    <p>Source File Path:</p>
-    <div>
-      <input bind:value={selectedFolder} /><button on:click={selectFolder}>Select Folder</button>
-    </div>
-    <p>New Version:</p>
-    <div>
-      <input bind:value={versionNumber} />
-    </div>
-    <p>File List:</p>
-    <div>
-      <input /><button on:click={selectFile}>Select File</button>
-    </div>
-    <p>Package Raw Files?</p>
-    <div>
-      <input type="checkbox" bind:checked={shouldPackageRawFiles} />
-    </div>
-  </div>
+  <InputForm
+    bind:selectedFolder
+    bind:selectedFileListFile
+    bind:versionNumber
+    bind:shouldPackageRawFiles
+    {selectFile}
+    {selectFolder}
+  />
   <div class="buttonContainer">
     <button on:click={prepareBundling}>Bundle</button>
   </div>
@@ -91,17 +82,19 @@
 
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
+
+    box-sizing: border-box;
+    padding: 1rem;
   }
 
   .heading {
-  }
-
-  .inputGrid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    margin: 0;
+    font-size: 1.5rem;
   }
 
   .buttonContainer {
+    align-self: flex-end;
   }
 
 </style>
