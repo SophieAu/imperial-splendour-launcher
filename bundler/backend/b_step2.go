@@ -13,7 +13,8 @@ func (a *API) prepareUserScript(sourcePath string) error {
 	a.logger.Info("Moving from " + source + " to " + destination)
 	err := a.Sh.MoveFile(source, destination)
 	if err != nil {
-		return a.error("Cannot Move userScript: "+err.Error(), customErrors.MoveUserScript)
+		return a.error("Cannot move userScript: "+err.Error(), customErrors.MoveUserScript)
 	}
+	a.logToFrontend("User script was moved to mod folder")
 	return nil
 }

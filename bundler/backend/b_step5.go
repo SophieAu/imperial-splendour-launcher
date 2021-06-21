@@ -24,5 +24,6 @@ func (a *API) updateSetupVersion(versionNumber string) error {
 	if err != nil {
 		return a.error("Cannot update setup file: "+err.Error(), customErrors.VersionUpdate)
 	}
+	a.logToFrontend("Version was set in setup script")
 	return nil
 }

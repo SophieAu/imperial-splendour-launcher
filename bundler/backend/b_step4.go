@@ -22,5 +22,6 @@ func (a *API) createInfoJSON(versionNumber string) error {
 	if err != nil {
 		return a.error("Cannot save Info file: "+err.Error(), customErrors.InfoFile)
 	}
+	a.logToFrontend("Info file was created")
 	return nil
 }

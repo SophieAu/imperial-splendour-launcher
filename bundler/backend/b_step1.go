@@ -19,12 +19,15 @@ func (a *API) prepareModFiles(sourcePath, fileListPath string) error {
 	if err := a.compareFileLists(expectedFileList, actualFileList); err != nil {
 		return err
 	}
+	a.logToFrontend("All mod files are accounted for.")
 	if err := a.moveFilesIntoModFolder(sourcePath, expectedFileList); err != nil {
 		return err
 	}
+	a.logToFrontend("Mod files were moved to mod folder.")
 	if err := a.saveFileListIntoModFolder(expectedFileList); err != nil {
 		return err
 	}
+	a.logToFrontend("File list was added to mod folder.")
 	return nil
 }
 

@@ -17,8 +17,3 @@ func (a *API) Bundle() error {
 
 	return nil
 }
-
-//canot compile
-// no package
-// cannot package
-//all good
