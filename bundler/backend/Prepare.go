@@ -3,9 +3,6 @@ package backend
 var versionRegex = "^\\d*\\.\\d*$"
 
 func (a *API) Prepare(sourcePath string, versionNumber string, packageRawFiles bool, fileListPath string) error {
-	// FROTNEND: VALIDATE INPUT (e.g. NO EMPTY SOURCE PATH, VALID VERSION NUMBER, ...)
-	// CHECK THAT I"M SENDING INFO MESSAGES (TEST FOR IT)
-
 	if err := a.validateUserInput(sourcePath, versionNumber, fileListPath); err != nil {
 		return err
 	}

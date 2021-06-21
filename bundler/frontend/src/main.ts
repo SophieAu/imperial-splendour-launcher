@@ -1,7 +1,7 @@
 // @ts-check
 import Wails from '@wailsapp/runtime';
 
-import Root from './Root.svelte';
+import Root from './app/Root.svelte';
 
 let app;
 

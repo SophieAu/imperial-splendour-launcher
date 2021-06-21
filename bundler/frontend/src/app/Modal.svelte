@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { modalButtonText } from './strings';
+  import { modalButtonText } from '../strings';
 
   export let message: string;
   export let onClick: () => void;
@@ -9,7 +9,7 @@
 <div class="overlay">
   <div class="container">
     <p class="message">
-      {@html message}
+      {message}
     </p>
     <div class="button">
       <button on:click={onClick}>{modalButtonText}</button>
@@ -33,9 +33,9 @@
   }
 
   .container {
-    width: 33vw;
+    width: 50vw;
 
-    border: 0.25rem solid rgb(77, 50, 50);
+    border: 0.125rem solid rgb(77, 50, 50);
     border-radius: 0.375rem;
     padding: 0.75rem;
 
