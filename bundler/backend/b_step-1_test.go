@@ -28,6 +28,27 @@ func TestUserInputValidation(t *testing.T) {
 		assert.Equal(t, err, customErrors.InvalidVersion)
 	})
 
+	t.Run("Validation of version number fails", func(t *testing.T) {
+		api := &API{logger: mockL}
+		err := api.validateUserInput("s", "2.0.0.0", "")
+
+		assert.Equal(t, err, customErrors.InvalidVersion)
+	})
+
+	t.Run("Validation of version number fails", func(t *testing.T) {
+		api := &API{logger: mockL}
+		err := api.validateUserInput("s", "2", "")
+
+		assert.Equal(t, err, customErrors.InvalidVersion)
+	})
+
+	t.Run("Validation of file list path fails", func(t *testing.T) {
+		api := &API{logger: mockL}
+		err := api.validateUserInput("s", "2.0.0", "")
+
+		assert.Equal(t, err, customErrors.NoFileList)
+	})
+
 	t.Run("Validation of file list path fails", func(t *testing.T) {
 		api := &API{logger: mockL}
 		err := api.validateUserInput("s", "2.0", "")

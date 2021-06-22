@@ -1,6 +1,6 @@
 package backend
 
-var versionRegex = "^\\d*\\.\\d*$"
+var versionRegex = "^\\d+\\.\\d+(.\\d+)?$"
 
 func (a *API) Prepare(sourcePath string, versionNumber string, packageRawFiles bool, fileListPath string) error {
 	if err := a.validateUserInput(sourcePath, versionNumber, fileListPath); err != nil {
