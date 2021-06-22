@@ -48,7 +48,7 @@
     if (!selectedFileListFile) {
       modalMsg.push('You need to select a file list file.');
     }
-    if (versionRegex.test(versionNumber)) {
+    if (!versionRegex.test(versionNumber)) {
       modalMsg.push('The version needs to be of the format x.y(.z).');
     }
     if (!selectedFolder || !selectedFileListFile || versionRegex.test(versionNumber)) {
