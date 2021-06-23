@@ -35,6 +35,7 @@
   .container {
     width: 50vw;
 
+    background-color: white;
     border: 0.125rem solid rgb(77, 50, 50);
     border-radius: 0.375rem;
     padding: 0.75rem;
