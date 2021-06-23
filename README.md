@@ -23,7 +23,8 @@ This repo contains the various apps to help create the best user experience for 
     * MediaFire
 2. Optional: Upload zipped 'raw-mod-files-only' (so, only the `IS_Files/` folder without the `IS_Info.json` file) versions of the mod update.
 3. Update the download links on the website
-4. Optional: Add a release blog post to the website
+4. Update `version.txt` with the new version number
+5. Optional: Add a release blog post to the website
 
 **And finally:**
 * Push the updated website
