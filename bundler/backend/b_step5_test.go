@@ -73,3 +73,66 @@ func TestUpdatingVersionInSetupFile(t *testing.T) {
 		mockS.AssertCalled(t, "WriteFile", baseFolder+"/"+setupFile, []byte("stringy string 3.7\nmerp derpderp"))
 	})
 }
+
+func TestUpdatingTempFolderInSetupFile(t *testing.T) {
+	mockL := &mocks.MockLogger{}
+	mockSt := &mocks.MockStore{}
+	mockL.On("Warn", mock.Anything).Return()
+	mockL.On("Info", mock.Anything).Return()
+	mockL.On("Infof", mock.Anything).Return()
+	mockSt.On("Update", mock.Anything).Return()
+
+	baseFolder := "testfolder"
+
+	t.Run("Cannot read Script File", func(t *testing.T) {
+		mockS := &mocks.MockSystemHandler{}
+		mockS.On("ReadFile", baseFolder+"/"+setupFile).Return([]byte("stringy string !!!TMP FOLDER HERE!!!"), errors.New("Cannot read")).Once()
+
+		api := &API{logger: mockL, Sh: mockS, logStore: mockSt}
+		api.setupBaseFolder = baseFolder + "/"
+		err := api.updateSetupTempFolder()
+
+		assert.Equal(t, customErrors.TempFolderUpdate, err)
+		mockS.AssertCalled(t, "ReadFile", baseFolder+"/"+setupFile)
+	})
+
+	t.Run("Found no TempFolder strings ", func(t *testing.T) {
+		mockS := &mocks.MockSystemHandler{}
+		mockS.On("ReadFile", baseFolder+"/"+setupFile).Return([]byte("stringy string derpderp"), nil).Once()
+
+		api := &API{logger: mockL, Sh: mockS, logStore: mockSt}
+		api.setupBaseFolder = baseFolder + "/"
+		err := api.updateSetupTempFolder()
+
+		assert.Equal(t, customErrors.TempFolderUpdate, err)
+		mockS.AssertCalled(t, "ReadFile", baseFolder+"/"+setupFile)
+	})
+
+	t.Run("Replaced all TempFolder strings but cannot write", func(t *testing.T) {
+		mockS := &mocks.MockSystemHandler{}
+		mockS.On("ReadFile", baseFolder+"/"+setupFile).Return([]byte("stringy string !!!TMP FOLDER HERE!!! merp !!!TMP FOLDER HERE!!! derpderp"), nil).Once()
+		mockS.On("WriteFile", mock.Anything, mock.Anything).Return(errors.New("cannot write"))
+
+		api := &API{logger: mockL, Sh: mockS, logStore: mockSt}
+		api.setupBaseFolder = baseFolder + "/"
+		err := api.updateSetupTempFolder()
+
+		assert.Equal(t, customErrors.TempFolderUpdate, err)
+		mockS.AssertCalled(t, "ReadFile", baseFolder+"/"+setupFile)
+		mockS.AssertCalled(t, "WriteFile", baseFolder+"/"+setupFile, []byte("stringy string ImperialSplendour merp ImperialSplendour derpderp"))
+	})
+
+	t.Run("Replace the only TempFolder string and save file", func(t *testing.T) {
+		mockS := &mocks.MockSystemHandler{}
+		mockS.On("ReadFile", baseFolder+"/"+setupFile).Return([]byte("stringy string !!!TMP FOLDER HERE!!!\nmerp derpderp"), nil).Once()
+		mockS.On("WriteFile", mock.Anything, mock.Anything).Return(nil)
+
+		api := &API{logger: mockL, Sh: mockS, logStore: mockSt}
+		api.setupBaseFolder = baseFolder + "/"
+		err := api.updateSetupTempFolder()
+
+		assert.Nil(t, err)
+		mockS.AssertCalled(t, "ReadFile", baseFolder+"/"+setupFile)
+		mockS.AssertCalled(t, "WriteFile", baseFolder+"/"+setupFile, []byte("stringy string ImperialSplendour\nmerp derpderp"))
+	})
+}

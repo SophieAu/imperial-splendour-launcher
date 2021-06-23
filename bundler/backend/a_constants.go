@@ -1,8 +1,9 @@
 package backend
 
 const (
-	AppName            = "Imperial Splendour Bundler"
-	VersionPlaceholder = "!!!VERSION HERE!!!"
+	AppName               = "Imperial Splendour Bundler"
+	VersionPlaceholder    = "!!!VERSION HERE!!!"
+	TempFolderPlaceholder = "!!!TMP FOLDER HERE!!!"
 
 	preferredSetupBaseFolder = "IS_Setup_Builder"
 	tempPath                 = "ImperialSplendour/"

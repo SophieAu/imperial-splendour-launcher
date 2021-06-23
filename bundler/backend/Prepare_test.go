@@ -45,6 +45,9 @@ func TestPrepare(t *testing.T) {
 		mockS.On("ReadFile", sourcePath+"/IS_Setup_Builder/setupBundled.iss").Return([]byte("stringy string !!!VERSION HERE!!!\nmerp derpderp"), nil).Once()
 		mockS.On("WriteFile", sourcePath+"/IS_Setup_Builder/setupBundled.iss", []byte("stringy string 3.7\nmerp derpderp")).Return(nil)
 
+		mockS.On("ReadFile", sourcePath+"/IS_Setup_Builder/setupBundled.iss").Return([]byte("stringy string !!!TMP FOLDER HERE!!!\nmerp derpderp"), nil).Once()
+		mockS.On("WriteFile", sourcePath+"/IS_Setup_Builder/setupBundled.iss", []byte("stringy string ImperialSplendour\nmerp derpderp")).Return(nil)
+
 		err := api.Prepare(sourcePath, version, false, fileListPath)
 		assert.Nil(t, err)
 

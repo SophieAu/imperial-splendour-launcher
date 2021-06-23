@@ -1,4 +1,4 @@
-export const pageTitle = 'Imperial Splendour: Rise of the Republic';
+export const pageTitle = 'Imperial Splendour Bundler';
 export const modalButtonText = 'OK';
 
 export const apiErrors = {
@@ -33,8 +33,8 @@ export const apiErrors = {
 
   infoFileError: "Couldn't create the info file.",
 
-  versionUpdateError:
-    "Couldn't update the version in the InnoSetup script. Make sure you have a pristine version straight from the ",
+  versionUpdateError: "Couldn't update the version in the InnoSetup script.",
+  tempFolderUpdateError: "Couldn't update the temp folder name in the InnoSetup script.",
 
   compileSetupError: "Couldn't compile the setup. Check the log for further info.",
 

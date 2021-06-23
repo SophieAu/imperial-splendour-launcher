@@ -7,7 +7,7 @@
 #define MyAppPublisher "Imperial Splendour"
 #define MyAppURL "https://imperialsplendour.com/"
 #define MyAppExeName "ImperialSplendour.exe"
-#define TmpFolder "ImperialSplendour"
+#define TmpFolder "!!!TMP FOLDER HERE!!!"
 #define UninstallDir "IS_Uninstall"
 #define UninstallHelperExe "deactivator.exe"
 #define SetupName "ImperialSplendourSetup"

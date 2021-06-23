@@ -22,6 +22,7 @@ export const mapError = (error: Error): string => {
   if (errCode === 'DownloadError') return apiErrors.downloadError;
   if (errCode === 'InfoFileError') return apiErrors.infoFileError;
   if (errCode === 'VersionUpdateError') return apiErrors.versionUpdateError;
+  if (errCode === 'TempFolderUpdateError') return apiErrors.tempFolderUpdateError;
 
   if (errCode === 'NoFileListError') return apiErrors.noFileListError;
 

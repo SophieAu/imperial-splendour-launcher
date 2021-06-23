@@ -37,5 +37,9 @@ func (a *API) Prepare(sourcePath string, versionNumber string, packageRawFiles b
 		return err
 	}
 
+	if err := a.updateSetupTempFolder(); err != nil {
+		return err
+	}
+
 	return nil
 }
