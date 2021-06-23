@@ -15,8 +15,8 @@ var css string
 
 func main() {
 	app := wails.CreateApp(&wails.AppConfig{
-		Width:            1280,
-		Height:           800,
+		Width:            540,
+		Height:           420,
 		Resizable:        false,
 		Title:            backend.AppName,
 		JS:               js,
