@@ -17,22 +17,18 @@ func (a *API) Prepare(sourcePath string, versionNumber string, packageRawFiles b
 		return err
 	}
 
-	// Step 2: User Script
 	if err := a.prepareUserScript(sourcePath); err != nil {
 		return err
 	}
 
-	// Step 3: Download setup files
 	if err := a.downloadFiles(); err != nil {
 		return err
 	}
 
-	// Step 4: Create IS_Info.json
 	if err := a.createInfoJSON(versionNumber); err != nil {
 		return err
 	}
 
-	// STEP 5: Update version in Setup
 	if err := a.updateSetupVersion(versionNumber); err != nil {
 		return err
 	}
