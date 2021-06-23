@@ -1,12 +1,14 @@
 <script lang="ts">
   import App from './App.svelte';
   import type { APIType } from '../types';
+  import runtime from '@wailsapp/runtime';
 
   const API = (window as any)?.backend?.API as APIType;
+  const Store = runtime.Store.New('Log');
 </script>
 
 <div>
-  <App {API} />
+  <App {API} {Store} />
 </div>
 
 <style>

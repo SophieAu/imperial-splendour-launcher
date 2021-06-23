@@ -4,11 +4,9 @@
   import BundleProgress from './ScreenBundle.svelte';
   import ErrorScreen from './ScreenError.svelte';
   import PrepProgress from './ScreenPrepare.svelte';
-  import runtime from '@wailsapp/runtime';
 
   import { pageTitle } from '../strings';
-  import type { APIType } from '../types';
-  import { onMount } from 'svelte';
+  import type { APIType, StoreType } from '../types';
 
   enum STAGE {
     INPUT,
@@ -18,6 +16,7 @@
   }
 
   export let API: APIType;
+  export let Store: StoreType;
 
   const versionRegex = new RegExp(/^\d+.\d+(.\d+)?$/);
 
@@ -34,10 +33,8 @@
   let compileProgressInfo = '';
 
   let progressInfo: string[] = [];
-  onMount(() => {
-    runtime.Store.New('Log').subscribe((newProgressInfo: string[]) => {
-      progressInfo = newProgressInfo;
-    });
+  Store.subscribe((newProgressInfo: string[]) => {
+    progressInfo = newProgressInfo;
   });
 
   const prepareBundling = async () => {
@@ -116,7 +113,7 @@
 </svelte:head>
 <main class="root">
   <h1 class="heading">Imperial Splendour Bundler</h1>
-  {#if stage === STAGE.INPUT}
+  {#if stage === STAGE.PREPARE}
     <InputForm
       bind:selectedFolder
       bind:selectedFileListFile
@@ -130,7 +127,7 @@
       <button on:click={prepareBundling}>Bundle</button>
     </div>
   {/if}
-  {#if stage === STAGE.PREPARE}
+  {#if stage === STAGE.INPUT}
     <PrepProgress bind:progress={progressInfo} />
     <div class="buttonContainer">
       <button on:click={bundle} disabled={!isButtonEnabled}>Compile</button>
