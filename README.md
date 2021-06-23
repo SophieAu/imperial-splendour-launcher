@@ -1,4 +1,20 @@
-# Imperial Splendour Launcher
+# Imperial Splendour Launcher Toolkit
+> Imperial Splendour attempts to create the best Empire: Total War experience possible without destroying the essence of the game, with an eye towards expanding and enriching the experience, while adding to the game's realism whenever possible.
+
+It is the year 1783; we begin the adventure just after the American Revolution which shows to the world that the order of a monarch can be disputed by his own subjects and that a colony can claim its independence in name of Liberty. However, in Europe, most of regimes are absolute monarchies; the American events are really bad news for the stability of their reign. Such events inspired by the Enlightenment could spread and tilt monarchies in place for nearly a thousand years.
+
+![](header.png)
+
+[About this Repo](#about-this-repo) | [Releasing a New Version](#releasing-a-new-imperial-splendour-version) | [Global constants](#global-constants) | [Bundling Imperial Splendour Manually](#bundling-imperial-splendour-manually) | [Credits and License Information](#credits-and-license-information)
+
+## About this Repo
+
+This repo contains the various apps to help create the best user experience for playing Imperial Splendour:
+* The Launcher: the most integral part which will be used by the user regularly
+* The Bundler: Used by the Imperial Splendour devs to create setup file for the users
+* The Deactivator: A script making sure that everything goes well when uninstalling Imperial Splendour
+* The InnoSetup scripts: Used by the bundler to create the setup.exe for the users. Currently, only the `setupBundled.iss` file is being used.
+
 
 ## Releasing a new Imperial Splendour Version
 1. Upload the bundled setup to the following hosts:
@@ -64,7 +80,7 @@
 
 
 
-## How to Create a New Imperial Splendour Bundle Manually
+## Bundling Imperial Splendour Manually
 
 ### Requirements
 
@@ -103,6 +119,8 @@ Collect all mod files in one otherwise empty folder. The folder structure will n
 Add the `setupBundled.iss` file to the mod file folder and then either use the Inno Setup Compiler IDE or the cli to build the setup.
 
 
-## Credits
+## Credits and License Information
 * Font: [IM Fell English SC](https://fonts.google.com/specimen/IM+Fell+English+SC) and [IM Fell English](https://fonts.google.com/specimen/IM+Fell+English) by Igino Marini
 * ETW Logo: https://www.pinclipart.com/maxpin/xRioh/
+
+Distributed under the MIT license. See ``LICENSE`` for more information.
