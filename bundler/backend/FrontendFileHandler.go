@@ -22,5 +22,5 @@ func (a *API) SelectFileListLocation() (string, error) {
 	if err != nil || fileListFile.IsDir() {
 		return "", customErrors.InvalidFile
 	}
-	return file + "/", nil
+	return file, nil
 }
