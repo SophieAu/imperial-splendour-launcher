@@ -3,7 +3,7 @@
 
 #define MyAppName "Imperial Splendour: Rise of the Republic"
 #define MyAppNameNoColon "Imperial Splendour - Rise of the Republic"
-#define MyAppVersion "1.2"
+#define MyAppVersion "!!!VERSION HERE!!!"
 #define MyAppPublisher "Imperial Splendour"
 #define MyAppURL "https://imperialsplendour.com/"
 #define MyAppExeName "ImperialSplendour.exe"
