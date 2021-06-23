@@ -6,9 +6,9 @@ export type APIType = {
     fileListPath: string
   ) => Promise<string>;
   Bundle: () => Promise<boolean>;
-  Exit: () => Promise<void>;
   SelectSourceDir: () => Promise<string>;
   SelectFileListLocation: () => Promise<string>;
+  Exit: () => Promise<void>;
 };
 
 export type StoreType = {
