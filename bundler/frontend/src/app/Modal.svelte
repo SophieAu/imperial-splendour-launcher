@@ -32,7 +32,7 @@
   }
 
   .container {
-    width: 50vw;
+    width: 50%;
 
     background-color: white;
     border: 0.125rem solid rgb(77, 50, 50);
