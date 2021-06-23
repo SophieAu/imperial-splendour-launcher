@@ -1,44 +1,6 @@
 # Imperial Splendour Launcher
 
-## How to Create a New Imperial Splendour Release
-
-### Requirements
-
-Note that the slim setup is currently theoretical only as hosting large files is too expensive to be sustainable for us. For potential future use, `setupSlim.iss` should still be updated though.
-
-* a Windows machine
-* at least 15GB of hard drive space (for the mod files)
-* a current install of [Inno Setup](https://jrsoftware.org/isinfo.php)
-* the `deactivator.exe` and `ImperialSplendour.exe` files which you can find in the `artifacts/` folder of this repo
-* the `setupBundled.iss` and `appicon.ico` files which you can find in the `setup/` folder of this repo
-
-### 1. Update Imperial Splendour Version
-
-The version needs to be updated in the following places:
-* Website (the `<URL>/version`) (**❗️Hold off on pushing the change though**)
-* `IS_Info.json` file
-* Setup files (both `setupBundled.iss` and `setupSlim.iss`)
-
-### 2. Collect Mod Files
-
-Collect all mod files in one otherwise empty folder. The folder structure will need to be:
-* `ImperialSplendour.exe` ('_Launcher File Name_' in the [Setup-specific Constants Table](#setup-specific-constants))
-* `IS_Files/` ('_Mod Files Folder_' in the [Imperial Splendour-specific Constants Table](#imperial-splendour-specific-constants))
-  * `IS_FileList.txt` ('_File List Location_' in the [Imperial Splendour-specific Constants Table](#imperial-splendour-specific-constants))
-  * `IS_Info.json` ('_Info File Location_' in the [Imperial Splendour-specific Constants Table](#imperial-splendour-specific-constants))
-  * `user.empire_script.txt` ('_User Script_' in the [ETW Constants Table](#etw-constants))
-  * all the other mod files (`.pack`, `.tga`, `.esf` files only, *need* to be listed in the `IS_FileList.txt`)
-* `IS_Uninstall/` ('_Uninstall Folder_' in the [Imperial Splendour-specific Constants Table](#imperial-splendour-specific-constants))
-  * `deactivator.exe` ('_Deactivator Name_' in the [Setup-specific Constants Table](#setup-specific-constants))
-* `setupBundled.iss`
-* `appicon.ico`
-
-### 3. Build the Setup
-
-Add the `setupBundled.iss` file to the mod file folder and then either use the Inno Setup Compiler IDE or the cli to build the setup.
-
-
-### 4. Finish Up
+## Releasing a new Imperial Splendour Version
 1. Upload the bundled setup to the following hosts:
     * Google Drive
     * ModDB
@@ -47,11 +9,7 @@ Add the `setupBundled.iss` file to the mod file folder and then either use the I
 3. Update the download links on the website
 4. Optional: Add a release blog post to the website
 
-```
-!!!!!!!!!!!!!!!!!!! MAYBE ADD A NEW SECTION TO THE DOWNLOAD PAGE
-```
-
-And finally:
+**And finally:**
 * Push the updated website
 * post the news on social media and Discord
 
@@ -65,6 +23,7 @@ And finally:
 * Deactivator: `setup/deactivator/app/a_constants.go`
 * Bundled Setup: `setup/setupBundled.iss`
 * Slim Setup: `setup/setupSlim.iss`
+* Bundler: `bundler/backend/a_constants.go`
 * Website: `<website repo>/src/constants.ts`
 
 ### ETW Constants
@@ -100,11 +59,48 @@ And finally:
 | Setup Display Name   | SetupName          | SetupName          |                 | -/-     |
 | Mod Files DLoad Link | -/-                | DownloadLink       |                 | -/-     |
 | Deactivator Name     | UninstallHelperExe | UninstallHelperExe | deactivatorFile | -/-     |
-| Temp Folder          | TmpFolder          | ???                | tempPath        | -/-     |
+| Temp Folder          | TmpFolder          | TmpFolder          | tempPath        | -/-     |
 
 
 
 
+## How to Create a New Imperial Splendour Bundle Manually
+
+### Requirements
+
+Note that the slim setup is currently theoretical only as hosting large files is too expensive to be sustainable for us. For potential future use, `setupSlim.iss` should still be updated though.
+
+* a Windows machine
+* at least 15GB of hard drive space (for the mod files)
+* a current install of [Inno Setup](https://jrsoftware.org/isinfo.php)
+* the `deactivator.exe` and `ImperialSplendour.exe` files which you can find in the `artifacts/` folder of this repo
+* the `setupBundled.iss` and `appicon.ico` files which you can find in the `setup/` folder of this repo
+
+### 1. Update Imperial Splendour Version
+
+The version needs to be updated in the following places:
+* Website (the `<URL>/version`) (**❗️Hold off on pushing the change though**)
+* `IS_Info.json` file
+* Setup files (both `setupBundled.iss` and `setupSlim.iss`)
+
+### 2. Collect Mod Files
+
+Collect all mod files in one otherwise empty folder. The folder structure will need to be:
+* `ImperialSplendour/`
+  * `ImperialSplendour.exe` ('_Launcher File Name_' in the [Setup-specific Constants Table](#setup-specific-constants))
+  * `IS_Files/` ('_Mod Files Folder_' in the [Imperial Splendour-specific Constants Table](#imperial-splendour-specific-constants))
+    * `IS_FileList.txt` ('_File List Location_' in the [Imperial Splendour-specific Constants Table](#imperial-splendour-specific-constants))
+    * `IS_Info.json` ('_Info File Location_' in the [Imperial Splendour-specific Constants Table](#imperial-splendour-specific-constants))
+    * `user.empire_script.txt` ('_User Script_' in the [ETW Constants Table](#etw-constants))
+    * all the other mod files (`.pack`, `.tga`, `.esf` files only, *need* to be listed in the `IS_FileList.txt`)
+  * `IS_Uninstall/` ('_Uninstall Folder_' in the [Imperial Splendour-specific Constants Table](#imperial-splendour-specific-constants))
+    * `deactivator.exe` ('_Deactivator Name_' in the [Setup-specific Constants Table](#setup-specific-constants))
+* `setupBundled.iss`
+* `appicon.ico`
+
+### 3. Build the Setup
+
+Add the `setupBundled.iss` file to the mod file folder and then either use the Inno Setup Compiler IDE or the cli to build the setup.
 
 
 ## Credits
