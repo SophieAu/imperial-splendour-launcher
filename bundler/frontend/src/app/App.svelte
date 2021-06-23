@@ -113,7 +113,7 @@
 </svelte:head>
 <main class="root">
   <h1 class="heading">Imperial Splendour Bundler</h1>
-  {#if stage === STAGE.PREPARE}
+  {#if stage === STAGE.INPUT}
     <InputForm
       bind:selectedFolder
       bind:selectedFileListFile
@@ -127,7 +127,7 @@
       <button on:click={prepareBundling}>Bundle</button>
     </div>
   {/if}
-  {#if stage === STAGE.INPUT}
+  {#if stage === STAGE.PREPARE}
     <PrepProgress bind:progress={progressInfo} />
     <div class="buttonContainer">
       <button on:click={bundle} disabled={!isButtonEnabled}>Compile</button>
