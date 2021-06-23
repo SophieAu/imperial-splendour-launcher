@@ -5,11 +5,3 @@
 <div class="container">
   <p>{progress}</p>
 </div>
-
-<style>
-  /* .container {
-  }
-
-  .container > p {
-  } */
-</style>

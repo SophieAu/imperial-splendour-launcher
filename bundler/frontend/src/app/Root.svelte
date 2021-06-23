@@ -20,7 +20,7 @@
   :global(body) {
     overflow: hidden;
     margin: 0;
-    height: 100vh;
-    width: 100vw;
+    height: 26.25rem;
+    width: 33.75rem;
   }
 </style>

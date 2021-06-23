@@ -149,8 +149,8 @@
 
 <style>
   .root {
-    width: 100vw;
-    height: 100vh;
+    width: 33.75rem;
+    height: 26.25rem;
     overflow: hidden;
 
     display: flex;

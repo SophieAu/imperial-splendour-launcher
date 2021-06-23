@@ -41,7 +41,6 @@
   .fileSelect > input {
     width: 16rem;
   }
-
   .fileSelect > button {
     width: 6rem;
   }
@@ -51,12 +50,16 @@
   }
 
   .inputGrid {
-    display: grid;
-    grid-template-columns: max-content max-content;
-    grid-gap: 1.5rem 1rem;
-    place-items: center left;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-items: left;
   }
   .inputGrid > p {
-    margin: 0;
+    margin: 0.75rem 1rem 0.75rem 0;
+    width: 8.25rem;
+  }
+  .inputGrid > div {
+    width: 22.5rem;
   }
 </style>
