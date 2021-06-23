@@ -104,7 +104,7 @@
 
   const selectFile = async () => {
     try {
-      selectedFolder = await API.SelectFileListLocation();
+      selectedFileListFile = await API.SelectFileListLocation();
     } catch (e: unknown) {
       modalText = mapError(e as Error);
     }
