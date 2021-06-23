@@ -1,5 +1,3 @@
-import 'isomorphic-fetch';
-
 import { apiErrors } from './strings';
 
 export const mapError = (error: Error): string => {
