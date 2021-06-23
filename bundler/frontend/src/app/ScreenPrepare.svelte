@@ -1,6 +1,5 @@
 <script lang="ts">
   export let progress: string[];
-
 </script>
 
 <div class="container">
@@ -15,5 +14,4 @@
 
   .container > p {
   } */
-
 </style>

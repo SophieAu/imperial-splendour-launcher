@@ -11,15 +11,13 @@
 
   export let selectFolder: () => void;
   export let selectFile: () => void;
-
 </script>
 
 <div class="inputGrid">
   <p>Source File Path:</p>
   <div class="fileSelect">
     <input bind:value={selectedFolder} required /><button on:click={selectFolder}
-      >Select Folder</button
-    >
+      >Select Folder</button>
   </div>
   <p>New Version:</p>
   <div class="versionInput">
@@ -28,8 +26,7 @@
   <p>File List:</p>
   <div class="fileSelect">
     <input bind:value={selectedFileListFile} required /><button on:click={selectFile}
-      >Select File</button
-    >
+      >Select File</button>
   </div>
   <p>Package Raw Files?</p>
   <div>
@@ -59,9 +56,7 @@
     grid-gap: 1.5rem 1rem;
     place-items: center left;
   }
-
   .inputGrid > p {
     margin: 0;
   }
-
 </style>

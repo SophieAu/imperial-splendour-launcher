@@ -3,7 +3,6 @@
 
   export let message: string;
   export let onClick: () => void;
-
 </script>
 
 <div class="overlay">
@@ -52,5 +51,4 @@
     margin: 0;
     padding: 0.5rem 0.5rem 0.75rem;
   }
-
 </style>

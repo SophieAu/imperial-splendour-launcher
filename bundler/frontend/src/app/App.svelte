@@ -109,7 +109,6 @@
       modalText = mapError(e as Error);
     }
   };
-
 </script>
 
 <svelte:head>
@@ -126,8 +125,7 @@
       {selectFile}
       {selectFolder}
       bind:modalText
-      {dismissModal}
-    />
+      {dismissModal} />
     <div class="buttonContainer">
       <button on:click={prepareBundling}>Bundle</button>
     </div>
@@ -174,5 +172,4 @@
   .buttonContainer {
     align-self: flex-end;
   }
-
 </style>

@@ -3,7 +3,6 @@
   import type { APIType } from '../types';
 
   const API = (window as any)?.backend?.API as APIType;
-
 </script>
 
 <div>
@@ -22,5 +21,4 @@
     height: 100vh;
     width: 100vw;
   }
-
 </style>
