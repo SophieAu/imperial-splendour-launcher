@@ -28,7 +28,7 @@ func Before() (*backend.API, *mocks.MockBrowser, *mocks.MockWindow, *mocks.MockL
 
 	api := &backend.API{}
 
-	mockSh.On("StartCommand", "/bin/sh", []string{"-c", "command -v iscc"}).Return(nil)
+	mockSh.On("StartCommand", "iscc /?").Return(nil)
 	if err := api.Init(mockB, mockW, mockL, mockSt, mockD, mockSh); err != nil {
 		panic(err)
 	}
