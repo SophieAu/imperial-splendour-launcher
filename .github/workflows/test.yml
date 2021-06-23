@@ -56,3 +56,23 @@ jobs:
         cd setup/deactivator
         go test ./... -v
         cd ../..
+
+
+  test-bundler-backend:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.16
+ 
+    - name: Test Launcher Backend
+      run: |
+        cd bundler
+        mkdir -p frontend/public/build
+        touch frontend/public/build/bundle.js
+        touch frontend/public/build/bundle.css
+        go test ./... -v
+
