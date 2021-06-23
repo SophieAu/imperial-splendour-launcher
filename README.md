@@ -41,42 +41,41 @@ This repo contains the various apps to help create the best user experience for 
 * Bundled Setup: `setup/setupBundled.iss`
 * Slim Setup: `setup/setupSlim.iss`
 * Bundler: `bundler/backend/a_constants.go`
-* Website: `<website repo>/src/constants.ts`
 
 ### ETW Constants
-| Constant                      | Launcher     | Deactivator  | Bundled Setup  | Slim Setup     | Bundler    | Website |
-|-------------------------------|--------------|--------------|----------------|----------------|------------|---------|
-| Default ETW Installation Path | -/-          | -/-          | ETWDefaultPath | ETWDefaultPath | -/-        | -/-     |
-| APPDATA Folder                | appDataPath  | appDataPath  | -/-            | -/-            | -/-        | -/-     |
-| Data Folder                   | dataPath     | dataPath     | -/-            | -/-            | -/-        | -/-     |
-| Campaign Folder               | campaignPath | campaignPath | CampaignPath   | CampaignPath   | -/-        | -/-     |
-| User Script                   | userScript   | userScript   | -/-            | -/-            | userScript | -/-     |
-| Steam URI                     | etwSteamURI  | -/-          | -/-            | -/-            | -/-        | -/-     |
+| Constant                      | Launcher     | Deactivator  | Bundled Setup  | Slim Setup     | Bundler    |
+|-------------------------------|--------------|--------------|----------------|----------------|------------|
+| Default ETW Installation Path | -/-          | -/-          | ETWDefaultPath | ETWDefaultPath | -/-        |
+| APPDATA Folder                | appDataPath  | appDataPath  | -/-            | -/-            | -/-        |
+| Data Folder                   | dataPath     | dataPath     | -/-            | -/-            | -/-        |
+| Campaign Folder               | campaignPath | campaignPath | CampaignPath   | CampaignPath   | -/-        |
+| User Script                   | userScript   | userScript   | -/-            | -/-            | userScript |
+| Steam URI                     | etwSteamURI  | -/-          | -/-            | -/-            | -/-        |
 
 
 
 ### Imperial Splendour-specific Constants
 
-| Constant           | Launcher      | Deactivator   | Bundled Setup | Slim Setup   | Bundler       | Website |
-|--------------------|---------------|---------------|---------------|--------------|---------------|---------|
-| Mod Files Folder   | modPath       | modPath       | -/-           | -/-          | modPath       | -/-     |
-| Uninstall Folder   | uninstallPath | uninstallPath | UninstallDir  | UninstallDir | uninstallPath | -/-     |
-| File List Location | fileListFile  | fileListFile  | -/-           | -/-          | fileListFile  | -/-     |
-| Info File Location | infoFile      | infoFile      | -/-           | -/-          | infoFile      | -/-     |
-| App Name           | AppName       | -/-           | MyAppName     | MyAppName    | lau           | -/-     |
-| Website            | websiteURL    | -/-           | MyAppURL      | MyAppURL     | -/-           | -/-     |
+| Constant           | Launcher      | Deactivator   | Bundled Setup | Slim Setup   | Bundler       |
+|--------------------|---------------|---------------|---------------|--------------|---------------|
+| Mod Files Folder   | modPath       | modPath       | -/-           | -/-          | modPath       |
+| Uninstall Folder   | uninstallPath | uninstallPath | UninstallDir  | UninstallDir | uninstallPath |
+| File List Location | fileListFile  | fileListFile  | -/-           | -/-          | fileListFile  |
+| Info File Location | infoFile      | infoFile      | -/-           | -/-          | infoFile      |
+| App Name           | AppName       | -/-           | MyAppName     | MyAppName    |               |
+| Website            | websiteURL    | -/-           | MyAppURL      | MyAppURL     | -/-           |
 
 ### Setup-specific Constants
 
-| Constant             | Bundled Setup      | Slim Setup         | Bundler         | Website |
-|----------------------|--------------------|--------------------|-----------------|---------|
-| App Version          | MyAppVersion       | MyAppVersion       |                 | -/-     |
-| App Publisher        | MyAppPublisher     | MyAppPublisher     |                 | -/-     |
-| Launcher File Name   | MyAppExeName       | MyAppExeName       | launcherFile    | -/-     |
-| Setup Display Name   | SetupName          | SetupName          |                 | -/-     |
-| Mod Files DLoad Link | -/-                | DownloadLink       |                 | -/-     |
-| Deactivator Name     | UninstallHelperExe | UninstallHelperExe | deactivatorFile | -/-     |
-| Temp Folder          | TmpFolder          | TmpFolder          | tempPath        | -/-     |
+| Constant             | Bundled Setup      | Slim Setup         | Bundler         |
+|----------------------|--------------------|--------------------|-----------------|
+| App Version          | MyAppVersion       | MyAppVersion       |                 |
+| App Publisher        | MyAppPublisher     | MyAppPublisher     |                 |
+| Launcher File Name   | MyAppExeName       | MyAppExeName       | launcherFile    |
+| Setup Display Name   | SetupName          | SetupName          |                 |
+| Mod Files DLoad Link | -/-                | DownloadLink       |                 |
+| Deactivator Name     | UninstallHelperExe | UninstallHelperExe | deactivatorFile |
+| Temp Folder          | TmpFolder          | TmpFolder          | tempPath        |
 
 
 
