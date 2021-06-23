@@ -11,7 +11,7 @@ func (a *API) ensureInnoSetup() error {
 	if err != nil {
 		return a.error("InnoSetup not installed", customErrors.InnoSetup)
 	}
-	a.logger.Info("Found InnoSetup instance")
+
 	return nil
 }
 

@@ -28,7 +28,7 @@ func TestInit(t *testing.T) {
 
 		err := api.Init(mockB, mockW, mockL, mockSt, mockD, mockSh)
 
-		assert.Equal(t, err, customErrors.InnoSetup)
+		assert.Equal(t, customErrors.InnoSetup, err)
 
 		test.After(*api)
 	})
