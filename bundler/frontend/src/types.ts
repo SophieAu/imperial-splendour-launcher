@@ -10,3 +10,7 @@ export type APIType = {
   SelectSourceDir: () => Promise<string>;
   SelectFileListLocation: () => Promise<string>;
 };
+
+export type StoreType = {
+  subscribe: (callback: (newState: string[]) => void) => void;
+};
