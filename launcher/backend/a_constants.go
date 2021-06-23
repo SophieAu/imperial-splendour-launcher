@@ -14,6 +14,7 @@ const (
 	infoFile        = modPath + "IS_Info.json"
 	uninstallerFile = uninstallPath + "unins000.exe"
 
-	websiteURL  = "https://imperialsplendour.com/"
-	etwSteamURI = "steam://rungameid/10500"
+	websiteURL      = "https://imperialsplendour.com/"
+	downloadPageUrl = websiteURL + "download"
+	etwSteamURI     = "steam://rungameid/10500"
 )

@@ -4,6 +4,7 @@ export type APIType = {
   Play: () => Promise<void>;
   Switch: () => Promise<boolean>;
   GoToWebsite: () => Promise<void>;
+  GoToDownloadPage: () => Promise<void>;
   Uninstall: () => Promise<void>;
   Exit: () => Promise<void>;
 };

@@ -4,6 +4,7 @@ import { fireEvent, render, waitFor } from '@testing-library/svelte';
 
 import App from './App.svelte';
 import { apiErrors, etwTitle, newVersionAvailable, pageTitle, versionPrefix } from './strings';
+import type { APIType } from './types';
 
 const versionPingResolver = jest.fn();
 const mockVersionPing = jest.fn(() => Promise.resolve({ json: () => versionPingResolver() }));
@@ -14,15 +15,17 @@ const mockIsActive = jest.fn();
 const mockPlay = jest.fn();
 const mockSwitch = jest.fn();
 const mockGoToWebsite = jest.fn();
+const mockGoToDownloadPage = jest.fn();
 const mockUninstall = jest.fn();
 const mockExit = jest.fn();
 
-const mockAPI = {
+const mockAPI: APIType = {
   Version: mockVersion,
   IsActive: mockIsActive,
   Play: mockPlay,
   Switch: mockSwitch,
   GoToWebsite: mockGoToWebsite,
+  GoToDownloadPage: mockGoToDownloadPage,
   Uninstall: mockUninstall,
   Exit: mockExit,
 };
@@ -33,6 +36,7 @@ afterEach(() => {
   mockPlay.mockReset();
   mockSwitch.mockReset();
   mockGoToWebsite.mockReset();
+  mockGoToDownloadPage.mockReset();
   mockUninstall.mockReset();
   mockExit.mockReset();
 });
@@ -121,24 +125,40 @@ describe('On Startup', () => {
     mockVersion.mockResolvedValue(vNr);
     mockIsActive.mockResolvedValue(true);
     versionPingResolver.mockResolvedValue(vNrNew);
+    mockGoToDownloadPage.mockRejectedValueOnce(new Error('DownloadPageError'));
+    mockGoToDownloadPage.mockRejectedValueOnce(undefined);
 
-    const { queryByAltText, getByText, queryByText } = render(App, { API: mockAPI });
+    const { queryByAltText, getByText, queryByText, getAllByText } = render(App, { API: mockAPI });
 
     // No content while starting up
     expect(queryByText(versionPrefix)).not.toBeInTheDocument();
 
+    // new version message is showing
     await waitFor(() => expect(queryByText('OK')).toBeInTheDocument());
-    expect(queryByText('our Website')).toBeInTheDocument();
+    expect(queryByText(newVersionAvailable[1])).toBeInTheDocument();
 
     // show version and status in the background
     expect(queryByText(vNr)).toBeInTheDocument();
     expect(queryByAltText(pageTitle)).toBeInTheDocument();
 
-    // dismiss error message
-    fireEvent.click(getByText('OK'));
+    // go to download page, fail
+    fireEvent.click(getByText(newVersionAvailable[1]));
+    expect(mockGoToDownloadPage).toHaveBeenCalled();
+    await waitFor(() => expect(queryByText(apiErrors.downloadPage)).toBeInTheDocument());
 
-    await waitFor(() => expect(queryByText('OK')).not.toBeInTheDocument());
-    expect(queryByText('our Website')).not.toBeInTheDocument();
+    // dismiss error message
+    fireEvent.click(getAllByText('OK')[1]);
+    await waitFor(() => expect(queryByText(apiErrors.downloadPage)).not.toBeInTheDocument());
+    expect(queryByText(newVersionAvailable[1])).toBeInTheDocument();
+
+    // go to download page, succeed
+    fireEvent.click(getByText(newVersionAvailable[1]));
+    expect(mockGoToDownloadPage).toHaveBeenCalled();
+    await waitFor(() => expect(queryByText(apiErrors.downloadPage)).not.toBeInTheDocument());
+
+    // dismiss update message
+    fireEvent.click(getByText('OK'));
+    await waitFor(() => expect(queryByText(newVersionAvailable[1])).not.toBeInTheDocument());
   });
 
   test('do not show anything when current launcher version is the most recent one', async () => {
@@ -157,7 +177,7 @@ describe('On Startup', () => {
     expect(queryByAltText(pageTitle)).toBeInTheDocument();
 
     expect(mockVersionPing).toHaveBeenCalled();
-    expect(queryByText(newVersionAvailable)).not.toBeInTheDocument();
+    expect(queryByText(newVersionAvailable[0])).not.toBeInTheDocument();
   });
 
   test('show ImpSplen header when ImpSplen is active', async () => {
@@ -185,7 +205,9 @@ describe('On Startup', () => {
 
 describe('Clicking the buttons', () => {
   test("handle the 'easy' stuff", async () => {
-    mockVersion.mockResolvedValue('something');
+    const vNr = '2.0';
+    mockVersion.mockResolvedValue(vNr);
+    versionPingResolver.mockResolvedValue(vNr);
     mockIsActive.mockResolvedValueOnce(false);
 
     mockPlay.mockRejectedValueOnce(new Error('PlayError'));

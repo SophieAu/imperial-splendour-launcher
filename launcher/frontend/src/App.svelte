@@ -16,6 +16,7 @@
   let version = '';
   let isISActive: boolean | undefined = undefined;
   let modalText = '';
+  let hasNewVersion = false;
 
   const callEndpoint = callAPI(API);
 
@@ -26,7 +27,7 @@
 
       try {
         const newestVersion = await getNewestVersion();
-        if (!!newestVersion && version != newestVersion) modalText = newVersionAvailable;
+        hasNewVersion = !!newestVersion && version < newestVersion;
       } catch {}
     } catch (e: unknown) {
       modalText = apiErrors.startup;
@@ -67,10 +68,13 @@
     }
   };
 
-  const dismissModal = () => {
+  const dismissErrorModal = () => {
     modalText = '';
   };
 
+  const dismissNewVersionModal = () => {
+    hasNewVersion = false;
+  };
 </script>
 
 <svelte:head>
@@ -92,7 +96,14 @@
       <span class="prefix">{versionPrefix}</span><span class="version">{version}</span>
     </footer>
   {/if}
+  {#if hasNewVersion}
+    <Modal onClick={dismissNewVersionModal}>
+      {newVersionAvailable[0]}<a on:click={async () => call('downloadPage')} href="/"
+        >{newVersionAvailable[1]}</a
+      >{newVersionAvailable[2]}</Modal
+    >>
+  {/if}
   {#if modalText}
-    <Modal bind:message={modalText} onClick={dismissModal} />
+    <Modal onClick={dismissErrorModal}>{modalText}</Modal>>
   {/if}
 </main>

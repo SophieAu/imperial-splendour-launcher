@@ -13,6 +13,7 @@ export enum Errors {
   NO_UNINSTALLER = 'NoUninstallerError',
   UNINSTALL = 'UninstallError',
   WEBSITE = 'WebsiteError',
+  DOWNLOAD_PAGE = 'DownloadPageError',
   PLAY = 'PlayError',
 }
 
@@ -24,6 +25,8 @@ export const apiErrors = {
     "Couldn't launch the game. Do you have Empire: Total War installed? If yes, please let us know about the error and we'll look into it.",
   website:
     "Couldn't open the website. Do you have a browser installed? If yes, please let us know about the error and we'll look into it.",
+  downloadPage:
+    "Couldn't open the download page. Do you have a browser installed? If yes, please let us know about the error and we'll look into it.",
   deactivationOnUninstall:
     "We couldn't deactivate Imperial Splendour to prepare for uninstalling." + pleaseContact,
   noUninstaller:
@@ -48,6 +51,10 @@ export const apiErrors = {
   unexpected: "We ran into an error that shouldn't happen..." + pleaseContact,
 };
 
-export const newVersionAvailable = `We released a newer version of Imperial Splendour. Go to <a href="https://imperialsplendour.com/download/">our Website</a> to download it.`;
+export const newVersionAvailable = [
+  `We released a newer version of Imperial Splendour. Go to `,
+  `our Website`,
+  ` to download it.`,
+];
 
 export const modalButtonText = 'OK';
