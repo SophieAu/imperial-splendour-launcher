@@ -135,13 +135,13 @@
   {#if stage === STAGE.PREPARE}
     <PrepProgress bind:progress={progressInfo} />
     <div class="buttonContainer">
-      <button on:click={prepareBundling} disabled={!isButtonEnabled}>Compile</button>
+      <button on:click={bundle} disabled={!isButtonEnabled}>Compile</button>
     </div>
   {/if}
   {#if stage === STAGE.BUNDLE}
     <BundleProgress bind:progress={compileProgressInfo} />
     <div class="buttonContainer">
-      <button on:click={bundle} disabled={!isButtonEnabled}>Finish</button>
+      <button on:click={exit} disabled={!isButtonEnabled}>Finish</button>
     </div>
   {/if}
   {#if stage === STAGE.ERROR}

@@ -7,7 +7,6 @@ import (
 
 func (a *API) SelectSourceDir() (string, error) {
 	dir := a.dialog.SelectDirectory()
-	a.logToFrontend("select dir")
 
 	sourceDir, err := os.Stat(dir)
 	if err != nil || !sourceDir.IsDir() {
@@ -18,7 +17,6 @@ func (a *API) SelectSourceDir() (string, error) {
 
 func (a *API) SelectFileListLocation() (string, error) {
 	file := a.dialog.SelectFile("Select the file list file", "*.txt")
-	a.logToFrontend("select file")
 
 	fileListFile, err := os.Stat(file)
 	if err != nil || fileListFile.IsDir() {
