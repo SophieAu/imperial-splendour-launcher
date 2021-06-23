@@ -68,7 +68,7 @@ func (a *API) compareFileLists(expected, actual []string) error {
 
 func (a *API) moveFilesIntoModFolder(sourcePath string, fileList []string) error {
 	for _, file := range fileList {
-		source := sourcePath + "/" + file
+		source := sourcePath + file
 		destination := a.setupBaseFolder + tempPath + modPath + file
 
 		a.logToFrontend("Moving from " + source + " to " + destination)

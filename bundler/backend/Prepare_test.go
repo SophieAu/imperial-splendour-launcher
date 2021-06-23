@@ -25,7 +25,7 @@ func TestPrepare(t *testing.T) {
 		mockS.On("MkdirAll", sourcePath+"/IS_Setup_Builder/ImperialSplendour/IS_Uninstall/").Return(nil).Once()
 
 		//File List
-		mockS.On("GetDirContentByName", sourcePath).Return([]string{"File1.txt", "File2.txt", "F3.txt"}, nil).Once()
+		mockS.On("GetDirContentByName", sourcePath+"/").Return([]string{"File1.txt", "File2.txt", "F3.txt"}, nil).Once()
 		mockS.On("ReadFile", "here/fileList.txt").Return([]byte("File1.txt\nFile2.txt"), nil).Once()
 		mockS.On("MoveFile", sourcePath+"/File1.txt", expectedModPath+"File1.txt").Return(nil).Times(2)
 		mockS.On("MoveFile", sourcePath+"/File2.txt", expectedModPath+"File2.txt").Return(nil).Times(2)

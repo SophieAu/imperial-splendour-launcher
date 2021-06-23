@@ -3,11 +3,12 @@ package backend
 import "imperial-splendour-bundler/backend/customErrors"
 
 func (a *API) prepareUserScript(sourcePath string) error {
-	if doesUserScriptExist, _ := a.Sh.DoesFileExist(sourcePath + "/" + userScript); !doesUserScriptExist {
-		return a.error("Userscript not found.", customErrors.UserScriptMissing)
+	source := sourcePath + userScript
+
+	if doesUserScriptExist, _ := a.Sh.DoesFileExist(source); !doesUserScriptExist {
+		return a.error("Userscript not found in "+source+".", customErrors.UserScriptMissing)
 	}
 
-	source := sourcePath + "/" + userScript
 	destination := a.setupBaseFolder + tempPath + modPath + userScript
 
 	a.logger.Info("Moving from " + source + " to " + destination)

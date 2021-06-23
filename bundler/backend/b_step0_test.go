@@ -23,9 +23,9 @@ func TestSetupBaseFolder(t *testing.T) {
 		mockS.On("DoesFileExist", mock.Anything).Return(false, nil)
 
 		api := &API{logger: mockL, Sh: mockS}
-		folder := api.getSetupBaseFolder("testfolder")
+		folder := api.getSetupBaseFolder("testfolder/")
 
-		assert.Equal(t, "testfolder/"+preferredSetupBaseFolder+"_2", folder)
+		assert.Equal(t, "testfolder/"+preferredSetupBaseFolder+"_2/", folder)
 
 	})
 
@@ -35,9 +35,9 @@ func TestSetupBaseFolder(t *testing.T) {
 		mockS.On("DoesFileExist", mock.Anything).Return(false, nil)
 
 		api := &API{logger: mockL, Sh: mockS}
-		folder := api.getSetupBaseFolder("testfolder")
+		folder := api.getSetupBaseFolder("testfolder/")
 
-		assert.Equal(t, "testfolder/"+preferredSetupBaseFolder+"_1", folder)
+		assert.Equal(t, "testfolder/"+preferredSetupBaseFolder+"_1/", folder)
 	})
 
 	t.Run("Folder doesn't exist", func(t *testing.T) {
@@ -45,9 +45,9 @@ func TestSetupBaseFolder(t *testing.T) {
 		mockS.On("DoesFileExist", mock.Anything).Return(false, nil)
 
 		api := &API{logger: mockL, Sh: mockS}
-		folder := api.getSetupBaseFolder("testfolder")
+		folder := api.getSetupBaseFolder("testfolder/")
 
-		assert.Equal(t, "testfolder/"+preferredSetupBaseFolder, folder)
+		assert.Equal(t, "testfolder/"+preferredSetupBaseFolder+"/", folder)
 	})
 }
 

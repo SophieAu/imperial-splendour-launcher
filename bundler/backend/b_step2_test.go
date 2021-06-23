@@ -19,14 +19,14 @@ func TestPrepareUserScript(t *testing.T) {
 	mockL.On("Infof", mock.Anything).Return()
 	mockSt.On("Update", mock.Anything).Return()
 
-	baseFolder := "testfolder"
+	baseFolder := "testfolder/"
 
 	t.Run("User Script cannot be found", func(t *testing.T) {
 		mockS := &mocks.MockSystemHandler{}
-		mockS.On("DoesFileExist", baseFolder+"/"+userScript).Return(false, errors.New("dir is evil")).Once()
+		mockS.On("DoesFileExist", baseFolder+userScript).Return(false, errors.New("dir is evil")).Once()
 
 		api := &API{logger: mockL, Sh: mockS, logStore: mockSt}
-		api.setupBaseFolder = baseFolder + "/"
+		api.setupBaseFolder = baseFolder
 		err := api.prepareUserScript(baseFolder)
 
 		assert.Equal(t, customErrors.UserScriptMissing, err)
@@ -34,11 +34,11 @@ func TestPrepareUserScript(t *testing.T) {
 
 	t.Run("Cannot move userscript", func(t *testing.T) {
 		mockS := &mocks.MockSystemHandler{}
-		mockS.On("DoesFileExist", baseFolder+"/"+userScript).Return(true, nil).Once()
-		mockS.On("MoveFile", baseFolder+"/"+userScript, mock.Anything).Return(errors.New("Cannot move file"))
+		mockS.On("DoesFileExist", baseFolder+userScript).Return(true, nil).Once()
+		mockS.On("MoveFile", baseFolder+userScript, mock.Anything).Return(errors.New("Cannot move file"))
 
 		api := &API{logger: mockL, Sh: mockS, logStore: mockSt}
-		api.setupBaseFolder = baseFolder + "/"
+		api.setupBaseFolder = baseFolder
 		err := api.prepareUserScript(baseFolder)
 
 		assert.Equal(t, customErrors.MoveUserScript, err)
@@ -46,14 +46,14 @@ func TestPrepareUserScript(t *testing.T) {
 
 	t.Run("All good", func(t *testing.T) {
 		mockS := &mocks.MockSystemHandler{}
-		mockS.On("DoesFileExist", baseFolder+"/"+userScript).Return(true, nil).Once()
-		mockS.On("MoveFile", baseFolder+"/"+userScript, mock.Anything).Return(nil)
+		mockS.On("DoesFileExist", baseFolder+userScript).Return(true, nil).Once()
+		mockS.On("MoveFile", baseFolder+userScript, mock.Anything).Return(nil)
 
 		api := &API{logger: mockL, Sh: mockS, logStore: mockSt}
-		api.setupBaseFolder = baseFolder + "/"
+		api.setupBaseFolder = baseFolder
 		err := api.prepareUserScript(baseFolder)
 
 		assert.Nil(t, err)
-		mockS.AssertCalled(t, "MoveFile", baseFolder+"/"+userScript, baseFolder+"/"+tempPath+modPath+userScript)
+		mockS.AssertCalled(t, "MoveFile", baseFolder+userScript, baseFolder+tempPath+modPath+userScript)
 	})
 }

@@ -6,12 +6,12 @@ import (
 )
 
 func (a *API) getSetupBaseFolder(sourcePath string) string {
-	preferredBase := sourcePath + "/" + preferredSetupBaseFolder
+	preferredBase := sourcePath + preferredSetupBaseFolder
 
 	hasPreviousSetup, _ := a.Sh.DoesFileExist(preferredBase)
 	if !hasPreviousSetup {
 		a.logger.Info("Setup Folder: " + preferredBase)
-		return preferredBase
+		return preferredBase + "/"
 	}
 
 	setupFolderBase := preferredBase + "_"
@@ -21,7 +21,7 @@ func (a *API) getSetupBaseFolder(sourcePath string) string {
 		doesXist, _ := a.Sh.DoesFileExist(currentFolderIteration)
 		if !doesXist {
 			a.logger.Info("Setup Folder: " + currentFolderIteration)
-			return currentFolderIteration
+			return currentFolderIteration + "/"
 		}
 		number++
 	}
