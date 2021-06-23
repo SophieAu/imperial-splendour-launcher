@@ -19,7 +19,7 @@
 
   export let API: APIType;
 
-  const versionRegex = new RegExp(/\d+.\d+(.\d+)?/).compile();
+  const versionRegex = new RegExp(/^\d+.\d+(.\d+)?$/);
 
   let modalText = '';
   let errorMessage = '';
@@ -35,7 +35,7 @@
 
   let progressInfo: string[] = [];
   onMount(() => {
-    runtime.Store.New('State').subscribe((newProgressInfo: string[]) => {
+    runtime.Store.New('Log').subscribe((newProgressInfo: string[]) => {
       progressInfo = newProgressInfo;
     });
   });
@@ -51,7 +51,7 @@
     if (!versionRegex.test(versionNumber)) {
       modalMsg.push('The version needs to be of the format x.y(.z).');
     }
-    if (!selectedFolder || !selectedFileListFile || versionRegex.test(versionNumber)) {
+    if (!selectedFolder || !selectedFileListFile || !versionRegex.test(versionNumber)) {
       modalText = modalMsg.join(' ');
       return;
     }
@@ -135,13 +135,13 @@
   {#if stage === STAGE.PREPARE}
     <PrepProgress bind:progress={progressInfo} />
     <div class="buttonContainer">
-      <button on:click={prepareBundling} disabled={isButtonEnabled}>Compile</button>
+      <button on:click={prepareBundling} disabled={!isButtonEnabled}>Compile</button>
     </div>
   {/if}
   {#if stage === STAGE.BUNDLE}
     <BundleProgress bind:progress={compileProgressInfo} />
     <div class="buttonContainer">
-      <button on:click={bundle} disabled={isButtonEnabled}>Finish</button>
+      <button on:click={bundle} disabled={!isButtonEnabled}>Finish</button>
     </div>
   {/if}
   {#if stage === STAGE.ERROR}
