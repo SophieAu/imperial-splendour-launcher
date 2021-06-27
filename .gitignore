@@ -1,6 +1,8 @@
 **/node_modules/
 */frontend/public/build/
 */build/
+
 launcher/test-fs/
+bundler/test/
 
 .DS_Store
