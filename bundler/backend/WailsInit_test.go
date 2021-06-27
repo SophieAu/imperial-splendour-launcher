@@ -1,20 +1,17 @@
 package backend_test
 
 import (
-	"errors"
 	"imperial-splendour-bundler/backend"
-	"imperial-splendour-bundler/backend/customErrors"
 	"imperial-splendour-bundler/backend/mocks"
 	"imperial-splendour-bundler/backend/test"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 )
 
 func TestInit(t *testing.T) {
 
-	t.Run("InnoSetup is not present", func(t *testing.T) {
+	t.Run("No issues initializing", func(t *testing.T) {
 		mockSh := &mocks.MockSystemHandler{}
 		mockB := &mocks.MockBrowser{}
 		mockW := &mocks.MockWindow{}
@@ -22,28 +19,6 @@ func TestInit(t *testing.T) {
 		mockD := &mocks.MockDialog{}
 		mockSt := &mocks.MockStore{}
 		api := &backend.API{}
-
-		mockSh.On("StartCommand", mock.Anything, mock.Anything).Return(errors.New("No Innosetup installed"))
-		mockL.On("Warn", mock.Anything).Return()
-
-		err := api.Init(mockB, mockW, mockL, mockSt, mockD, mockSh)
-
-		assert.Equal(t, customErrors.InnoSetup, err)
-
-		test.After(*api)
-	})
-
-	t.Run("InnoSetup is present", func(t *testing.T) {
-		mockSh := &mocks.MockSystemHandler{}
-		mockB := &mocks.MockBrowser{}
-		mockW := &mocks.MockWindow{}
-		mockL := &mocks.MockLogger{}
-		mockD := &mocks.MockDialog{}
-		mockSt := &mocks.MockStore{}
-		api := &backend.API{}
-
-		mockSh.On("StartCommand", mock.Anything, mock.Anything).Return(nil)
-		mockL.On("Warn", mock.Anything).Return()
 
 		err := api.Init(mockB, mockW, mockL, mockSt, mockD, mockSh)
 

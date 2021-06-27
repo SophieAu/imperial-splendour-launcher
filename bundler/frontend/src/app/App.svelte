@@ -7,6 +7,7 @@
 
   import { pageTitle } from '../strings';
   import type { APIType, StoreType } from '../types';
+  import { onMount } from 'svelte';
 
   enum STAGE {
     INPUT,
@@ -35,6 +36,14 @@
   let progressInfo: string[] = [];
   Store.subscribe((newProgressInfo: string[]) => {
     progressInfo = newProgressInfo;
+  });
+
+  onMount(async () => {
+    try {
+      await API.EnsureInnoSetup();
+    } catch (e: unknown) {
+      modalText = mapError(e as Error);
+    }
   });
 
   const prepareBundling = async () => {

@@ -8,6 +8,7 @@ export type APIType = {
   Bundle: () => Promise<boolean>;
   SelectSourceDir: () => Promise<string>;
   SelectFileListLocation: () => Promise<string>;
+  EnsureInnoSetup: () => Promise<void>;
   Exit: () => Promise<void>;
 };
 
