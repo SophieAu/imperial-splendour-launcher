@@ -17,10 +17,7 @@ jobs:
  
     - name: Test Launcher Backend
       run: |
-        cd bundler
         echo "derp"
-        echo $Error
-        iscc /?
+        iscc
         echo "mrp"
-        echo $Error
 
