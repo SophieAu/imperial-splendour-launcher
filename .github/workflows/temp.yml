@@ -19,4 +19,5 @@ jobs:
       run: |
         cd bundler
         iscc /?
-        $?
+        echo $?
+        
