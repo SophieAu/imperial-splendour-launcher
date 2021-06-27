@@ -18,8 +18,7 @@ jobs:
     - name: Test Launcher Backend
       run: |
         cd bundler
-        herpaderp
-        echo $?
+        echo $Error
         iscc /?
-        echo $?
+        echo $Error
 
