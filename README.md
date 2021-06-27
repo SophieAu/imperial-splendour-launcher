@@ -123,4 +123,4 @@ Add the `setupBundled.iss` file to the mod file folder and then either use the I
 * Font: [IM Fell English SC](https://fonts.google.com/specimen/IM+Fell+English+SC) and [IM Fell English](https://fonts.google.com/specimen/IM+Fell+English) by Igino Marini
 * ETW Logo: https://www.pinclipart.com/maxpin/xRioh/
 
-Distributed under the MIT license. See ``LICENSE`` for more information.
+Distributed under the MIT license. See ``LICENSE.md`` for more information.
