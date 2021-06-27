@@ -18,6 +18,8 @@ jobs:
     - name: Test Launcher Backend
       run: |
         cd bundler
+        herpaderp
+        echo $?
         iscc /?
         echo $?
-        
+
