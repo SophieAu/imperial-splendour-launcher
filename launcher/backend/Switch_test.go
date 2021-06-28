@@ -3,6 +3,7 @@ package backend_test
 import (
 	"errors"
 	"imperial-splendour-launcher/backend"
+	"imperial-splendour-launcher/backend/mocks"
 	"imperial-splendour-launcher/backend/test"
 	"strings"
 
@@ -12,11 +13,11 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func activeBefore() (*backend.API, *test.MockBrowser, *test.MockWindow, *test.MockLogger, *test.MockSystemHandler) {
+func activeBefore() (*backend.API, *mocks.MockBrowser, *mocks.MockWindow, *mocks.MockLogger, *mocks.MockSystemHandler) {
 	return test.VariableBefore("2.0", true, "test")
 }
 
-func inactiveBefore() (*backend.API, *test.MockBrowser, *test.MockWindow, *test.MockLogger, *test.MockSystemHandler) {
+func inactiveBefore() (*backend.API, *mocks.MockBrowser, *mocks.MockWindow, *mocks.MockLogger, *mocks.MockSystemHandler) {
 	return test.VariableBefore("2.0", false, "test")
 }
 

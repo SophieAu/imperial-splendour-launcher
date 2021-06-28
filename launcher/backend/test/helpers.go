@@ -2,6 +2,7 @@ package test
 
 import (
 	"imperial-splendour-launcher/backend"
+	"imperial-splendour-launcher/backend/mocks"
 	"strconv"
 
 	"github.com/stretchr/testify/mock"
@@ -15,15 +16,15 @@ func FmtInfoFile(isActive bool, version, usChecksum string) []byte {
 	return []byte("{\n\t\"isActive\": " + strconv.FormatBool(isActive) + ",\n\t\"version\": \"" + version + "\",\n\t\"usChecksum\": \"" + usChecksum + "\"\n}")
 }
 
-func Before() (*backend.API, *MockBrowser, *MockWindow, *MockLogger, *MockSystemHandler) {
+func Before() (*backend.API, *mocks.MockBrowser, *mocks.MockWindow, *mocks.MockLogger, *mocks.MockSystemHandler) {
 	return VariableBefore("2.0", true, "test")
 }
 
-func VariableBefore(version string, isActive bool, usChecksum string) (*backend.API, *MockBrowser, *MockWindow, *MockLogger, *MockSystemHandler) {
-	mockS := &MockSystemHandler{}
-	mockB := &MockBrowser{}
-	mockW := &MockWindow{}
-	mockL := &MockLogger{}
+func VariableBefore(version string, isActive bool, usChecksum string) (*backend.API, *mocks.MockBrowser, *mocks.MockWindow, *mocks.MockLogger, *mocks.MockSystemHandler) {
+	mockS := &mocks.MockSystemHandler{}
+	mockB := &mocks.MockBrowser{}
+	mockW := &mocks.MockWindow{}
+	mockL := &mocks.MockLogger{}
 
 	mockW.On("Close").Return()
 
