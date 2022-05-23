@@ -106,8 +106,7 @@ begin
       RegistryPath := RegistryPathX64
   end;
 
-  if not HasInstallation then
-  begin
+  if not HasInstallation then begin
     Result := True;
     Exit;
   end;
@@ -118,9 +117,10 @@ begin
     Result := False;
     Exit;
   end else if InstalledVersion = '{#MyAppVersion}' then begin
-    if MsgBox(ExpandConstant('{cm:ConfirmReinstall}'), mbConfirmation, MB_OKCANCEL) = IDCANCEL then
+    if MsgBox(ExpandConstant('{cm:ConfirmReinstall}'), mbConfirmation, MB_OKCANCEL) = IDCANCEL then begin
       Result := false;
       Exit;
+    end;
   end;
 
   RegQueryStringValue(HKEY_LOCAL_MACHINE, RegistryPath, 'InstallLocation', OldInstallLocation);
@@ -184,9 +184,10 @@ end;
 function ShouldSkipPage(PageID: Integer): Boolean;
 begin
   if PageID = InputDirPage.ID then begin
-    if HasInstallation then
+    if HasInstallation then begin
       Result := True;
       Exit;
+    end;
   end;
 
   Result := False;
