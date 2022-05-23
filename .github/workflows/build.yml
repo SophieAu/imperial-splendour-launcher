@@ -30,7 +30,7 @@ jobs:
         cd ..
 
     - name: Commit updated Launcher
-      uses: EndBug/add-and-commit@v7
+      uses: EndBug/add-and-commit@v9
       with:
         add: 'artifacts/ImperialSplendour*.exe'
         default_author: github_actions
@@ -60,7 +60,7 @@ jobs:
         cd ../..
 
     - name: Commit updated Deactivator
-      uses: EndBug/add-and-commit@v7
+      uses: EndBug/add-and-commit@v9
       with:
         add: 'artifacts/deactivator.exe'
         default_author: github_actions
@@ -96,7 +96,7 @@ jobs:
         cd ..
 
     - name: Commit updated Bundler
-      uses: EndBug/add-and-commit@v7
+      uses: EndBug/add-and-commit@v9
       with:
         add: 'artifacts/ISBundler.exe'
         default_author: github_actions
