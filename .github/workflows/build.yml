@@ -86,7 +86,7 @@ jobs:
     - name: Install Wails
       run: go get -u github.com/wailsapp/wails/cmd/wails@v1.16.3
     
-    - name: Build Launcher
+    - name: Build Bundler
       shell: cmd
       run: |
         [ -d artifacts ] || mkdir -p artifacts
@@ -95,7 +95,7 @@ jobs:
         mv build/imperial-splendour-bundler.exe ../artifacts/ISBundler.exe
         cd ..
 
-    - name: Commit updated Launcher
+    - name: Commit updated Bundler
       uses: EndBug/add-and-commit@v7
       with:
         add: 'artifacts/ISBundler.exe'
