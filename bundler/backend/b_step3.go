@@ -3,10 +3,10 @@ package backend
 import "imperial-splendour-bundler/backend/customErrors"
 
 const (
-	deactivatorUrl = "https://github.com/SophieAu/imperial-splendour-launcher/raw/master/artifacts/deactivator.exe"
-	launcherUrl    = "https://github.com/SophieAu/imperial-splendour-launcher/raw/master/artifacts/ImperialSplendour.exe"
-	setupUrl       = "https://github.com/SophieAu/imperial-splendour-launcher/raw/master/setup/setupBundled.iss"
-	appiconUrl     = "https://github.com/SophieAu/imperial-splendour-launcher/raw/master/setup/appicon.ico"
+	deactivatorUrl = "https://raw.githubusercontent.com/SophieAu/imperial-splendour-launcher/raw/master/artifacts/deactivator.exe"
+	launcherUrl    = "https://raw.githubusercontent.com/SophieAu/imperial-splendour-launcher/raw/master/artifacts/ImperialSplendour.exe"
+	setupUrl       = "https://raw.githubusercontent.com/SophieAu/imperial-splendour-launcher/raw/master/setup/setupBundled.iss"
+	appiconUrl     = "https://raw.githubusercontent.com/SophieAu/imperial-splendour-launcher/raw/master/setup/appicon.ico"
 )
 
 func (a *API) downloadFiles() error {
